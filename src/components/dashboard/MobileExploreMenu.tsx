@@ -28,12 +28,12 @@ export function MobileExploreMenu({ isOpen, onClose }: MobileExploreMenuProps) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
         onClick={onClose}
       />
 
       {/* Menu */}
-      <div className="fixed inset-x-0 top-0 z-50 bg-[#0A0A0A] rounded-b-2xl shadow-2xl animate-slideDown">
+      <div className="fixed inset-x-0 top-0 z-[101] bg-[#0A0A0A] rounded-b-2xl shadow-2xl animate-slideDown max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#1A1A1A]">
           <div className="flex items-center gap-3">
