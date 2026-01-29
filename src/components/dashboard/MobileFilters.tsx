@@ -9,31 +9,18 @@ interface MobileFiltersProps {
 
 export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTimeChange }: MobileFiltersProps) {
   const filters = [
-    { id: '24h', label: '24H', icon: '🕐' },
-    { id: 'trending', label: 'Trending', icon: '🔥' },
-    { id: 'top', label: 'Top', icon: '📊' },
-    { id: 'gainers', label: 'Gainers', icon: '📈' },
+    { id: 'all', label: 'All listings', icon: '📋' },
+    { id: 'volume', label: 'Top volume', icon: '📊' },
+    { id: 'upcoming', label: 'Upcoming', icon: '🚀' },
   ]
 
-  const timeFilters = ['5M', '1H', '6H', '24H']
+  const timeFilters = ['1d', '7d', '30d', '1yr']
 
   return (
     <div className="sticky top-[129px] z-20 bg-[#0A0A0A] border-b border-[#1A1A1A]">
       {/* Main Filters */}
       <div className="flex items-center gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
-        <button
-          onClick={() => onFilterChange('24h')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-            activeFilter === '24h'
-              ? 'bg-[#4459FF] text-white'
-              : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#252525]'
-          }`}
-        >
-          <span>🕐</span>
-          <span className="text-sm font-medium">24H</span>
-        </button>
-
-        {filters.slice(1).map((filter) => (
+        {filters.map((filter) => (
           <button
             key={filter.id}
             onClick={() => onFilterChange(filter.id)}

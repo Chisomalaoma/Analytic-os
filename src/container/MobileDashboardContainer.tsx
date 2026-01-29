@@ -24,8 +24,8 @@ interface Token {
 export default function MobileDashboardContainer() {
   const [showExplore, setShowExplore] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
-  const [activeFilter, setActiveFilter] = useState('24h')
-  const [activeTime, setActiveTime] = useState('24H')
+  const [activeFilter, setActiveFilter] = useState('all')
+  const [activeTime, setActiveTime] = useState('1d')
   const [tokens, setTokens] = useState<Token[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -66,7 +66,7 @@ export default function MobileDashboardContainer() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] pb-32">
+    <div className="min-h-screen bg-[#0A0A0A] pb-4">
       {/* Header */}
       <MobileHeader
         onOpenExplore={() => setShowExplore(true)}
