@@ -41,6 +41,8 @@ export function FundWalletModal({
 
   if (!open) return null
 
+  console.log('FundWalletModal props:', { accountNumber, bankName, accountName })
+
   const hasAccountDetails = accountNumber && accountNumber !== ''
 
   return (
@@ -122,7 +124,7 @@ export function FundWalletModal({
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-400">Account Name</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-white font-medium truncate max-w-[180px]">{accountName}</span>
+              <span className="text-xs text-white font-medium break-words text-right max-w-[200px]">{accountName}</span>
               <button
                 onClick={() => copyToClipboard(accountName, 'name')}
                 className="p-1 hover:bg-[#23262F] rounded transition-colors flex-shrink-0"

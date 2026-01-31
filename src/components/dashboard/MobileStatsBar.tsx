@@ -20,7 +20,9 @@ export function MobileStatsBar() {
       try {
         const res = await fetch('/api/wallet')
         const data = await res.json()
+        console.log('Mobile wallet data:', data)
         if (data.success && data.wallet) {
+          console.log('Setting wallet:', data.wallet)
           setWallet(data.wallet)
         }
       } catch (error) {
@@ -75,13 +77,15 @@ export function MobileStatsBar() {
       </div>
 
       {/* Fund Wallet Modal */}
-      <FundWalletModal
-        open={showFundModal}
-        onClose={() => setShowFundModal(false)}
-        accountNumber={wallet?.accountNumber || ''}
-        bankName={wallet?.bankName || 'Monnify'}
-        accountName={wallet?.accountName || session?.user?.name || 'Your Account'}
-      />
+      {wallet && (
+        <FundWalletModal
+          open={showFundModal}
+          onClose={() => setShowFundModal(false)}
+          accountNumber={wallet.accountNumber || ''}
+          bankName={wallet.bankName || 'Monnify'}
+          accountName={wallet.accountName || session?.user?.name || 'Your Account'}
+        />
+      )}
 
       {/* Withdraw Modal */}
       <WithdrawModal
