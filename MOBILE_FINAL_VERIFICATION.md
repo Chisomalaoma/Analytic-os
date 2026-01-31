@@ -4,7 +4,7 @@
 
 ### ✅ No Emoji Icons Found
 - **MobileFilters.tsx**: Clean - Text-only buttons (All listings, Top volume, Upcoming)
-- **MobileExploreMenu.tsx**: Clean - SVG icons only (Dashboard, Watchlist, Portfolio, Settings, Sign Out)
+- **MobileExploreMenu.tsx**: Clean - SVG icons only (Dashboard, Watchlifundst, Portfolio, Settings, Sign Out)
 - **MobileHeader.tsx**: Clean - SVG icons only (Search, Notification, Menu)
 - **MobileBottomNav.tsx**: Clean - Zendesk button only
 - **MobileTokenRow.tsx**: Clean - No icons, just token data

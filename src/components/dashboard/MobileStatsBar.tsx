@@ -1,54 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useCurrency } from '@/contexts/CurrencyContext'
+import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useCurrency } from '@/contexts/CurrencyContext'
 import { FundWalletModal } from './FundWalletModal'
 import { WithdrawModal } from './WithdrawModal'
+import { useWallet } from '@/hooks/useWallet'
+import { useWalletSync } from '@/hooks/useWalletSync'
 
 export function MobileStatsBar() {
-  const [wallet, setWallet] = useState<any>(null)
   const [showFundModal, setShowFundModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const { formatAmount } = useCurrency()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
 
-  useEffect(() => {
-    const fetchWallet = async () => {
-      if (!session?.user?.id) return
-      
-      try {
-        const res = await fetch('/api/wallet')
-        const data = await res.json()
-        console.log('Mobile wallet data:', data)
-        if (data.success && data.wallet) {
-          console.log('Setting wallet:', data.wallet)
-          setWallet(data.wallet)
-        }
-      } catch (error) {
-        console.error('Failed to fetch wallet:', error)
-      }
-    }
-    fetchWallet()
-  }, [session])
+  // Use the EXACT same wallet hook as desktop
+  const { balance, wallet, hasWallet, isLoading } = useWallet()
 
-  const balance = wallet?.ngnBalance || 0
-
-  const handleWithdrawSuccess = () => {
-    // Refresh wallet balance after withdrawal
-    const fetchWallet = async () => {
-      try {
-        const res = await fetch('/api/wallet')
-        const data = await res.json()
-        if (data.success && data.wallet) {
-          setWallet(data.wallet)
-        }
-      } catch (error) {
-        console.error('Failed to fetch wallet:', error)
-      }
-    }
-    fetchWallet()
-  }
+  // Enable auto-sync for wallet polling - SAME AS DESKTOP
+  useWalletSync(status === 'authenticated')
 
   return (
     <div className="sticky top-[57px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
@@ -56,42 +26,56 @@ export function MobileStatsBar() {
         {/* Wallet Balance */}
         <div>
           <div className="text-xs text-gray-500 mb-1">WALLET BALANCE</div>
-          <div className="text-lg font-bold text-white">{formatAmount(balance / 100)}</div>
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="w-16 h-5 bg-[#1A1A1A] rounded animate-pulse" />
+            </div>
+          ) : (
+            <div className="text-lg font-bold text-white">{formatAmount(balance / 100)}</div>
+          )}
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFundModal(true)}
-            className="px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-sm font-medium rounded-lg transition-colors"
+            disabled={isLoading || !hasWallet}
+            className="px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] disabled:bg-[#4459FF]/50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors"
           >
             Fund
           </button>
           <button
             onClick={() => setShowWithdrawModal(true)}
-            className="px-4 py-2 bg-[#1A1A1A] hover:bg-[#252525] text-white text-sm font-medium rounded-lg transition-colors border border-[#23262F]"
+            disabled={isLoading || !hasWallet}
+            className="px-4 py-2 bg-[#1A1A1A] hover:bg-[#252525] disabled:bg-[#1A1A1A]/50 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors border border-[#23262F]"
           >
             Withdraw
           </button>
         </div>
       </div>
 
-      {/* Fund Wallet Modal */}
-      <FundWalletModal
-        open={showFundModal}
-        onClose={() => setShowFundModal(false)}
-        accountNumber={wallet?.accountNumber || ''}
-        bankName={wallet?.bankName || 'Monnify'}
-        accountName={wallet?.accountName || session?.user?.name || 'Your Account'}
-      />
+      {/* Fund Wallet Modal - SAME AS DESKTOP */}
+      {showFundModal && wallet && (
+        <FundWalletModal
+          open={showFundModal}
+          onClose={() => setShowFundModal(false)}
+          accountNumber={wallet.accountNumber}
+          bankName={wallet.bankName}
+          accountName={wallet.accountName}
+        />
+      )}
 
-      {/* Withdraw Modal */}
-      <WithdrawModal
-        open={showWithdrawModal}
-        onClose={() => setShowWithdrawModal(false)}
-        balance={balance}
-        onWithdraw={handleWithdrawSuccess}
-      />
+      {/* Withdraw Modal - SAME AS DESKTOP */}
+      {showWithdrawModal && wallet && (
+        <WithdrawModal
+          open={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          balance={balance}
+          onWithdraw={() => {
+            setShowWithdrawModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }
