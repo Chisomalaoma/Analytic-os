@@ -364,7 +364,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
           />
           {/* Currency/Token Label */}
           {tradeType === 'buy' ? (
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
               <button
                 onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
                 className="flex items-center gap-1 bg-[#353945] px-2 py-1 rounded text-xs hover:bg-[#404550] transition-colors"
@@ -377,32 +377,40 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
               </button>
               
               {showCurrencyDropdown && (
-                <div className="absolute right-0 top-full mt-1 bg-[#1A1A1A] border border-[#353945] rounded shadow-lg z-[100] min-w-[100px]">
-                  <button
-                    onClick={() => {
-                      setCurrency('NGN');
-                      setShowCurrencyDropdown(false);
-                      setAmount('');
-                    }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-[#353945] transition-colors ${
-                      currency === 'NGN' ? 'bg-[#353945] text-green-400' : 'text-white'
-                    }`}
-                  >
-                    <span className="font-bold">₦</span> Naira
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCurrency('USDT');
-                      setShowCurrencyDropdown(false);
-                      setAmount('');
-                    }}
-                    className={`w-full px-3 py-2 text-left text-sm hover:bg-[#353945] transition-colors ${
-                      currency === 'USDT' ? 'bg-[#353945] text-blue-400' : 'text-white'
-                    }`}
-                  >
-                    <span className="font-bold">$</span> USDT
-                  </button>
-                </div>
+                <>
+                  {/* Backdrop to close dropdown */}
+                  <div 
+                    className="fixed inset-0 z-[90]" 
+                    onClick={() => setShowCurrencyDropdown(false)}
+                  />
+                  {/* Dropdown menu */}
+                  <div className="absolute right-0 top-full mt-1 bg-[#1A1A1A] border border-[#353945] rounded shadow-lg z-[100] min-w-[100px]">
+                    <button
+                      onClick={() => {
+                        setCurrency('NGN');
+                        setShowCurrencyDropdown(false);
+                        setAmount('');
+                      }}
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-[#353945] transition-colors ${
+                        currency === 'NGN' ? 'bg-[#353945] text-green-400' : 'text-white'
+                      }`}
+                    >
+                      <span className="font-bold">₦</span> Naira
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCurrency('USDT');
+                        setShowCurrencyDropdown(false);
+                        setAmount('');
+                      }}
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-[#353945] transition-colors ${
+                        currency === 'USDT' ? 'bg-[#353945] text-blue-400' : 'text-white'
+                      }`}
+                    >
+                      <span className="font-bold">$</span> USDT
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           ) : (
