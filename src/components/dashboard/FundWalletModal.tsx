@@ -41,50 +41,68 @@ export function FundWalletModal({
 
   if (!open) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-[#23262F] rounded-2xl w-full max-w-md p-6 relative">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-[#181A20] rounded-lg transition-colors"
-        >
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+  const hasAccountDetails = accountNumber && accountNumber !== ''
 
-        {/* Header */}
-        <h2 className="text-xl font-bold text-white mb-2">Fund Wallet</h2>
-        <p className="text-sm text-gray-400 mb-6">
-          Transfer to this account and your wallet will be credited automatically
-        </p>
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
+      <div className="bg-[#23262F] rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+        <div className="sticky top-0 bg-[#23262F] p-4 border-b border-[#353A45] flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">Fund Wallet</h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-[#181A20] rounded-lg transition-colors"
+          >
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-4">
+          {!hasAccountDetails ? (
+            /* No Account Details */
+            <div className="py-6 text-center">
+              <div className="w-12 h-12 bg-[#181A20] rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-white font-medium mb-1 text-sm">Setting up your wallet...</p>
+              <p className="text-xs text-gray-400">
+                Your wallet account is being created. Please wait a moment and try again.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-gray-400 mb-4">
+                Transfer to this account and your wallet will be credited automatically
+              </p>
 
         {/* Bank Details Card */}
-        <div className="bg-[#181A20] rounded-xl p-4 space-y-4">
+        <div className="bg-[#181A20] rounded-xl p-3 space-y-3">
           {/* Bank Name */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">Bank</span>
-            <span className="text-sm text-white font-medium">{bankName}</span>
+            <span className="text-xs text-gray-400">Bank</span>
+            <span className="text-xs text-white font-medium">{bankName}</span>
           </div>
 
           {/* Account Number */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">Account Number</span>
+            <span className="text-xs text-gray-400">Account Number</span>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-white font-mono">{formatAccountNumber(accountNumber)}</span>
+              <span className="text-xs text-white font-mono">{formatAccountNumber(accountNumber)}</span>
               <button
                 onClick={() => copyToClipboard(accountNumber, 'account')}
-                className="p-1.5 hover:bg-[#23262F] rounded-lg transition-colors"
+                className="p-1 hover:bg-[#23262F] rounded transition-colors"
               >
                 {copied === 'account' ? (
                   <svg
-                    className="w-4 h-4 text-green-400"
+                    className="w-3.5 h-3.5 text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -98,7 +116,7 @@ export function FundWalletModal({
                   </svg>
                 ) : (
                   <svg
-                    className="w-4 h-4 text-gray-400"
+                    className="w-3.5 h-3.5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -117,16 +135,16 @@ export function FundWalletModal({
 
           {/* Account Name */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-400">Account Name</span>
+            <span className="text-xs text-gray-400">Account Name</span>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-white font-medium">{accountName}</span>
+              <span className="text-xs text-white font-medium truncate max-w-[180px]">{accountName}</span>
               <button
                 onClick={() => copyToClipboard(accountName, 'name')}
-                className="p-1.5 hover:bg-[#23262F] rounded-lg transition-colors"
+                className="p-1 hover:bg-[#23262F] rounded transition-colors flex-shrink-0"
               >
                 {copied === 'name' ? (
                   <svg
-                    className="w-4 h-4 text-green-400"
+                    className="w-3.5 h-3.5 text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -140,7 +158,7 @@ export function FundWalletModal({
                   </svg>
                 ) : (
                   <svg
-                    className="w-4 h-4 text-gray-400"
+                    className="w-3.5 h-3.5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -161,7 +179,7 @@ export function FundWalletModal({
         {/* Share Button */}
         <button
           onClick={shareDetails}
-          className="w-full mt-4 py-3 bg-[#181A20] hover:bg-[#2A2F3A] text-gray-300 text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+          className="w-full mt-3 py-2.5 bg-[#181A20] hover:bg-[#2A2F3A] text-gray-300 text-sm font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -175,11 +193,14 @@ export function FundWalletModal({
         </button>
 
         {/* Instructions */}
-        <div className="mt-6 p-4 bg-[#181A20] rounded-xl">
+        <div className="mt-3 p-3 bg-[#181A20] rounded-xl">
           <p className="text-xs text-gray-400">
             <span className="text-yellow-400 font-medium">Note:</span> Your wallet will be credited
             automatically once the transfer is confirmed. This usually takes a few seconds.
           </p>
+        </div>
+        </>
+        )}
         </div>
       </div>
     </div>

@@ -9,9 +9,9 @@ interface MobileFiltersProps {
 
 export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTimeChange }: MobileFiltersProps) {
   const filters = [
-    { id: 'all', label: 'All listings', icon: '📋' },
-    { id: 'volume', label: 'Top volume', icon: '📊' },
-    { id: 'upcoming', label: 'Upcoming', icon: '🚀' },
+    { id: 'all', label: 'All listings' },
+    { id: 'volume', label: 'Top volume' },
+    { id: 'upcoming', label: 'Upcoming' },
   ]
 
   const timeFilters = ['1d', '7d', '30d', '1yr']
@@ -24,13 +24,12 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
           <button
             key={filter.id}
             onClick={() => onFilterChange(filter.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
               activeFilter === filter.id
                 ? 'bg-[#4459FF] text-white'
                 : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#252525]'
             }`}
           >
-            <span>{filter.icon}</span>
             <span className="text-sm font-medium">{filter.label}</span>
           </button>
         ))}

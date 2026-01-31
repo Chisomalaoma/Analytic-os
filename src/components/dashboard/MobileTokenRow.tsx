@@ -10,8 +10,6 @@ interface MobileTokenRowProps {
   name: string
   price: number
   change: number
-  age: string
-  txns: number
   volume: number
   logo: string | null
 }
@@ -22,8 +20,6 @@ export function MobileTokenRow({
   name,
   price,
   change,
-  age,
-  txns,
   volume,
   logo
 }: MobileTokenRowProps) {
@@ -31,16 +27,20 @@ export function MobileTokenRow({
   const { formatAmount } = useCurrency()
 
   const handleClick = () => {
+    // Haptic feedback for mobile devices
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10)
+    }
     router.push(`/dashboard/token?symbol=${symbol}`)
   }
 
   return (
     <div
       onClick={handleClick}
-      className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] hover:bg-[#0F0F0F] active:bg-[#151515] transition-colors cursor-pointer"
+      className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] hover:bg-[#0F0F0F] active:bg-[#151515] transition-colors cursor-pointer min-w-max touch-manipulation"
     >
       {/* Token Icon & Info */}
-      <div className="flex items-center gap-2 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-1 min-w-[200px]">
         {logo ? (
           <Image src={logo} alt={symbol} width={32} height={32} className="rounded-full flex-shrink-0" />
         ) : (
@@ -49,20 +49,13 @@ export function MobileTokenRow({
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-white text-sm">{symbol}</span>
-            <span className="text-xs text-gray-500">/ {name.length > 15 ? name.substring(0, 15) + '...' : name}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span>{age}</span>
-            <span>•</span>
-            <span>{txns.toLocaleString()} txns</span>
-          </div>
+          <div className="font-bold text-white text-sm">{symbol}</div>
+          <div className="text-xs text-gray-500 truncate">{name}</div>
         </div>
       </div>
 
       {/* Price & Change */}
-      <div className="text-right flex-shrink-0">
+      <div className="text-right flex-shrink-0 w-20">
         <div className="font-bold text-white text-sm">{formatAmount(price)}</div>
         <div className={`text-xs font-medium ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
           {change >= 0 ? '+' : ''}{change.toFixed(2)}%
@@ -70,7 +63,7 @@ export function MobileTokenRow({
       </div>
 
       {/* Volume */}
-      <div className="text-right flex-shrink-0 min-w-[60px]">
+      <div className="text-right flex-shrink-0 w-16 ml-2">
         <div className="text-xs text-gray-500">VOL</div>
         <div className="text-xs font-medium text-white">{formatAmount(volume)}</div>
       </div>

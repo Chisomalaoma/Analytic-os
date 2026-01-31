@@ -75,15 +75,13 @@ export function MobileStatsBar() {
       </div>
 
       {/* Fund Wallet Modal */}
-      {wallet?.monnifyAccountNumber && (
-        <FundWalletModal
-          open={showFundModal}
-          onClose={() => setShowFundModal(false)}
-          accountNumber={wallet.monnifyAccountNumber}
-          bankName={wallet.monnifyBankName || 'Monnify'}
-          accountName={wallet.monnifyAccountName || session?.user?.name || 'Your Account'}
-        />
-      )}
+      <FundWalletModal
+        open={showFundModal}
+        onClose={() => setShowFundModal(false)}
+        accountNumber={wallet?.monnifyAccountNumber || wallet?.accountNumber || ''}
+        bankName={wallet?.monnifyBankName || wallet?.bankName || 'Monnify'}
+        accountName={wallet?.monnifyAccountName || wallet?.accountName || session?.user?.name || 'Your Account'}
+      />
 
       {/* Withdraw Modal */}
       <WithdrawModal

@@ -237,30 +237,31 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-[#23262F] rounded-2xl w-full max-w-md p-6 relative">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 hover:bg-[#181A20] rounded-lg transition-colors"
-        >
-          <X className="w-5 h-5 text-gray-400" />
-        </button>
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
+      <div className="bg-[#23262F] rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+        <div className="sticky top-0 bg-[#23262F] p-4 border-b border-[#353A45] flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white">Withdraw Funds</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Available: <span className="text-green-400 font-medium">{formatCurrency(balance)}</span>
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-[#181A20] rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
 
-        {/* Header */}
-        <h2 className="text-xl font-bold text-white mb-2">Withdraw Funds</h2>
-        <p className="text-sm text-gray-400 mb-6">
-          Available: <span className="text-green-400 font-medium">{formatCurrency(balance)}</span>
-        </p>
-
-        {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="p-4">{error && (
+          <div className="mb-3 p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+          <div className="mb-3 p-2.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-xs">
             {success}
           </div>
         )}
@@ -268,25 +269,25 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
         {step === 'select' ? (
           <>
             {/* Bank Account Selection */}
-            <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Select Bank Account</label>
+            <div className="mb-3">
+              <label className="block text-xs text-gray-400 mb-2">Select Bank Account</label>
               <div className="relative">
                 <button
                   onClick={() => setShowBankDropdown(!showBankDropdown)}
-                  className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-4 py-3 text-left flex items-center justify-between hover:border-[#4459FF] transition-colors"
+                  className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 text-left flex items-center justify-between hover:border-[#4459FF] transition-colors"
                 >
                   {selectedBankData ? (
-                    <div className="flex items-center gap-3">
-                      <Building2 className="w-5 h-5 text-gray-400" />
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-gray-400" />
                       <div>
-                        <p className="text-white font-medium">{selectedBankData.bankName}</p>
-                        <p className="text-sm text-gray-400">{selectedBankData.accountNumber}</p>
+                        <p className="text-white font-medium text-sm">{selectedBankData.bankName}</p>
+                        <p className="text-xs text-gray-400">{selectedBankData.accountNumber}</p>
                       </div>
                     </div>
                   ) : (
-                    <span className="text-gray-400">Select bank account</span>
+                    <span className="text-gray-400 text-sm">Select bank account</span>
                   )}
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showBankDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showBankDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Dropdown */}
@@ -299,15 +300,15 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
                           setSelectedBank(acc.id)
                           setShowBankDropdown(false)
                         }}
-                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-[#23262F] transition-colors"
+                        className="w-full px-3 py-2.5 text-left flex items-center gap-2 hover:bg-[#23262F] transition-colors"
                       >
-                        <Building2 className="w-5 h-5 text-gray-400" />
-                        <div className="flex-1">
-                          <p className="text-white font-medium">{acc.bankName}</p>
-                          <p className="text-sm text-gray-400">{acc.accountNumber} - {acc.accountName}</p>
+                        <Building2 className="w-4 h-4 text-gray-400" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium text-sm">{acc.bankName}</p>
+                          <p className="text-xs text-gray-400 truncate">{acc.accountNumber} - {acc.accountName}</p>
                         </div>
                         {acc.isDefault && (
-                          <span className="text-xs text-[#4459FF] bg-[#4459FF]/10 px-2 py-1 rounded">Default</span>
+                          <span className="text-xs text-[#4459FF] bg-[#4459FF]/10 px-2 py-0.5 rounded">Default</span>
                         )}
                       </button>
                     ))}
@@ -316,9 +317,9 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
                         setShowBankDropdown(false)
                         setStep('add')
                       }}
-                      className="w-full px-4 py-3 text-left flex items-center gap-3 text-[#4459FF] hover:bg-[#23262F] transition-colors border-t border-[#353A45]"
+                      className="w-full px-3 py-2.5 text-left flex items-center gap-2 text-[#4459FF] hover:bg-[#23262F] transition-colors border-t border-[#353A45] text-sm"
                     >
-                      <span className="text-xl">+</span>
+                      <span className="text-lg">+</span>
                       <span>Add new bank account</span>
                     </button>
                   </div>
@@ -328,20 +329,20 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
 
             {/* Selected Account Display */}
             {selectedBankData && (
-              <div className="bg-[#181A20] rounded-xl p-4 mb-4">
+              <div className="bg-[#181A20] rounded-xl p-3 mb-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Account Name</span>
+                  <span className="text-xs text-gray-400">Account Name</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-medium">{selectedBankData.accountName}</span>
+                    <span className="text-white font-medium text-sm truncate max-w-[180px]">{selectedBankData.accountName}</span>
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(selectedBankData.accountName)
                         setCopied(true)
                         setTimeout(() => setCopied(false), 2000)
                       }}
-                      className="p-1 hover:bg-[#23262F] rounded transition-colors"
+                      className="p-1 hover:bg-[#23262F] rounded transition-colors flex-shrink-0"
                     >
-                      {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
+                      {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
                     </button>
                   </div>
                 </div>
@@ -349,16 +350,16 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             )}
 
             {/* Amount Input */}
-            <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Amount</label>
+            <div className="mb-3">
+              <label className="block text-xs text-gray-400 mb-2">Amount</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">₦</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">₦</span>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-4 py-3 pl-8 text-white text-xl font-medium focus:outline-none focus:border-[#4459FF]"
+                  className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 pl-7 text-white text-lg font-medium focus:outline-none focus:border-[#4459FF]"
                 />
               </div>
               <div className="flex justify-between mt-2 text-xs">
@@ -390,14 +391,14 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             </div>
 
             {/* Narration */}
-            <div className="mb-6">
-              <label className="block text-sm text-gray-400 mb-2">Narration (optional)</label>
+            <div className="mb-4">
+              <label className="block text-xs text-gray-400 mb-2">Narration (optional)</label>
               <input
                 type="text"
                 value={narration}
                 onChange={(e) => setNarration(e.target.value)}
                 placeholder="Wallet withdrawal"
-                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-[#4459FF]"
               />
             </div>
 
@@ -405,11 +406,11 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             <button
               onClick={handleWithdraw}
               disabled={loading || !selectedBank || !amount || parseFloat(amount) * 100 > balance}
-              className="w-full py-4 bg-[#4459FF] hover:bg-[#3448EE] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -417,7 +418,7 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
                 </>
               ) : (
                 <>
-                  <ArrowDownUp className="w-5 h-5" />
+                  <ArrowDownUp className="w-4 h-4" />
                   Withdraw {amount ? `₦${parseFloat(amount).toLocaleString()}` : ''}
                 </>
               )}
@@ -428,20 +429,20 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
           <>
             <button
               onClick={() => setStep('select')}
-              className="mb-4 text-sm text-gray-400 hover:text-white flex items-center gap-1"
+              className="mb-3 text-xs text-gray-400 hover:text-white flex items-center gap-1"
             >
               ← Back to withdrawal
             </button>
 
-            <h3 className="text-lg font-semibold text-white mb-4">Add Bank Account</h3>
+            <h3 className="text-base font-semibold text-white mb-3">Add Bank Account</h3>
 
             {/* Bank Selection */}
-            <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Select Bank</label>
+            <div className="mb-3">
+              <label className="block text-xs text-gray-400 mb-2">Select Bank</label>
               <select
                 value={newBankCode}
                 onChange={(e) => setNewBankCode(e.target.value)}
-                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-[#4459FF]"
               >
                 <option value="">Select bank</option>
                 {NIGERIAN_BANKS.map((bank) => (
@@ -453,8 +454,8 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             </div>
 
             {/* Account Number */}
-            <div className="mb-4">
-              <label className="block text-sm text-gray-400 mb-2">Account Number</label>
+            <div className="mb-3">
+              <label className="block text-xs text-gray-400 mb-2">Account Number</label>
               <input
                 type="text"
                 value={newAccountNumber}
@@ -463,7 +464,7 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
                   setNewAccountNumber(value)
                 }}
                 placeholder="Enter account number"
-                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-4 py-3 text-white font-mono focus:outline-none focus:border-[#4459FF]"
+                className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#4459FF]"
               />
             </div>
 
@@ -471,16 +472,16 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             <button
               onClick={verifyAccount}
               disabled={verifyingAccount || !newAccountNumber || !newBankCode}
-              className="w-full py-3 bg-[#353A45] hover:bg-[#4459FF] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors mb-4"
+              className="w-full py-2.5 bg-[#353A45] hover:bg-[#4459FF] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors mb-3 text-sm"
             >
               {verifyingAccount ? 'Verifying...' : 'Verify Account'}
             </button>
 
             {/* Account Name Display */}
             {newAccountName && (
-              <div className="bg-[#181A20] rounded-xl p-4 mb-4">
-                <p className="text-sm text-gray-400">Account Name</p>
-                <p className="text-white font-medium">{newAccountName}</p>
+              <div className="bg-[#181A20] rounded-xl p-3 mb-3">
+                <p className="text-xs text-gray-400">Account Name</p>
+                <p className="text-white font-medium text-sm">{newAccountName}</p>
               </div>
             )}
 
@@ -488,12 +489,13 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
             <button
               onClick={handleAddBank}
               disabled={loading || !newAccountNumber || !newBankCode || !newAccountName}
-              className="w-full py-4 bg-[#4459FF] hover:bg-[#3448EE] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors"
+              className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors text-sm"
             >
               {loading ? 'Adding...' : 'Add Bank Account'}
             </button>
           </>
         )}
+        </div>
       </div>
     </div>
   )
