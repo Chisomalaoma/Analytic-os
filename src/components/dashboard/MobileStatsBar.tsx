@@ -78,9 +78,9 @@ export function MobileStatsBar() {
       <FundWalletModal
         open={showFundModal}
         onClose={() => setShowFundModal(false)}
-        accountNumber={wallet?.monnifyAccountNumber || wallet?.accountNumber || ''}
-        bankName={wallet?.monnifyBankName || wallet?.bankName || 'Monnify'}
-        accountName={wallet?.monnifyAccountName || wallet?.accountName || session?.user?.name || 'Your Account'}
+        accountNumber={wallet?.accountNumber || ''}
+        bankName={wallet?.bankName || 'Monnify'}
+        accountName={wallet?.accountName || session?.user?.name || 'Your Account'}
       />
 
       {/* Withdraw Modal */}

@@ -377,7 +377,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
               </button>
               
               {showCurrencyDropdown && (
-                <div className="absolute right-0 top-full mt-1 bg-[#1A1A1A] border border-[#353945] rounded shadow-lg z-10 min-w-[100px]">
+                <div className="absolute right-0 top-full mt-1 bg-[#1A1A1A] border border-[#353945] rounded shadow-lg z-[100] min-w-[100px]">
                   <button
                     onClick={() => {
                       setCurrency('NGN');

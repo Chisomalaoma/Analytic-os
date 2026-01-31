@@ -25,83 +25,83 @@ const ComplianceSection: React.FC<ComplianceSectionProps> = ({ className = '' })
 
   return (
     <>
-      <div className={`bg-[#0A0A0A] border border-[#262626] rounded-lg p-6 ${className}`}>
-        <div className="mb-6">
-          <div className="font-semibold text-white flex items-center gap-2">
+      <div className={`bg-[#0A0A0A] border border-[#262626] rounded-lg p-4 sm:p-6 ${className}`}>
+        <div className="mb-4 sm:mb-6">
+          <div className="font-semibold text-white flex items-center gap-2 text-base sm:text-lg">
             <Shield className="w-5 h-5 text-[#4459FF]" />
             Legal & Compliance
           </div>
-          <div className="text-gray-400 text-sm">
+          <div className="text-gray-400 text-xs sm:text-sm mt-1">
             Access important legal documents and privacy information
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Privacy Policy */}
-          <div className="flex items-center justify-between p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg hover:border-[#4459FF]/30 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#4459FF]/10 rounded-lg flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg hover:border-[#4459FF]/30 transition-colors">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-[#4459FF]/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Eye className="w-5 h-5 text-[#4459FF]" />
               </div>
-              <div>
-                <div className="text-white font-medium">Privacy Policy</div>
-                <div className="text-gray-400 text-sm">
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-medium text-sm sm:text-base">Privacy Policy</div>
+                <div className="text-gray-400 text-xs sm:text-sm mt-0.5">
                   Learn how we collect, use, and protect your personal information
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-13 sm:ml-0">
               <button
                 onClick={handlePrivacyClick}
-                className="px-4 py-2 bg-[#23262F] hover:bg-[#2A2D37] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[#23262F] hover:bg-[#2A2D37] text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 View
               </button>
               <button
                 onClick={() => handleExternalLink('/privacy-policy')}
-                className="px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Open
               </button>
             </div>
           </div>
 
           {/* Terms of Use */}
-          <div className="flex items-center justify-between p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg hover:border-[#4459FF]/30 transition-colors">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#4459FF]/10 rounded-lg flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg hover:border-[#4459FF]/30 transition-colors">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-[#4459FF]/10 rounded-lg flex items-center justify-center flex-shrink-0">
                 <FileText className="w-5 h-5 text-[#4459FF]" />
               </div>
-              <div>
-                <div className="text-white font-medium">Terms of Use</div>
-                <div className="text-gray-400 text-sm">
+              <div className="flex-1 min-w-0">
+                <div className="text-white font-medium text-sm sm:text-base">Terms of Use</div>
+                <div className="text-gray-400 text-xs sm:text-sm mt-0.5">
                   Understand your rights and responsibilities when using our platform
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-13 sm:ml-0">
               <button
                 onClick={handleTermsClick}
-                className="px-4 py-2 bg-[#23262F] hover:bg-[#2A2D37] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[#23262F] hover:bg-[#2A2D37] text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 View
               </button>
               <button
                 onClick={() => handleExternalLink('/terms-of-use')}
-                className="px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Open
               </button>
             </div>
           </div>
 
           {/* Additional Info */}
-          <div className="mt-6 p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg">
-            <div className="text-sm text-gray-400">
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#1A1A1A] border border-[#23262F] rounded-lg">
+            <div className="text-xs sm:text-sm text-gray-400">
               <div className="font-medium text-gray-300 mb-2">Document Information</div>
               <div className="space-y-1">
                 <div>• Documents are updated regularly to reflect current policies</div>

@@ -230,14 +230,14 @@ const AccountContainer = () => {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8 text-white">My Account</h1>
-      <div className="max-w-3xl mx-auto flex flex-col gap-8">
+    <div className="p-4 sm:p-8 pb-20 sm:pb-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-white">My Account</h1>
+      <div className="max-w-3xl mx-auto flex flex-col gap-6 sm:gap-8">
         {/* Profile Settings */}
-        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-          <div className="mb-6">
-            <div className="font-semibold text-white">Profile Settings</div>
-            <div className="text-gray-400 text-sm">
+        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            <div className="font-semibold text-white text-base sm:text-lg">Profile Settings</div>
+            <div className="text-gray-400 text-xs sm:text-sm">
               Manage your personal information
             </div>
           </div>
@@ -255,11 +255,11 @@ const AccountContainer = () => {
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
             {/* Profile Image */}
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-[#1A1A1A] border-2 border-[#23262F]">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-[#1A1A1A] border-2 border-[#23262F]">
                   {preview ? (
                     <img
                       src={preview}
@@ -296,8 +296,8 @@ const AccountContainer = () => {
             </div>
 
             {/* Form Fields */}
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="flex-1 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">
                     First Name
@@ -384,7 +384,7 @@ const AccountContainer = () => {
               <button
                 onClick={handleSave}
                 disabled={loading}
-                className="flex items-center gap-2 px-5 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#4459FF] hover:bg-[#3448EE] text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {loading ? "Saving..." : "Save Changes"}
@@ -423,57 +423,61 @@ const AccountContainer = () => {
         <PriceAlertSettings />
 
         {/* Wallet Settings */}
-        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-          <div className="mb-6">
-            <div className="font-semibold text-white">Wallet Settings</div>
-            <div className="text-gray-400 text-sm">
+        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            <div className="font-semibold text-white text-base sm:text-lg">Wallet Settings</div>
+            <div className="text-gray-400 text-xs sm:text-sm">
               Configure your wallet preferences
             </div>
           </div>
           <div className="divide-y divide-[#23262F]">
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-white">Auto-Lock Wallet</div>
-                <div className="text-gray-400 text-xs">
+            <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="text-white text-sm sm:text-base">Auto-Lock Wallet</div>
+                <div className="text-gray-400 text-xs mt-0.5">
                   Automatically lock yield after token purchase
                 </div>
               </div>
-              <ToggleSwitch checked={autoLock} onChange={handleAutoLockChange} />
+              <div className="flex-shrink-0">
+                <ToggleSwitch checked={autoLock} onChange={handleAutoLockChange} />
+              </div>
             </div>
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-white">Hide Token Balances</div>
-                <div className="text-gray-400 text-xs">
+            <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="text-white text-sm sm:text-base">Hide Token Balances</div>
+                <div className="text-gray-400 text-xs mt-0.5">
                   Mask financial information
                 </div>
               </div>
-              <ToggleSwitch checked={hideBalances} onChange={setHideBalances} />
+              <div className="flex-shrink-0">
+                <ToggleSwitch checked={hideBalances} onChange={setHideBalances} />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Display Settings */}
-        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-          <div className="mb-6">
-            <div className="font-semibold text-white">Currency Preferences</div>
-            <div className="text-gray-400 text-sm">
+        <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
+            <div className="font-semibold text-white text-base sm:text-lg">Currency Preferences</div>
+            <div className="text-gray-400 text-xs sm:text-sm">
               Select your preferred currency for displaying prices
             </div>
           </div>
           
           <div className="space-y-4">
             {/* Currency Toggle */}
-            <div className="flex items-center justify-between py-4 border-b border-[#23262F]">
-              <div>
-                <div className="text-white">Display Currency</div>
-                <div className="text-gray-400 text-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-3 sm:py-4 border-b border-[#23262F]">
+              <div className="flex-1">
+                <div className="text-white text-sm sm:text-base">Display Currency</div>
+                <div className="text-gray-400 text-xs mt-0.5">
                   All prices will be shown in this currency
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => handleCurrencyChange('NGN')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     currency === 'NGN'
                       ? 'bg-[#4459FF] text-white'
                       : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#23262F]'
@@ -483,7 +487,7 @@ const AccountContainer = () => {
                 </button>
                 <button
                   onClick={() => handleCurrencyChange('USD')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     currency === 'USD'
                       ? 'bg-[#4459FF] text-white'
                       : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#23262F]'

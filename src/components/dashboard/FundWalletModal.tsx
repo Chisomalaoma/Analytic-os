@@ -64,24 +64,9 @@ export function FundWalletModal({
         </div>
 
         <div className="p-4">
-          {!hasAccountDetails ? (
-            /* No Account Details */
-            <div className="py-6 text-center">
-              <div className="w-12 h-12 bg-[#181A20] rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="text-white font-medium mb-1 text-sm">Setting up your wallet...</p>
-              <p className="text-xs text-gray-400">
-                Your wallet account is being created. Please wait a moment and try again.
-              </p>
-            </div>
-          ) : (
-            <>
-              <p className="text-xs text-gray-400 mb-4">
-                Transfer to this account and your wallet will be credited automatically
-              </p>
+          <p className="text-xs text-gray-400 mb-4">
+            Transfer to this account and your wallet will be credited automatically
+          </p>
 
         {/* Bank Details Card */}
         <div className="bg-[#181A20] rounded-xl p-3 space-y-3">
@@ -199,8 +184,6 @@ export function FundWalletModal({
             automatically once the transfer is confirmed. This usually takes a few seconds.
           </p>
         </div>
-        </>
-        )}
         </div>
       </div>
     </div>
