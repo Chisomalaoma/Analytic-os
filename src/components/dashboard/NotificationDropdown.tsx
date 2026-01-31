@@ -129,9 +129,9 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
   ]
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-96 bg-[#181A20] rounded-xl shadow-xl border border-[#858B9A33] overflow-hidden z-[9999]">
+    <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-[#181A20] rounded-xl shadow-xl border border-[#858B9A33] overflow-hidden z-[9999] max-w-md mx-auto sm:mx-0">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[#858B9A33]">
+      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-[#858B9A33]">
         <h3 className="text-sm font-semibold text-white">Notifications</h3>
         {count > 0 && (
           <button
@@ -149,7 +149,7 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-3 text-xs font-medium transition-colors ${
+            className={`flex-1 py-2 sm:py-3 text-xs font-medium transition-colors ${
               activeTab === tab.id
                 ? 'text-white border-b-2 border-[#4459FF]'
                 : 'text-gray-400 hover:text-gray-300'
@@ -161,16 +161,16 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
       </div>
 
       {/* Notification List */}
-      <div className="max-h-80 overflow-y-auto">
+      <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto">
         {loading ? (
-          <div className="p-4 space-y-3">
+          <div className="p-3 sm:p-4 space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="h-16 bg-[#23262F] rounded-xl animate-pulse" />
             ))}
           </div>
         ) : notifications.length === 0 ? (
-          <div className="p-8 text-center">
-            <svg className="w-12 h-12 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-6 sm:p-8 text-center">
+            <svg className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
             <p className="text-sm text-gray-400">No notifications yet</p>
@@ -181,30 +181,30 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
               <div
                 key={notification.id}
                 onClick={() => !notification.isRead && markAsRead(notification.id)}
-                className={`relative p-4 hover:bg-[#23262F] transition-colors cursor-pointer ${
+                className={`relative p-3 sm:p-4 hover:bg-[#23262F] transition-colors cursor-pointer ${
                   !notification.isRead ? 'bg-[#1E2028]' : ''
                 }`}
               >
                 {/* Red dot for unread */}
                 {!notification.isRead && (
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full" />
+                  <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full" />
                 )}
 
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2 sm:gap-3 ml-4 sm:ml-0">
                   {/* Icon */}
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                       notification.type === 'transaction'
                         ? 'bg-green-400/20 text-green-400'
                         : 'bg-[#4459FF]/20 text-[#4459FF]'
                     }`}
                   >
                     {notification.type === 'transaction' ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                       </svg>
                     )}
@@ -213,7 +213,7 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-gray-300'}`}>
+                      <p className={`text-xs sm:text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-gray-300'}`}>
                         {notification.title}
                       </p>
                       <span className="text-xs text-gray-500 flex-shrink-0">

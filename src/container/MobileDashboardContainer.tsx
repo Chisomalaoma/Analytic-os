@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { MobileHeader } from '@/components/dashboard/MobileHeader'
 import { MobileStatsBar } from '@/components/dashboard/MobileStatsBar'
 import { MobileFilters } from '@/components/dashboard/MobileFilters'
 import { MobileTokenRow } from '@/components/dashboard/MobileTokenRow'
 import { MobileExploreMenu } from '@/components/dashboard/MobileExploreMenu'
 import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav'
-import SearchModal from '@/components/dashboard/SearchModal'
+import SearchDropdown from '@/components/dashboard/SearchDropdown'
 
 interface Token {
   id: string
@@ -28,6 +28,7 @@ export default function MobileDashboardContainer() {
   const [activeTime, setActiveTime] = useState('1d')
   const [tokens, setTokens] = useState<Token[]>([])
   const [loading, setLoading] = useState(true)
+  const searchDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -51,6 +52,28 @@ export default function MobileDashboardContainer() {
 
     fetchTokens()
   }, [])
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
+        setShowSearch(false)
+      }
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setShowSearch(false)
+      }
+    }
+    if (showSearch) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleEscape)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showSearch])
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] pb-20 safe-bottom">
@@ -138,11 +161,15 @@ export default function MobileDashboardContainer() {
         onClose={() => setShowExplore(false)}
       />
 
-      {/* Search Modal */}
-      <SearchModal
-        isOpen={showSearch}
-        onClose={() => setShowSearch(false)}
-      />
+      {/* Search Dropdown - Same as Desktop */}
+      {showSearch && (
+        <div ref={searchDropdownRef} className="fixed inset-x-0 top-[57px] z-[9999] px-4">
+          <SearchDropdown
+            isOpen={showSearch}
+            onClose={() => setShowSearch(false)}
+          />
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <MobileBottomNav />

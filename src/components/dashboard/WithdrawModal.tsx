@@ -237,8 +237,8 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
-      <div className="bg-[#23262F] rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4">
+      <div className="bg-[#23262F] rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
         <div className="sticky top-0 bg-[#23262F] p-4 border-b border-[#353A45] flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white">Withdraw Funds</h2>
