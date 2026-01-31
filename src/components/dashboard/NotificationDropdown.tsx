@@ -129,7 +129,7 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
   ]
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-[#181A20] rounded-xl shadow-xl border border-[#858B9A33] overflow-hidden z-[9999] max-w-md mx-auto sm:mx-0">
+    <div className="fixed sm:absolute right-2 sm:right-0 top-[60px] sm:top-full mt-0 sm:mt-2 w-[calc(100vw-1rem)] sm:w-96 bg-[#181A20] rounded-xl shadow-xl border border-[#858B9A33] overflow-hidden z-[9999] max-w-md">
       {/* Header */}
       <div className="flex items-center justify-between p-3 sm:p-4 border-b border-[#858B9A33]">
         <h3 className="text-sm font-semibold text-white">Notifications</h3>
