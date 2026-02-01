@@ -49,6 +49,40 @@ export function ZendeskProvider({ children }: ZendeskProviderProps) {
         // Hide the default Zendesk launcher (we use our own button)
         if (window.zE) {
           window.zE('messenger', 'hide')
+          
+          // Configure widget for mobile - make it smaller and not fullscreen
+          const isMobile = window.innerWidth < 768
+          if (isMobile) {
+            // Set mobile-friendly size
+            window.zE('messenger:set', 'zIndex', 9998)
+            window.zE('messenger:set', 'cookies', false)
+            
+            // Add custom CSS to make it smaller on mobile
+            const style = document.createElement('style')
+            style.innerHTML = `
+              @media (max-width: 768px) {
+                iframe[title="Messaging window"] {
+                  width: 90vw !important;
+                  max-width: 400px !important;
+                  height: 70vh !important;
+                  max-height: 600px !important;
+                  bottom: 80px !important;
+                  right: 5vw !important;
+                  border-radius: 16px !important;
+                  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+                }
+                
+                /* Make the launcher button smaller on mobile */
+                iframe[title="Button to launch messaging window"] {
+                  bottom: 80px !important;
+                  right: 20px !important;
+                  width: 56px !important;
+                  height: 56px !important;
+                }
+              }
+            `
+            document.head.appendChild(style)
+          }
         }
       }
 
