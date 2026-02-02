@@ -219,17 +219,19 @@ const PriceAlertSettingsComponent: React.FC<PriceAlertSettingsProps> = ({ classN
       )}
 
       {/* Enable/Disable Price Alerts */}
-      <div className="flex items-center justify-between py-4 border-b border-[#23262F] mb-6">
-        <div>
-          <div className="text-white font-medium">Enable Price Alerts</div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 border-b border-[#23262F] mb-6 gap-3">
+        <div className="flex-1">
+          <div className="text-white font-medium text-sm sm:text-base">Enable Price Alerts</div>
           <div className="text-gray-400 text-xs mt-1">
             Receive notifications when token prices change significantly
           </div>
         </div>
-        <ToggleSwitch
-          checked={settings.enabled}
-          onChange={handleEnabledToggle}
-        />
+        <div className="flex-shrink-0 sm:ml-4">
+          <ToggleSwitch
+            checked={settings.enabled}
+            onChange={handleEnabledToggle}
+          />
+        </div>
       </div>
 
       {settings.enabled && (

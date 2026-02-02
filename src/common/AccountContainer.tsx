@@ -258,8 +258,8 @@ const AccountContainer = () => {
           <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
             {/* Profile Image */}
             <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-[#1A1A1A] border-2 border-[#23262F]">
+              <div className="relative mb-2">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden bg-[#1A1A1A] border-2 border-[#23262F]">
                   {preview ? (
                     <img
                       src={preview}
@@ -273,14 +273,14 @@ const AccountContainer = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#4459FF] to-[#3448EE] flex items-center justify-center text-white text-2xl font-semibold">
+                    <div className="w-full h-full bg-gradient-to-br from-[#4459FF] to-[#3448EE] flex items-center justify-center text-white text-2xl sm:text-3xl font-semibold">
                       {getInitials(user?.firstName, user?.lastName)}
                     </div>
                   )}
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors"
+                  className="absolute bottom-1 right-1 w-9 h-9 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors border-2 border-[#0A0A0A]"
                 >
                   <Camera className="w-4 h-4" />
                 </button>
@@ -292,7 +292,7 @@ const AccountContainer = () => {
                 onChange={handleImageSelect}
                 className="hidden"
               />
-              <p className="text-sm text-gray-400 mt-2">Click to upload</p>
+              <p className="text-xs sm:text-sm text-gray-400 text-center">Click to upload</p>
             </div>
 
             {/* Form Fields */}
@@ -431,25 +431,25 @@ const AccountContainer = () => {
             </div>
           </div>
           <div className="divide-y divide-[#23262F]">
-            <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 gap-3">
               <div className="flex-1 min-w-0">
                 <div className="text-white text-sm sm:text-base">Auto-Lock Wallet</div>
                 <div className="text-gray-400 text-xs mt-0.5">
                   Automatically lock yield after token purchase
                 </div>
               </div>
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 sm:ml-4">
                 <ToggleSwitch checked={autoLock} onChange={handleAutoLockChange} />
               </div>
             </div>
-            <div className="flex items-start sm:items-center justify-between py-3 sm:py-4 gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 sm:py-4 gap-3">
               <div className="flex-1 min-w-0">
                 <div className="text-white text-sm sm:text-base">Hide Token Balances</div>
                 <div className="text-gray-400 text-xs mt-0.5">
                   Mask financial information
                 </div>
               </div>
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 sm:ml-4">
                 <ToggleSwitch checked={hideBalances} onChange={setHideBalances} />
               </div>
             </div>

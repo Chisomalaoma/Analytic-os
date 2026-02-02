@@ -197,15 +197,15 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         {notificationTypes.map((notificationType) => (
           <div 
             key={notificationType.key} 
-            className="flex items-center justify-between py-3 border-b border-[#23262F] last:border-b-0"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-[#23262F] last:border-b-0 gap-3"
           >
             <div className="flex-1">
-              <div className="text-white font-medium">{notificationType.label}</div>
+              <div className="text-white font-medium text-sm sm:text-base">{notificationType.label}</div>
               <div className="text-gray-400 text-xs mt-1">
                 {notificationType.description}
               </div>
             </div>
-            <div className="ml-4">
+            <div className="flex-shrink-0 sm:ml-4">
               <ToggleSwitch
                 checked={preferences.email[notificationType.key]}
                 onChange={(value) =>
