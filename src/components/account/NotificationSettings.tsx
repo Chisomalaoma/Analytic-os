@@ -108,15 +108,19 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({
     }
   }, [preferences, initialPreferences]);
 
+  // Update both email and webApp preferences together
   const updatePreference = (
-    channel: 'email' | 'webApp',
     type: keyof NotificationPreferences['email'],
     value: boolean
   ) => {
     const newPreferences = {
       ...preferences,
-      [channel]: {
-        ...preferences[channel],
+      email: {
+        ...preferences.email,
+        [type]: value,
+      },
+      webApp: {
+        ...preferences.webApp,
         [type]: value,
       },
     };
@@ -166,7 +170,7 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       <div className="mb-6">
         <div className="font-semibold text-white">Notification Settings</div>
         <div className="text-gray-400 text-sm">
-          Control how you receive notifications for different activities
+          Control which notifications you receive via email and in-app
         </div>
       </div>
 
@@ -188,42 +192,24 @@ const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         </div>
       )}
 
-      {/* Header Row */}
-      <div className="grid grid-cols-12 gap-4 mb-4 pb-3 border-b border-[#23262F]">
-        <div className="col-span-6">
-          <div className="text-sm font-medium text-gray-300">Notification Type</div>
-        </div>
-        <div className="col-span-3 text-center">
-          <div className="text-sm font-medium text-gray-300">Email</div>
-        </div>
-        <div className="col-span-3 text-center">
-          <div className="text-sm font-medium text-gray-300">Web App</div>
-        </div>
-      </div>
-
       {/* Notification Types */}
       <div className="space-y-4">
         {notificationTypes.map((notificationType) => (
-          <div key={notificationType.key} className="grid grid-cols-12 gap-4 items-center py-3">
-            <div className="col-span-6">
+          <div 
+            key={notificationType.key} 
+            className="flex items-center justify-between py-3 border-b border-[#23262F] last:border-b-0"
+          >
+            <div className="flex-1">
               <div className="text-white font-medium">{notificationType.label}</div>
               <div className="text-gray-400 text-xs mt-1">
                 {notificationType.description}
               </div>
             </div>
-            <div className="col-span-3 flex justify-center">
+            <div className="ml-4">
               <ToggleSwitch
                 checked={preferences.email[notificationType.key]}
                 onChange={(value) =>
-                  updatePreference('email', notificationType.key, value)
-                }
-              />
-            </div>
-            <div className="col-span-3 flex justify-center">
-              <ToggleSwitch
-                checked={preferences.webApp[notificationType.key]}
-                onChange={(value) =>
-                  updatePreference('webApp', notificationType.key, value)
+                  updatePreference(notificationType.key, value)
                 }
               />
             </div>

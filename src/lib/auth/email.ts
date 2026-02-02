@@ -73,7 +73,45 @@ export async function sendOTPEmail(email: string, otp: string): Promise<boolean>
 }
 
 /**
- * Send password reset email
+ * Send password reset OTP email
+ */
+export async function sendPasswordResetOTPEmail(email: string, otp: string): Promise<boolean> {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0A0A0A; color: white; }
+        .container { max-width: 480px; margin: 0 auto; padding: 40px 20px; }
+        .card { background: #1A1A1A; border-radius: 12px; padding: 32px; border: 1px solid #23262F; }
+        .otp { font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; margin: 24px 0; color: #fff; }
+        .footer { margin-top: 24px; font-size: 14px; color: #888; text-align: center; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="card">
+          <h2 style="margin: 0 0 16px; color: white;">Reset your password</h2>
+          <p style="color: #888; margin-bottom: 24px;">Enter this code to reset your password:</p>
+          <div class="otp">${otp}</div>
+          <p style="color: #888; font-size: 14px;">This code expires in 10 minutes.</p>
+          <p style="color: #666; font-size: 12px; margin-top: 16px;">If you didn't request this, please ignore this email.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+
+  return sendEmail({
+    to: email,
+    subject: 'Reset your AnalytiOS password',
+    html,
+  })
+}
+
+/**
+ * Send password reset email (legacy - with link)
  */
 export async function sendPasswordResetEmail(
   email: string,

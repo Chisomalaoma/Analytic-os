@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn } from 'next-auth/react'
-import { X, Eye, EyeOff } from 'lucide-react'
+import { X, Eye, EyeOff, Check } from 'lucide-react'
 
 interface SignUpModalProps {
   open: boolean
@@ -35,6 +35,15 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
 
   if (!open) return null
 
+  // Password validation
+  const hasMinLength = password.length >= 8
+  const hasUpperCase = /[A-Z]/.test(password)
+  const hasLowerCase = /[a-z]/.test(password)
+  const hasNumber = /[0-9]/.test(password)
+  const hasSymbol = /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~]/.test(password)
+  const passwordsMatch = password === confirmPassword && password.length > 0
+  const isPasswordValid = hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSymbol
+
   const handleComingSoon = (provider: string) => {
     setComingSoonProvider(provider)
     setShowComingSoon(true)
@@ -54,8 +63,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
     }
 
     // Validate password strength
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+    if (!isPasswordValid) {
+      setError('Password does not meet requirements')
       setLoading(false)
       return
     }
@@ -418,10 +427,45 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                 </div>
               </div>
 
+              {/* Password Requirements */}
+              {password && (
+                <div className="bg-[#1A1A1A] border border-[#23262F] rounded-lg p-4 space-y-2">
+                  <p className="text-sm text-gray-400 mb-2">Password must contain:</p>
+                  <div className="space-y-1.5">
+                    <div className={`flex items-center gap-2 text-sm ${hasMinLength ? 'text-green-500' : 'text-gray-500'}`}>
+                      <Check className={`w-4 h-4 ${hasMinLength ? 'opacity-100' : 'opacity-30'}`} />
+                      <span>At least 8 characters</span>
+                    </div>
+                    <div className={`flex items-center gap-2 text-sm ${hasUpperCase ? 'text-green-500' : 'text-gray-500'}`}>
+                      <Check className={`w-4 h-4 ${hasUpperCase ? 'opacity-100' : 'opacity-30'}`} />
+                      <span>One uppercase letter (A-Z)</span>
+                    </div>
+                    <div className={`flex items-center gap-2 text-sm ${hasLowerCase ? 'text-green-500' : 'text-gray-500'}`}>
+                      <Check className={`w-4 h-4 ${hasLowerCase ? 'opacity-100' : 'opacity-30'}`} />
+                      <span>One lowercase letter (a-z)</span>
+                    </div>
+                    <div className={`flex items-center gap-2 text-sm ${hasNumber ? 'text-green-500' : 'text-gray-500'}`}>
+                      <Check className={`w-4 h-4 ${hasNumber ? 'opacity-100' : 'opacity-30'}`} />
+                      <span>One number (0-9)</span>
+                    </div>
+                    <div className={`flex items-center gap-2 text-sm ${hasSymbol ? 'text-green-500' : 'text-gray-500'}`}>
+                      <Check className={`w-4 h-4 ${hasSymbol ? 'opacity-100' : 'opacity-30'}`} />
+                      <span>One symbol (!@#$%^&*...)</span>
+                    </div>
+                    {confirmPassword && (
+                      <div className={`flex items-center gap-2 text-sm ${passwordsMatch ? 'text-green-500' : 'text-gray-500'}`}>
+                        <Check className={`w-4 h-4 ${passwordsMatch ? 'opacity-100' : 'opacity-30'}`} />
+                        <span>Passwords match</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                disabled={loading || !isPasswordValid || !passwordsMatch}
+                className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>

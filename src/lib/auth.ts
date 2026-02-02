@@ -9,7 +9,7 @@ import { verifyPassword } from '@/lib/auth/password'
 import { generateUserId } from '@/lib/user-id'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as any,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -18,7 +18,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         params: {
           scope: 'openid email profile',
           prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code'
         },
+      },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          firstName: profile.given_name,
+          lastName: profile.family_name,
+        }
       },
       allowDangerousEmailAccountLinking: true, // Allow linking OAuth to existing email accounts
     }),
@@ -75,7 +87,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return {
           id: user.id,
           email: user.email,
-          name: user.username,
+          name: user.username || user.email.split('@')[0],
           userId: user.userId,
           username: user.username,
           firstName: user.firstName,
@@ -83,7 +95,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           phone: user.phone,
           walletAddress: user.walletAddress,
           role: user.role,
-        }
+        } as any
       },
     }),
   ],
@@ -202,14 +214,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           console.log('[OAUTH] Found user:', existingUser.email, 'Has wallet:', !!existingUser.wallet)
 
+          // Extract first and last name from profile or user.name
+          let firstName = 'User'
+          let lastName = 'User'
+          
+          // Try to get from OAuth profile first (Google provides given_name, family_name)
+          if (profile) {
+            firstName = (profile as any).given_name || (profile as any).firstName || firstName
+            lastName = (profile as any).family_name || (profile as any).lastName || lastName
+          }
+          
+          // If still default, try parsing user.name
+          if ((firstName === 'User' || lastName === 'User') && user.name) {
+            const nameParts = user.name.trim().split(' ')
+            if (nameParts.length > 0) {
+              firstName = nameParts[0] || 'User'
+              lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName
+            }
+          }
+
           // Update user with additional fields if they're missing
-          if (!existingUser.userId || !existingUser.username) {
+          if (!existingUser.userId || !existingUser.username || !existingUser.firstName || !existingUser.lastName) {
             const username = user.email?.split('@')[0] || `user_${Date.now()}`
             const uniqueUsername = `${username}_${Math.random().toString(36).substring(2, 6)}`
-            
-            const nameParts = (user.name || 'User').split(' ')
-            const firstName = nameParts[0]
-            const lastName = nameParts.slice(1).join(' ') || nameParts[0]
 
             await prisma.user.update({
               where: { id: existingUser.id },
@@ -221,7 +248,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 image: user.image || existingUser.image,
               }
             })
-            console.log('[OAUTH] Updated OAuth user with missing fields:', user.email)
+            console.log('[OAUTH] Updated OAuth user with missing fields:', user.email, 'Name:', firstName, lastName)
           }
 
           // If user exists but has no wallet, create one
@@ -264,10 +291,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const username = user.email?.split('@')[0] || `user_${Date.now()}`
           const uniqueUsername = `${username}_${Math.random().toString(36).substring(2, 6)}`
           
-          // Parse name into first and last
-          const nameParts = (user.name || 'User').split(' ')
-          const firstName = nameParts[0]
-          const lastName = nameParts.slice(1).join(' ') || nameParts[0]
+          // Parse name into first and last - use better parsing
+          let firstName = 'User'
+          let lastName = 'User'
+          
+          if (user.name) {
+            const nameParts = user.name.trim().split(' ')
+            firstName = nameParts[0] || 'User'
+            lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName
+          }
 
           // Update user with userId, username, and name fields
           await prisma.user.update({
@@ -279,7 +311,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               lastName: lastName,
             }
           })
-          console.log('Updated new OAuth user with userId and username:', user.email)
+          console.log('Updated new OAuth user with userId and username:', user.email, 'Name:', firstName, lastName)
 
           // Create wallet for new user
           console.log('[OAUTH-CREATE] Creating wallet for new user:', user.email)

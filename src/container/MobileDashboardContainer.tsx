@@ -95,64 +95,67 @@ export default function MobileDashboardContainer() {
       />
 
       {/* Token List */}
-      <div className="pb-4 overflow-x-auto -webkit-overflow-scrolling-touch">
-        {/* Table Header */}
-        <div className="flex items-center px-4 py-2 border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[201px] z-10 min-w-max">
+      <div className="pb-4">
+        {/* Table Header - Sticky outside scrollable area */}
+        <div className="flex items-center px-4 py-2 border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[201px] z-20">
           <div className="flex-1 text-xs text-gray-500 font-medium min-w-[200px]">TOKEN</div>
           <div className="text-xs text-gray-500 font-medium text-right w-20">PRICE</div>
           <div className="text-xs text-gray-500 font-medium text-right w-16 ml-2">VOLUME</div>
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="space-y-0 min-w-max">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] animate-pulse">
-                <div className="w-8 h-8 bg-[#1A1A1A] rounded-full" />
-                <div className="flex-1 min-w-[150px]">
-                  <div className="h-4 w-24 bg-[#1A1A1A] rounded mb-1" />
-                  <div className="h-3 w-32 bg-[#1A1A1A] rounded" />
+        {/* Scrollable Container */}
+        <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+          {/* Loading State */}
+          {loading && (
+            <div className="space-y-0 min-w-max">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] animate-pulse">
+                  <div className="w-8 h-8 bg-[#1A1A1A] rounded-full" />
+                  <div className="flex-1 min-w-[150px]">
+                    <div className="h-4 w-24 bg-[#1A1A1A] rounded mb-1" />
+                    <div className="h-3 w-32 bg-[#1A1A1A] rounded" />
+                  </div>
+                  <div className="text-right">
+                    <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
+                    <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
+                  </div>
+                  <div className="text-right w-16">
+                    <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
-                  <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
-                </div>
-                <div className="text-right w-16">
-                  <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Token Rows */}
-        {!loading && tokens.length > 0 && (
-          <div className="min-w-max">
-            {tokens.map((token) => (
-              <MobileTokenRow
-                key={token.id}
-                tokenId={token.id}
-                symbol={token.symbol}
-                name={token.name}
-                price={token.price / 100}
-                change={Math.random() * 20 - 10} // Placeholder - replace with real data
-                volume={token.volume / 100}
-                logo={token.logoUrl}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && tokens.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div className="text-4xl mb-4">📊</div>
-            <div className="text-white text-lg font-medium mb-2">No tokens found</div>
-            <div className="text-gray-500 text-sm text-center">
-              Check back later for new listings
+              ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Token Rows */}
+          {!loading && tokens.length > 0 && (
+            <div className="min-w-max">
+              {tokens.map((token) => (
+                <MobileTokenRow
+                  key={token.id}
+                  tokenId={token.id}
+                  symbol={token.symbol}
+                  name={token.name}
+                  price={token.price / 100}
+                  change={Math.random() * 20 - 10} // Placeholder - replace with real data
+                  volume={token.volume / 100}
+                  logo={token.logoUrl}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && tokens.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="text-4xl mb-4">📊</div>
+              <div className="text-white text-lg font-medium mb-2">No tokens found</div>
+              <div className="text-gray-500 text-sm text-center">
+                Check back later for new listings
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Explore Menu */}

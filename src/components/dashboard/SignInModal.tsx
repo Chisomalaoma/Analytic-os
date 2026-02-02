@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn } from 'next-auth/react'
 import { Eye, EyeOff } from 'lucide-react'
+import ForgotPasswordModal from './ForgotPasswordModal'
 
 interface SignInModalProps {
   open: boolean
@@ -23,6 +24,7 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
   const [showComingSoon, setShowComingSoon] = useState(false)
   const [comingSoonProvider, setComingSoonProvider] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
 
   if (!open) return null
 
@@ -291,6 +293,15 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              <div className="text-right mt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-[#4459FF] hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
             </div>
             <button
               type="submit"
@@ -350,6 +361,15 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
           </button>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        open={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToSignIn={() => {
+          setShowForgotPassword(false)
+        }}
+      />
     </div>
   )
 }

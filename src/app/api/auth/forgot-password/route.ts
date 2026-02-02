@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import {
-  createPasswordResetToken,
-  canRequestPasswordReset,
-} from '@/lib/auth/reset'
-import { sendPasswordResetEmail } from '@/lib/auth/email'
-
-// Rate limiting: max 3 reset requests per hour per email
-const MAX_REQUESTS_PER_HOUR = 3
+import { createVerificationToken } from '@/lib/auth/otp'
+import { sendPasswordResetOTPEmail } from '@/lib/auth/email'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -19,64 +13,38 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email } = forgotPasswordSchema.parse(body)
 
-    // Check if user exists with this email
+    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { email },
     })
 
+    // Don't reveal if user exists or not for security
     if (!user) {
-      // Don't reveal if email exists
       return NextResponse.json({
         success: true,
-        message: 'If an account exists, a reset link has been sent',
+        message: 'If an account exists with this email, you will receive a reset code.',
       })
     }
 
-    // Check rate limit
-    const countLastHour = await prisma.passwordResetToken.count({
-      where: {
-        email,
-        createdAt: {
-          gte: new Date(Date.now() - 60 * 60 * 1000),
-        },
-      },
-    })
+    // Generate and store OTP
+    const otp = await createVerificationToken(email)
 
-    if (countLastHour >= MAX_REQUESTS_PER_HOUR) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      )
-    }
-
-    // Check 60 second delay
-    const { allowed, delay } = await canRequestPasswordReset(email)
-    if (!allowed && delay) {
-      return NextResponse.json(
-        { error: `Please wait ${delay} seconds before requesting again` },
-        { status: 429 }
-      )
-    }
-
-    // Create reset token
-    const token = await createPasswordResetToken(email)
-
-    // Build reset link
-    const resetLink = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`
-
-    // Send reset email
-    const emailSent = await sendPasswordResetEmail(email, resetLink)
-
+    // Send OTP via email
+    const emailSent = await sendPasswordResetOTPEmail(email, otp)
+    
     if (!emailSent) {
+      console.error('[FORGOT-PASSWORD] Failed to send OTP email')
       return NextResponse.json(
-        { error: 'Failed to send reset link. Please try again.' },
+        { error: 'Failed to send reset code. Please try again.' },
         { status: 500 }
       )
     }
 
     return NextResponse.json({
       success: true,
-      message: 'If an account exists, a reset link has been sent',
+      message: 'Reset code sent to your email',
+      // In development, return OTP for testing
+      ...(process.env.NODE_ENV === 'development' && { otp }),
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
