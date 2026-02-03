@@ -43,6 +43,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           prompt: 'consent',
         },
       },
+      profile(profile) {
+        return {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture?.data?.url,
+          firstName: profile.first_name || profile.name?.split(' ')[0] || 'User',
+          lastName: profile.last_name || profile.name?.split(' ').slice(1).join(' ') || 'User',
+        }
+      },
       allowDangerousEmailAccountLinking: true,
     }),
     Twitter({

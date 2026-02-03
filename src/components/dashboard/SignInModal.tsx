@@ -225,7 +225,7 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
             {/* Facebook */}
             <button
               type="button"
-              onClick={() => handleComingSoon('Facebook')}
+              onClick={() => signIn('facebook', { callbackUrl: '/dashboard' })}
               className="w-full py-3 bg-[#1A1A1A] hover:bg-[#23262F] border border-[#23262F] rounded-lg text-white font-medium flex items-center justify-center gap-3 transition-colors"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
