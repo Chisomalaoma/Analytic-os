@@ -9,18 +9,18 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange }) => (
     <button
         type="button"
         aria-pressed={checked}
-        className={`relative inline-flex h-8 w-14 sm:h-8 sm:w-16 md:w-24 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4459FF] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] touch-manipulation ${
+        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4459FF] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] ${
             checked ? 'bg-[#4459FF]' : 'bg-gray-600'
         }`}
         onClick={() => onChange(!checked)}
     >
         <span className="sr-only">Toggle setting</span>
         <span
-            className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                checked ? 'translate-x-6 sm:translate-x-8 md:translate-x-16' : 'translate-x-0'
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                checked ? 'translate-x-5' : 'translate-x-0'
             }`}
         />
     </button>
 );
 
-export default ToggleSwitch;
+export default ToggleSwitch; 
