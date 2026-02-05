@@ -9,7 +9,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange }) => (
     <button
         type="button"
         aria-pressed={checked}
-        className={`relative inline-flex h-[26px] w-[51px] flex-shrink-0 cursor-pointer rounded-[13px] border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4459FF] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] ${
+        className={`relative inline-flex h-[26px] w-[51px] flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4459FF] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] ${
             checked ? 'bg-[#4459FF]' : 'bg-gray-600'
         }`}
         onClick={() => onChange(!checked)}
