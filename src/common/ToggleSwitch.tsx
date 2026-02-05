@@ -10,10 +10,14 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange }) => (
         <input 
             type="checkbox" 
             checked={checked}
-            onChange={(e) => onChange(e.target.checked)}
+            onChange={(e) => {
+                e.preventDefault();
+                onChange(e.target.checked);
+            }}
+            onFocus={(e) => e.preventDefault()}
             className="sr-only peer"
         />
-        <div className="relative w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#4459FF]/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4459FF]"></div>
+        <div className="relative w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4459FF]"></div>
     </label>
 );
 
