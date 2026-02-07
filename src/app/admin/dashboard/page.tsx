@@ -197,7 +197,7 @@ export default function AdminDashboardPage() {
             address={walletData?.address || '0x1a2b3c...7q8r9s0t'}
             balance={walletData?.balance || 125000}
             tokens={walletData?.tokens || [
-              { name: 'AnalyticaOS Token', symbol: 'AOS', value: 50000 },
+              { name: 'WTX Token', symbol: 'WTX', value: 50000 },
               { name: 'Club Token', symbol: 'CLUB', value: 75000 }
             ]}
           />

@@ -3,8 +3,18 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  ArrowDownCircle, 
+  ArrowUpCircle, 
+  Bell, 
+  AlertTriangle,
+  Sparkles
+} from 'lucide-react'
 
 type NotificationType = 'alert' | 'transaction'
+type TabType = 'all' | 'unread' | 'alerts'
 
 interface Notification {
   id: string
@@ -13,6 +23,11 @@ interface Notification {
   message: string
   isRead: boolean
   createdAt: string
+  metadata?: {
+    action?: 'buy' | 'sell' | 'deposit' | 'withdrawal' | 'price_alert' | 'new_listing' | 'market_update' | 'system'
+    amount?: number
+    tokenSymbol?: string
+  }
 }
 
 interface NotificationDropdownProps {
@@ -20,7 +35,65 @@ interface NotificationDropdownProps {
   onUnreadCountChange: (count: number) => void
 }
 
-type TabType = 'all' | 'alert' | 'transaction'
+// Icon component for different notification types
+const NotificationIcon = ({ action, type }: { action?: string; type: NotificationType }) => {
+  const iconClass = "w-5 h-5"
+  
+  if (action === 'buy') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+        <TrendingUp className={`${iconClass} text-green-500`} />
+      </div>
+    )
+  }
+  
+  if (action === 'sell') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center">
+        <TrendingDown className={`${iconClass} text-red-500`} />
+      </div>
+    )
+  }
+  
+  if (action === 'deposit') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+        <ArrowDownCircle className={`${iconClass} text-blue-500`} />
+      </div>
+    )
+  }
+  
+  if (action === 'withdrawal') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
+        <ArrowUpCircle className={`${iconClass} text-orange-500`} />
+      </div>
+    )
+  }
+  
+  if (action === 'price_alert') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
+        <AlertTriangle className={`${iconClass} text-yellow-500`} />
+      </div>
+    )
+  }
+  
+  if (action === 'new_listing') {
+    return (
+      <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+        <Sparkles className={`${iconClass} text-purple-500`} />
+      </div>
+    )
+  }
+  
+  // Default icon
+  return (
+    <div className="w-10 h-10 rounded-full bg-[#4459FF]/10 flex items-center justify-center">
+      <Bell className={`${iconClass} text-[#4459FF]`} />
+    </div>
+  )
+}
 
 export default function NotificationDropdown({ onClose, onUnreadCountChange }: NotificationDropdownProps) {
   const [activeTab, setActiveTab] = useState<TabType>('all')
@@ -31,9 +104,6 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
   const fetchNotifications = useCallback(async () => {
     try {
       const params = new URLSearchParams()
-      if (activeTab !== 'all') {
-        params.set('type', activeTab)
-      }
       params.set('limit', '50')
 
       const res = await fetch(`/api/notifications?${params}`)
@@ -47,7 +117,7 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
       console.error('Failed to fetch notifications:', error)
       setLoading(false)
     }
-  }, [activeTab])
+  }, [])
 
   const fetchCount = useCallback(async () => {
     try {
@@ -124,105 +194,111 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
 
   const tabs: { id: TabType; label: string }[] = [
     { id: 'all', label: 'All' },
-    { id: 'alert', label: 'Alert' },
-    { id: 'transaction', label: 'Transactions' }
+    { id: 'unread', label: 'Unread' },
+    { id: 'alerts', label: 'Alerts' }
   ]
 
+  const filteredNotifications = notifications.filter(n => {
+    if (activeTab === 'unread') return !n.isRead
+    if (activeTab === 'alerts') return n.type === 'alert'
+    return true
+  })
+
   return (
-    <div className="fixed sm:absolute right-2 sm:right-0 top-[60px] sm:top-full mt-0 sm:mt-2 w-[calc(100vw-1rem)] sm:w-96 bg-[#181A20] rounded-xl shadow-xl border border-[#858B9A33] overflow-hidden z-[9999] max-w-md">
+    <div className="fixed sm:absolute right-2 sm:right-0 top-[60px] sm:top-full mt-0 sm:mt-2 w-[calc(100vw-1rem)] sm:w-[420px] bg-[#0A0A0A] rounded-xl shadow-2xl border border-[#23262F] overflow-hidden z-[9999] max-w-md">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-[#858B9A33]">
-        <h3 className="text-sm font-semibold text-white">Notifications</h3>
+      <div className="flex items-center justify-between p-4 border-b border-[#23262F]">
+        <div>
+          <h3 className="text-base font-semibold text-white">Notifications</h3>
+          {count > 0 && (
+            <p className="text-xs text-gray-400 mt-0.5">{count} unread</p>
+          )}
+        </div>
         {count > 0 && (
           <button
             onClick={markAllAsRead}
-            className="text-xs text-[#4459FF] hover:text-[#3448EE] transition-colors"
+            className="text-xs text-[#4459FF] hover:text-[#3448EE] transition-colors font-medium"
           >
-            Mark all as read
+            Mark all read
           </button>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#858B9A33]">
+      <div className="flex border-b border-[#23262F] bg-[#0D0D0D]">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-2 sm:py-3 text-xs font-medium transition-colors ${
+            className={`flex-1 py-3 text-xs font-medium transition-all relative ${
               activeTab === tab.id
-                ? 'text-white border-b-2 border-[#4459FF]'
+                ? 'text-white'
                 : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             {tab.label}
+            {activeTab === tab.id && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4459FF]" />
+            )}
           </button>
         ))}
       </div>
 
       {/* Notification List */}
-      <div className="max-h-[60vh] sm:max-h-80 overflow-y-auto">
+      <div className="max-h-[60vh] sm:max-h-[500px] overflow-y-auto">
         {loading ? (
-          <div className="p-3 sm:p-4 space-y-3">
+          <div className="p-4 space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-[#23262F] rounded-xl animate-pulse" />
+              <div key={i} className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-[#1A1A1A] rounded-full animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-[#1A1A1A] rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-[#1A1A1A] rounded animate-pulse w-full" />
+                </div>
+              </div>
             ))}
           </div>
-        ) : notifications.length === 0 ? (
-          <div className="p-6 sm:p-8 text-center">
-            <svg className="w-10 h-10 sm:w-12 sm:h-12 mx-auto text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-            <p className="text-sm text-gray-400">No notifications yet</p>
+        ) : filteredNotifications.length === 0 ? (
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1A1A1A] flex items-center justify-center">
+              <Bell className="w-8 h-8 text-gray-600" />
+            </div>
+            <p className="text-sm text-gray-400">No notifications</p>
+            <p className="text-xs text-gray-500 mt-1">You're all caught up!</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#858B9A33]">
-            {notifications.map(notification => (
+          <div>
+            {filteredNotifications.map(notification => (
               <div
                 key={notification.id}
                 onClick={() => !notification.isRead && markAsRead(notification.id)}
-                className={`relative p-3 sm:p-4 hover:bg-[#23262F] transition-colors cursor-pointer ${
-                  !notification.isRead ? 'bg-[#1E2028]' : ''
+                className={`relative p-4 hover:bg-[#1A1A1A] transition-colors cursor-pointer border-b border-[#23262F] last:border-b-0 ${
+                  !notification.isRead ? 'bg-[#0D0D0D]' : ''
                 }`}
               >
-                {/* Red dot for unread */}
-                {!notification.isRead && (
-                  <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-
-                <div className="flex items-start gap-2 sm:gap-3 ml-4 sm:ml-0">
+                <div className="flex items-start gap-3">
                   {/* Icon */}
-                  <div
-                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      notification.type === 'transaction'
-                        ? 'bg-green-400/20 text-green-400'
-                        : 'bg-[#4459FF]/20 text-[#4459FF]'
-                    }`}
-                  >
-                    {notification.type === 'transaction' ? (
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                    )}
-                  </div>
+                  <NotificationIcon 
+                    action={notification.metadata?.action} 
+                    type={notification.type} 
+                  />
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className={`text-xs sm:text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-gray-300'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <p className={`text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-gray-300'}`}>
                         {notification.title}
                       </p>
-                      <span className="text-xs text-gray-500 flex-shrink-0">
-                        {formatTime(notification.createdAt)}
-                      </span>
+                      {!notification.isRead && (
+                        <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-1.5" />
+                      )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    <p className="text-xs text-gray-400 line-clamp-2 mb-1">
                       {notification.message}
                     </p>
+                    <span className="text-xs text-gray-500">
+                      {formatTime(notification.createdAt)}
+                    </span>
                   </div>
                 </div>
               </div>

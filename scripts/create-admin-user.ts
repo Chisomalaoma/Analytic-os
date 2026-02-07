@@ -12,7 +12,7 @@ function generateUserId(): string {
 }
 
 async function main() {
-  const email = 'admin@analyticaos.com'
+  const email = 'admin@wtx.com'
   const password = 'Admin123!'
   const username = 'admin'
   const firstName = 'Admin'

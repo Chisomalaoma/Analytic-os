@@ -47,7 +47,7 @@ export async function notifyWalletDeposit(userId: string, amount: number, refere
     type: 'transaction',
     title: 'Wallet Funded Successfully',
     message: `Your wallet has been credited with ₦${nairaAmount} via bank transfer.`,
-    metadata: { amount, reference, type: 'deposit' }
+    metadata: { amount, reference, action: 'deposit' }
   })
 }
 
@@ -66,7 +66,7 @@ export async function notifyTokenPurchase(
     type: 'transaction',
     title: 'Token Purchase Successful',
     message: `You successfully purchased ${tokensReceived} units of ${tokenSymbol} for ₦${nairaAmount}.`,
-    metadata: { tokenSymbol, tokensReceived, amountSpent, type: 'purchase' }
+    metadata: { tokenSymbol, tokensReceived, amountSpent, action: 'buy' }
   })
 }
 
@@ -85,7 +85,7 @@ export async function notifyTokenSale(
     type: 'transaction',
     title: 'Token Sale Successful',
     message: `You successfully sold ${tokensSold} units of ${tokenSymbol} for ₦${nairaAmount}.`,
-    metadata: { tokenSymbol, tokensSold, amountReceived, type: 'sale' }
+    metadata: { tokenSymbol, tokensSold, amountReceived, action: 'sell' }
   })
 }
 
@@ -118,7 +118,7 @@ export async function notifyWithdrawal(
     type: 'transaction',
     title: titles[status],
     message: messages[status],
-    metadata: { amount, accountNumber: maskedAccount, status, type: 'withdrawal' }
+    metadata: { amount, accountNumber: maskedAccount, status, action: 'withdrawal' }
   })
 }
 
@@ -185,7 +185,7 @@ export async function notifyNewTokenListed(
     type: 'alert',
     title: 'New Token Available',
     message: `${tokenName} (${tokenSymbol}) is now available! Price: ₦${price.toLocaleString()}, Annual Yield: ${annualYield}%`,
-    metadata: { tokenName, tokenSymbol, price, annualYield, type: 'new_token' }
+    metadata: { tokenName, tokenSymbol, price, annualYield, action: 'new_listing' }
   })
 }
 
@@ -212,7 +212,7 @@ export async function notifyTokenUpdate(
     type: 'alert',
     title: `${tokenSymbol} Token Updated`,
     message: messages[updateType],
-    metadata: { tokenSymbol, updateType, oldValue, newValue, type: 'token_update' }
+    metadata: { tokenSymbol, updateType, oldValue, newValue, action: 'price_alert' }
   })
 }
 

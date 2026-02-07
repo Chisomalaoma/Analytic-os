@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import GainerRow from './GainerRow';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { FilterState } from './FiltersDropdown';
 
 interface Token {
   id: string;
@@ -27,11 +28,12 @@ interface TopTableProps {
   timePeriod?: '1d' | '7d' | '30d' | '1yr';
   watchlistIds: string[];
   onWatchlistToggle: (tokenId: string, isInWatchlist: boolean) => void;
+  filters: FilterState;
 }
 
 type TimePeriod = '1d' | '7d' | '30d' | '1yr';
 
-export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchlistIds, onWatchlistToggle }: TopTableProps) {
+export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchlistIds, onWatchlistToggle, filters }: TopTableProps) {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [yieldPayouts, setYieldPayouts] = useState<YieldPayouts>({});
   const [periodVolumes, setPeriodVolumes] = useState<PeriodVolumes>({});
@@ -56,9 +58,31 @@ export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchl
         if (tokensData.success) {
           let filtered = [...tokensData.tokens];
           
+          // Apply category filter
+          if (!filters.categories.includes('All')) {
+            filtered = filtered.filter((t: Token) => 
+              filters.categories.includes(t.industry)
+            );
+          }
+          
+          // Apply price filter (price is stored in cents, so multiply by 100)
+          filtered = filtered.filter((t: Token) => {
+            const priceInNaira = t.price / 100;
+            return priceInNaira >= filters.priceRange.min && priceInNaira <= filters.priceRange.max;
+          });
+          
+          // Apply yield filter
+          filtered = filtered.filter((t: Token) => 
+            t.annualYield >= filters.yieldRange.min && t.annualYield <= filters.yieldRange.max
+          );
+          
           // Filter based on active tab
           if (activeTab === 'volume') {
-            // Sort by period volume (highest first)
+            // Apply volume filter and sort by period volume (highest first)
+            filtered = filtered.filter((t: Token) => {
+              const volume = volumeData.success ? (volumeData.volumes[t.symbol] || 0) : t.volume;
+              return volume >= filters.volumeRange.min && volume <= filters.volumeRange.max;
+            });
             filtered = filtered.sort((a: Token, b: Token) => {
               const aVolume = volumeData.success ? (volumeData.volumes[a.symbol] || 0) : a.volume;
               const bVolume = volumeData.success ? (volumeData.volumes[b.symbol] || 0) : b.volume;
@@ -72,7 +96,11 @@ export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchl
               new Date(a.listingDate).getTime() - new Date(b.listingDate).getTime()
             );
           } else {
-            // All listings - sort by newest first
+            // All listings - apply volume filter and sort by newest first
+            filtered = filtered.filter((t: Token) => {
+              const volume = volumeData.success ? (volumeData.volumes[t.symbol] || 0) : t.volume;
+              return volume >= filters.volumeRange.min && volume <= filters.volumeRange.max;
+            });
             filtered = filtered.sort((a: Token, b: Token) => 
               new Date(b.listingDate).getTime() - new Date(a.listingDate).getTime()
             );
@@ -96,7 +124,7 @@ export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchl
     };
 
     fetchData();
-  }, [activeTab, timePeriod]); // Re-fetch when timePeriod changes
+  }, [activeTab, timePeriod, filters]); // Re-fetch when filters change
 
   if (loading) {
     return (

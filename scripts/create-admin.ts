@@ -7,7 +7,7 @@ async function main() {
 
   // Check if admin already exists
   const existing = await p.user.findFirst({
-    where: { email: 'admin@analyticaos.com' }
+    where: { email: 'admin@wtx.com' }
   })
 
   if (existing) {
@@ -20,7 +20,7 @@ async function main() {
 
   const admin = await p.user.create({
     data: {
-      email: 'admin@analyticaos.com',
+      email: 'admin@wtx.com',
       username: 'admin',
       userId: 'ADMIN001',
       firstName: 'System',
@@ -32,7 +32,7 @@ async function main() {
   })
 
   console.log('✅ Admin created successfully!')
-  console.log('Email: admin@analyticaos.com')
+  console.log('Email: admin@wtx.com')
   console.log('Password: Admin@123')
   console.log('User ID:', admin.id)
 }

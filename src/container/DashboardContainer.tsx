@@ -7,7 +7,7 @@ import ListStartupButton from '../common/ListStartupButton';
 import TrendingStartups from '../components/dashboard/TrendingStartups';
 import Tabs from '../components/dashboard/Tabs';
 import TopTable from '../components/dashboard/TopTable';
-import FiltersDropdown from '../components/dashboard/FiltersDropdown';
+import FiltersDropdown, { FilterState } from '../components/dashboard/FiltersDropdown';
 import SearchDropdown from '@/components/dashboard/SearchDropdown';
 
 export default function DashboardContainer() {
@@ -17,6 +17,12 @@ export default function DashboardContainer() {
     const [timePeriod, setTimePeriod] = useState<'1d' | '7d' | '30d' | '1yr'>('30d');
     const [tokenCount, setTokenCount] = useState(0);
     const [watchlistIds, setWatchlistIds] = useState<string[]>([]);
+    const [filters, setFilters] = useState<FilterState>({
+        categories: ['All'],
+        priceRange: { min: 0, max: 10000000 },
+        volumeRange: { min: 0, max: 100000000 },
+        yieldRange: { min: 0, max: 100 },
+    });
     const searchDropdownRef = useRef<HTMLDivElement>(null);
 
     // Fetch token count
@@ -149,12 +155,14 @@ export default function DashboardContainer() {
                     timePeriod={timePeriod}
                     watchlistIds={watchlistIds}
                     onWatchlistToggle={handleWatchlistToggle}
+                    filters={filters}
                 />
             </section>
             <FiltersDropdown
                 id="filters-dropdown"
                 isOpen={showFilters}
                 onClose={() => setShowFilters(false)}
+                onApplyFilters={setFilters}
             />
         </div>
     );
