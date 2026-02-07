@@ -9,6 +9,7 @@ import { createWalletWithRetry } from '@/lib/wallet-service'
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  companyName: z.string().optional(), // For business accounts
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
@@ -69,6 +70,7 @@ export async function POST(request: NextRequest) {
         userId: userId,
         firstName: data.firstName,
         lastName: data.lastName,
+        companyName: data.companyName || null, // Store company name for business accounts
         phone: data.phone || null,
         passwordHash,
         emailVerified: null, // Require OTP verification

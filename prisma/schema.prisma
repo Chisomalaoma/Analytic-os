@@ -17,33 +17,34 @@ datasource db {
 // ============================================
 
 model User {
-  id              String    @id @default(cuid())
-  name            String?
-  email           String    @unique
-  emailVerified   DateTime?
-  username        String?   @unique
-  userId          String?   @unique  // ANALYTI-XXXXXX format
-  firstName       String?
-  lastName        String?
-  phone           String?
-  passwordHash    String?
-  walletAddress   String?   @unique
-  image           String?
-  role            UserRole  @default(USER)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  username      String?   @unique
+  userId        String?   @unique // ANALYTI-XXXXXX format
+  firstName     String?
+  lastName      String?
+  companyName   String? // For business accounts
+  phone         String?
+  passwordHash  String?
+  walletAddress String?   @unique
+  image         String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relations
-  sessions        Session[]
-  accounts        Account[]
-  wallet          Wallet?
-  bankAccounts    BankAccount[]
-  notifications   Notification[]
-  recentSearches  RecentSearch[]
-  tokenHoldings   TokenHolding[]
-  tokenPurchases  TokenPurchase[]
-  settings        UserSettings?
-  priceAlerts     PriceAlert[]
+  sessions       Session[]
+  accounts       Account[]
+  wallet         Wallet?
+  bankAccounts   BankAccount[]
+  notifications  Notification[]
+  recentSearches RecentSearch[]
+  tokenHoldings  TokenHolding[]
+  tokenPurchases TokenPurchase[]
+  settings       UserSettings?
+  priceAlerts    PriceAlert[]
 
   @@index([walletAddress])
   @@index([username])
@@ -112,37 +113,37 @@ model PasswordResetToken {
 // ============================================
 
 model Wallet {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  accountNumber  String   @unique
-  bankName       String
-  accountName    String
-  accountRef     String   @unique
-  balance        Int      @default(0)  // in kobo (cents)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  accountNumber String   @unique
+  bankName      String
+  accountName   String
+  accountRef    String   @unique
+  balance       Int      @default(0) // in kobo (cents)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions   Transaction[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
 
   @@index([userId])
   @@index([accountNumber])
 }
 
 model Transaction {
-  id              String   @id @default(uuid())
-  walletId        String
-  type            CreditDebit
-  amount          Int      // in kobo
-  description     String
-  reference       String   @unique  // Monnify transaction reference
-  monnifyRef      String?
-  status          TxStatus @default(pending)
-  createdAt       DateTime @default(now())
+  id          String      @id @default(uuid())
+  walletId    String
+  type        CreditDebit
+  amount      Int // in kobo
+  description String
+  reference   String      @unique // Monnify transaction reference
+  monnifyRef  String?
+  status      TxStatus    @default(pending)
+  createdAt   DateTime    @default(now())
 
   // Relations
-  wallet          Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
 
   @@index([walletId])
   @@index([reference])
@@ -180,7 +181,7 @@ model BankAccount {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, accountNumber])
   @@index([userId])
@@ -191,16 +192,16 @@ model BankAccount {
 // ============================================
 
 model Notification {
-  id          String   @id @default(uuid())
-  userId      String
-  type        NotificationType
-  title       String
-  message     String
-  isRead      Boolean  @default(false)
-  metadata    String?  @db.Text  // JSON string for additional data
-  createdAt   DateTime @default(now())
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  metadata  String?          @db.Text // JSON string for additional data
+  createdAt DateTime         @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([userId, isRead])
@@ -221,7 +222,7 @@ model RecentSearch {
   query     String
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
@@ -231,36 +232,36 @@ model RecentSearch {
 // ============================================
 
 model TokenHolding {
-  id           String   @id @default(uuid())
-  userId       String
-  tokenId      String   @default("INV")
-  quantity     Decimal  @default(0) @db.Decimal(18, 6)  // Support fractional tokens (up to 6 decimal places)
-  averagePrice Decimal  @default(1500) @db.Decimal(10, 2) // N1,500
-  totalInvested Decimal @default(0) @db.Decimal(18, 2)  // Total amount invested in Naira
-  accumulatedYield Decimal @default(0) @db.Decimal(18, 2)  // Accumulated yield in Naira
-  lastYieldUpdate DateTime @default(now())  // Last time yield was calculated
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(uuid())
+  userId           String
+  tokenId          String   @default("INV")
+  quantity         Decimal  @default(0) @db.Decimal(18, 6) // Support fractional tokens (up to 6 decimal places)
+  averagePrice     Decimal  @default(1500) @db.Decimal(10, 2) // N1,500
+  totalInvested    Decimal  @default(0) @db.Decimal(18, 2) // Total amount invested in Naira
+  accumulatedYield Decimal  @default(0) @db.Decimal(18, 2) // Accumulated yield in Naira
+  lastYieldUpdate  DateTime @default(now()) // Last time yield was calculated
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tokenId])
   @@index([userId])
 }
 
 model TokenPurchase {
-  id              String   @id @default(uuid())
-  userId          String
-  tokenId         String   @default("INV")
-  nairaAmountSpent Int     // In Naira (not kobo)
-  tokensReceived  Decimal  @db.Decimal(18, 6)  // Support fractional tokens
-  pricePerToken   Int      // N1,500 in kobo (150000)
-  totalAmountKobo Int      // nairaAmountSpent * 100
-  reference       String   @unique
-  status          PurchaseStatus @default(pending)
-  createdAt       DateTime @default(now())
+  id               String         @id @default(uuid())
+  userId           String
+  tokenId          String         @default("INV")
+  nairaAmountSpent Int // In Naira (not kobo)
+  tokensReceived   Decimal        @db.Decimal(18, 6) // Support fractional tokens
+  pricePerToken    Int // N1,500 in kobo (150000)
+  totalAmountKobo  Int // nairaAmountSpent * 100
+  reference        String         @unique
+  status           PurchaseStatus @default(pending)
+  createdAt        DateTime       @default(now())
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
@@ -277,29 +278,29 @@ enum PurchaseStatus {
 // ============================================
 
 model Token {
-  id               String   @id @default(uuid())
-  tokenId          String?   @unique // Unique token ID (e.g., PYSK-001) - nullable for migration
-  name             String
-  symbol           String   @unique
-  price            Int      // in kobo (e.g., 150000 = ₦1,500)
-  priceChange24h   Decimal  @default(0) @db.Decimal(10, 2) // 24h price change percentage
-  annualYield      Decimal  @db.Decimal(5, 2)
-  industry         String
-  payoutFrequency  String
-  investmentType   String
-  riskLevel        String
-  listingDate      DateTime
-  closeDate        DateTime?
-  logoUrl          String?
-  minimumInvestment Int     // in kobo
-  employeeCount    Int
-  description      String?  @db.Text
-  contractAddress  String?  // Blockchain contract address (e.g., 0xe54d08a...bfd4b)
-  volume           Int      @default(0) // Trading volume
-  transactionCount Int      @default(0) // Number of transactions
-  isActive         Boolean  @default(true)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                String    @id @default(uuid())
+  tokenId           String?   @unique // Unique token ID (e.g., PYSK-001) - nullable for migration
+  name              String
+  symbol            String    @unique
+  price             Int // in kobo (e.g., 150000 = ₦1,500)
+  priceChange24h    Decimal   @default(0) @db.Decimal(10, 2) // 24h price change percentage
+  annualYield       Decimal   @db.Decimal(5, 2)
+  industry          String
+  payoutFrequency   String
+  investmentType    String
+  riskLevel         String
+  listingDate       DateTime
+  closeDate         DateTime?
+  logoUrl           String?
+  minimumInvestment Int // in kobo
+  employeeCount     Int
+  description       String?   @db.Text
+  contractAddress   String? // Blockchain contract address (e.g., 0xe54d08a...bfd4b)
+  volume            Int       @default(0) // Trading volume
+  transactionCount  Int       @default(0) // Number of transactions
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([symbol])
   @@index([industry])
@@ -338,13 +339,13 @@ model UserSettings {
 }
 
 model PriceAlert {
-  id                  String   @id @default(uuid())
+  id                  String    @id @default(uuid())
   userId              String
   tokenSymbol         String
-  thresholdPercentage Decimal  @default(5.00) @db.Decimal(5, 2)
-  isActive            Boolean  @default(true)
+  thresholdPercentage Decimal   @default(5.00) @db.Decimal(5, 2)
+  isActive            Boolean   @default(true)
   lastTriggeredAt     DateTime?
-  createdAt           DateTime @default(now())
+  createdAt           DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

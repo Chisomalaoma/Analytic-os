@@ -25,14 +25,21 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
   const [dataLoading, setDataLoading] = useState(true); // Add loading state for initial data fetch
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [currency, setCurrency] = useState<Currency>('NGN');
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [tradeType, setTradeType] = useState<TradeType>('buy');
-  const { formatAmount: formatCurrencyAmount } = useCurrency();
+  const { formatAmount: formatCurrencyAmount, currency: accountCurrency } = useCurrency();
+  
+  // Initialize currency based on account preference: USD → USDT, NGN → NGN
+  const [currency, setCurrency] = useState<Currency>(accountCurrency === 'USD' ? 'USDT' : 'NGN');
 
   const USDT_TO_NGN = 1650;
 
   const tokensAmount = amount ? parseFloat(amount) : 0;
+
+  // Update local currency when account currency changes
+  useEffect(() => {
+    setCurrency(accountCurrency === 'USD' ? 'USDT' : 'NGN');
+  }, [accountCurrency]);
 
   useEffect(() => {
     const fetchTokenData = async () => {

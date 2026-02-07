@@ -17,19 +17,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorization: {
         params: {
           scope: 'openid email profile',
-          prompt: 'consent',
+          prompt: 'select_account', // Force account selection to avoid cache issues
           access_type: 'offline',
           response_type: 'code'
         },
       },
       profile(profile) {
+        console.log('[GOOGLE-PROFILE] Raw profile data:', {
+          sub: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          given_name: profile.given_name,
+          family_name: profile.family_name,
+          picture: profile.picture
+        })
+        
         return {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          firstName: profile.given_name,
-          lastName: profile.family_name,
+          // Store firstName/lastName in the returned object for later use
+          firstName: profile.given_name || profile.name?.split(' ')[0] || 'User',
+          lastName: profile.family_name || profile.name?.split(' ').slice(1).join(' ') || 'User',
         }
       },
       allowDangerousEmailAccountLinking: true, // Allow linking OAuth to existing email accounts
@@ -119,7 +129,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
+      // Initial sign in - user object is available
       if (user) {
+        console.log('[JWT] Initial sign in, user data:', {
+          id: user.id,
+          email: user.email,
+          firstName: (user as any).firstName,
+          lastName: (user as any).lastName
+        })
+        
         token.id = user.id
         token.userId = (user as any).userId
         token.username = (user as any).username
@@ -131,11 +149,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.image = (user as any).image
       }
       
-      // For OAuth users, fetch fresh data from database
-      if (token.id && account?.provider && (account.provider === 'google' || account.provider === 'facebook' || account.provider === 'twitter')) {
+      // For OAuth users on initial sign in, fetch fresh data from database after a short delay
+      // This ensures PrismaAdapter and our signIn callback have completed
+      if (user && account?.provider && (account.provider === 'google' || account.provider === 'facebook' || account.provider === 'twitter')) {
         try {
+          // Wait for database operations to complete
+          await new Promise(resolve => setTimeout(resolve, 500))
+          
           const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
+            where: { id: user.id },
             select: {
               userId: true,
               username: true,
@@ -145,10 +167,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               walletAddress: true,
               role: true,
               image: true,
+              email: true,
             }
           })
           
           if (dbUser) {
+            console.log('[JWT] Fetched fresh OAuth user data:', {
+              email: dbUser.email,
+              firstName: dbUser.firstName,
+              lastName: dbUser.lastName,
+              username: dbUser.username
+            })
+            
             token.userId = dbUser.userId
             token.username = dbUser.username
             token.firstName = dbUser.firstName
@@ -159,7 +189,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.image = dbUser.image
           }
         } catch (error) {
-          console.error('Failed to fetch user data for JWT:', error)
+          console.error('[JWT] Failed to fetch user data for OAuth:', error)
         }
       }
       
@@ -205,36 +235,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
     async signIn({ user, account, profile }) {
-      // Handle OAuth sign-in - let PrismaAdapter handle user creation
+      // Handle OAuth sign-in
       if (account?.provider === 'google' || account?.provider === 'facebook' || account?.provider === 'twitter') {
         try {
-          // Wait a moment for PrismaAdapter to create the user if it's a new signup
-          await new Promise(resolve => setTimeout(resolve, 100))
+          console.log('[OAUTH-SIGNIN] Starting OAuth sign-in for:', user.email, 'Provider:', account.provider)
           
-          // Check if user exists in database (PrismaAdapter may have just created it)
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! },
-            include: { wallet: true }
-          })
-
-          if (!existingUser) {
-            console.log('[OAUTH] User not found after wait, will be created by adapter')
-            return true
-          }
-
-          console.log('[OAUTH] Found user:', existingUser.email, 'Has wallet:', !!existingUser.wallet)
-
-          // Extract first and last name from profile or user.name
+          // Extract first and last name from profile FIRST (most reliable source)
           let firstName = 'User'
           let lastName = 'User'
           
-          // Try to get from OAuth profile first (Google provides given_name, family_name)
           if (profile) {
-            firstName = (profile as any).given_name || (profile as any).firstName || firstName
-            lastName = (profile as any).family_name || (profile as any).lastName || lastName
+            console.log('[OAUTH-SIGNIN] Profile data available:', {
+              given_name: (profile as any).given_name,
+              family_name: (profile as any).family_name,
+              first_name: (profile as any).first_name,
+              last_name: (profile as any).last_name,
+              name: (profile as any).name
+            })
+            
+            // Google uses given_name and family_name
+            firstName = (profile as any).given_name || (profile as any).first_name || firstName
+            lastName = (profile as any).family_name || (profile as any).last_name || lastName
           }
           
-          // If still default, try parsing user.name
+          // Fallback to parsing user.name if profile didn't provide names
           if ((firstName === 'User' || lastName === 'User') && user.name) {
             const nameParts = user.name.trim().split(' ')
             if (nameParts.length > 0) {
@@ -242,48 +266,87 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName
             }
           }
+          
+          console.log('[OAUTH-SIGNIN] Extracted names:', { firstName, lastName })
+          
+          // Wait for PrismaAdapter to create/update the user
+          await new Promise(resolve => setTimeout(resolve, 300))
+          
+          // Check if user exists in database
+          let existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            include: { wallet: true, accounts: true }
+          })
 
-          // Update user with additional fields if they're missing
-          if (!existingUser.userId || !existingUser.username || !existingUser.firstName || !existingUser.lastName) {
-            const username = user.email?.split('@')[0] || `user_${Date.now()}`
-            const uniqueUsername = `${username}_${Math.random().toString(36).substring(2, 6)}`
-
-            await prisma.user.update({
-              where: { id: existingUser.id },
-              data: {
-                userId: existingUser.userId || generateUserId(),
-                username: existingUser.username || uniqueUsername,
-                firstName: existingUser.firstName || firstName,
-                lastName: existingUser.lastName || lastName,
-                image: user.image || existingUser.image,
-              }
+          // If user doesn't exist yet, wait a bit more and try again
+          if (!existingUser) {
+            console.log('[OAUTH-SIGNIN] User not found, waiting for PrismaAdapter...')
+            await new Promise(resolve => setTimeout(resolve, 500))
+            existingUser = await prisma.user.findUnique({
+              where: { email: user.email! },
+              include: { wallet: true, accounts: true }
             })
-            console.log('[OAUTH] Updated OAuth user with missing fields:', user.email, 'Name:', firstName, lastName)
           }
+
+          if (!existingUser) {
+            console.log('[OAUTH-SIGNIN] User still not found, will be created by adapter')
+            return true
+          }
+
+          console.log('[OAUTH-SIGNIN] Found user:', {
+            email: existingUser.email,
+            hasWallet: !!existingUser.wallet,
+            hasUserId: !!existingUser.userId,
+            hasUsername: !!existingUser.username,
+            currentFirstName: existingUser.firstName,
+            currentLastName: existingUser.lastName
+          })
+
+          // ALWAYS update firstName and lastName from OAuth profile to ensure fresh data
+          // This fixes the caching issue where old names persist
+          const username = user.email?.split('@')[0] || `user_${Date.now()}`
+          const uniqueUsername = existingUser.username || `${username}_${Math.random().toString(36).substring(2, 6)}`
+
+          const updateData: any = {
+            userId: existingUser.userId || generateUserId(),
+            username: uniqueUsername,
+            firstName: firstName, // Always update from OAuth profile
+            lastName: lastName,   // Always update from OAuth profile
+            image: user.image || existingUser.image,
+          }
+
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: updateData
+          })
+          
+          console.log('[OAUTH-SIGNIN] Updated user with OAuth data:', {
+            email: user.email,
+            firstName,
+            lastName,
+            username: uniqueUsername
+          })
 
           // If user exists but has no wallet, create one
           if (!existingUser.wallet) {
-            console.log('[OAUTH] Creating wallet for OAuth user:', existingUser.email)
+            console.log('[OAUTH-SIGNIN] Creating wallet for OAuth user:', existingUser.email)
             const { createWalletWithRetry } = await import('@/lib/wallet-service')
             const walletResult = await createWalletWithRetry({
               userId: existingUser.id,
               email: existingUser.email,
-              firstName: existingUser.firstName || user.name?.split(' ')[0] || 'User',
-              lastName: existingUser.lastName || user.name?.split(' ').slice(1).join(' ') || 'User',
+              firstName: firstName,
+              lastName: lastName,
               maxRetries: 3
             })
             
             if (walletResult.success) {
-              console.log('[OAUTH] Wallet created successfully for:', existingUser.email)
+              console.log('[OAUTH-SIGNIN] Wallet created successfully')
             } else {
-              console.error('[OAUTH] Failed to create wallet:', walletResult.error)
-              // Don't block sign-in even if wallet creation fails
+              console.error('[OAUTH-SIGNIN] Failed to create wallet:', walletResult.error)
             }
-          } else {
-            console.log('[OAUTH] User already has wallet')
           }
         } catch (error) {
-          console.error('[OAUTH] Error in signIn callback:', error)
+          console.error('[OAUTH-SIGNIN] Error in signIn callback:', error)
           // Don't block sign-in on errors
         }
         return true
@@ -295,52 +358,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   events: {
     async createUser({ user }) {
       // This event fires when NextAuth/PrismaAdapter creates a new user
+      // Note: This runs BEFORE the signIn callback
       if (user.id) {
         try {
-          // Generate username from email or name
-          const username = user.email?.split('@')[0] || `user_${Date.now()}`
-          const uniqueUsername = `${username}_${Math.random().toString(36).substring(2, 6)}`
-          
-          // Parse name into first and last - use better parsing
-          let firstName = 'User'
-          let lastName = 'User'
-          
-          if (user.name) {
-            const nameParts = user.name.trim().split(' ')
-            firstName = nameParts[0] || 'User'
-            lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : firstName
-          }
-
-          // Update user with userId, username, and name fields
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              userId: generateUserId(),
-              username: uniqueUsername,
-              firstName: firstName,
-              lastName: lastName,
-            }
-          })
-          console.log('Updated new OAuth user with userId and username:', user.email, 'Name:', firstName, lastName)
-
-          // Create wallet for new user
-          console.log('[OAUTH-CREATE] Creating wallet for new user:', user.email)
-          const { createWalletWithRetry } = await import('@/lib/wallet-service')
-          const walletResult = await createWalletWithRetry({
-            userId: user.id,
-            email: user.email!,
-            firstName: firstName,
-            lastName: lastName,
-            maxRetries: 3
+          console.log('[OAUTH-CREATE-EVENT] New user created by PrismaAdapter:', {
+            id: user.id,
+            email: user.email,
+            name: user.name
           })
           
-          if (walletResult.success) {
-            console.log('[OAUTH-CREATE] Wallet created for new OAuth user:', user.email)
-          } else {
-            console.error('[OAUTH-CREATE] Failed to create wallet:', walletResult.error)
-          }
+          // The signIn callback will handle the full user setup
+          // This event is just for logging and initial setup if needed
         } catch (error) {
-          console.error('Failed to update new OAuth user:', error)
+          console.error('[OAUTH-CREATE-EVENT] Error in createUser event:', error)
         }
       }
     },

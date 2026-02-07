@@ -6,6 +6,7 @@ import { z } from 'zod'
 const updateProfileSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters').optional(),
   lastName: z.string().min(2, 'Last name must be at least 2 characters').optional(),
+  companyName: z.string().optional(), // For business accounts
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
@@ -70,6 +71,7 @@ export async function PUT(request: NextRequest) {
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
+        companyName: data.companyName,
         username: data.username,
         email: data.email,
         phone: data.phone || null,
@@ -84,6 +86,7 @@ export async function PUT(request: NextRequest) {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
+        companyName: user.companyName,
         username: user.username,
         email: user.email,
         phone: user.phone,
@@ -123,6 +126,7 @@ export async function GET() {
         id: true,
         firstName: true,
         lastName: true,
+        companyName: true,
         username: true,
         email: true,
         phone: true,

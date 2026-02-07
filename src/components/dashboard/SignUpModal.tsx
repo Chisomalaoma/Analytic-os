@@ -13,7 +13,7 @@ interface SignUpModalProps {
 
 export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpModalProps) {
   const router = useRouter()
-  const { data: session, update: updateSession } = useSession()
+  const { update: updateSession } = useSession()
   const [step, setStep] = useState<'form' | 'otp'>('form')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -21,6 +21,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
   // Form fields
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [workEmail, setWorkEmail] = useState('')
   const [username, setUsername] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -75,11 +77,12 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firstName,
-          lastName,
+          firstName: role === 'ADMIN' ? companyName : firstName,
+          lastName: role === 'ADMIN' ? 'Business' : lastName,
+          companyName: role === 'ADMIN' ? companyName : undefined, // Send companyName for business accounts
           username,
           phone,
-          email,
+          email: role === 'ADMIN' ? workEmail : email,
           password,
           role,
         }),
@@ -111,7 +114,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
       const res = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, token: otp }),
+        body: JSON.stringify({ email: role === 'ADMIN' ? workEmail : email, token: otp }),
       })
 
       const data = await res.json()
@@ -124,7 +127,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
 
       // Email verified - sign in and close
       await signIn('credentials', {
-        email,
+        email: role === 'ADMIN' ? workEmail : email,
         password,
         redirect: false,
       })
@@ -153,7 +156,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: role === 'ADMIN' ? workEmail : email }),
       })
 
       const data = await res.json()
@@ -172,6 +175,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
     setStep('form')
     setFirstName('')
     setLastName('')
+    setCompanyName('')
+    setWorkEmail('')
     setUsername('')
     setPhone('')
     setEmail('')
@@ -287,30 +292,106 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
 
           {step === 'form' ? (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
-                    placeholder="First name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
-                    placeholder="Last name"
-                    required
-                  />
+              {/* Account Type Selection - Moved to Top */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Account Type</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRole('INVESTOR')}
+                    className={`p-4 rounded-lg border transition-all text-left ${
+                      role === 'INVESTOR'
+                        ? 'bg-[#4459FF]/10 border-[#4459FF] text-white'
+                        : 'bg-[#1A1A1A] border-[#23262F] text-gray-400 hover:border-[#4459FF]'
+                    }`}
+                  >
+                    <div className="font-medium">Personal</div>
+                    <div className="text-xs mt-1 opacity-70">Access investment features</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole('ADMIN')}
+                    className={`p-4 rounded-lg border transition-all text-left ${
+                      role === 'ADMIN'
+                        ? 'bg-[#4459FF]/10 border-[#4459FF] text-white'
+                        : 'bg-[#1A1A1A] border-[#23262F] text-gray-400 hover:border-[#4459FF]'
+                    }`}
+                  >
+                    <div className="font-medium">Business</div>
+                    <div className="text-xs mt-1 opacity-70">Manage platform settings</div>
+                  </button>
                 </div>
               </div>
+
+              {/* Conditional Fields Based on Account Type */}
+              {role === 'INVESTOR' ? (
+                <>
+                  {/* Personal Account Fields */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">First Name</label>
+                      <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                        placeholder="First name"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Last Name</label>
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                        placeholder="Last name"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Business Account Fields */}
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Company Name</label>
+                    <input
+                      type="text"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="Enter company name"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">Work Email</label>
+                    <input
+                      type="email"
+                      value={workEmail}
+                      onChange={(e) => setWorkEmail(e.target.value)}
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="Enter work email"
+                      required
+                    />
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Username</label>
@@ -339,49 +420,6 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                   placeholder="+234 80 0000 0000"
                   maxLength={13}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-
-              {/* Role Selection */}
-              <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">Account Type</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setRole('INVESTOR')}
-                    className={`p-4 rounded-lg border transition-all text-left ${
-                      role === 'INVESTOR'
-                        ? 'bg-[#4459FF]/10 border-[#4459FF] text-white'
-                        : 'bg-[#1A1A1A] border-[#23262F] text-gray-400 hover:border-[#4459FF]'
-                    }`}
-                  >
-                    <div className="font-medium">Personal</div>
-                    <div className="text-xs mt-1 opacity-70">Access investment features</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRole('ADMIN')}
-                    className={`p-4 rounded-lg border transition-all text-left ${
-                      role === 'ADMIN'
-                        ? 'bg-[#4459FF]/10 border-[#4459FF] text-white'
-                        : 'bg-[#1A1A1A] border-[#23262F] text-gray-400 hover:border-[#4459FF]'
-                    }`}
-                  >
-                    <div className="font-medium">Business</div>
-                    <div className="text-xs mt-1 opacity-70">Manage platform settings</div>
-                  </button>
-                </div>
               </div>
 
               <div>
@@ -474,7 +512,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
             <form onSubmit={handleVerifyOTP} className="space-y-4">
               <div className="text-center mb-4">
                 <p className="text-sm text-gray-400">Enter the 6-digit code sent to</p>
-                <p className="text-white font-medium">{email}</p>
+                <p className="text-white font-medium">{role === 'ADMIN' ? workEmail : email}</p>
               </div>
 
               <div>
