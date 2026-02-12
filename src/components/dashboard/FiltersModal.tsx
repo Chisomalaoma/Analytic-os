@@ -92,10 +92,10 @@ export default function FiltersModal({ open, onClose }: { open: boolean, onClose
                     {activeTab === 'Yield' && (
                         <div className='text-lg'>
                             <div className="font-medium text-white mb-2">Annual Yield Range</div>
-                            <input type="range" min={0} max={100} className="w-full accent-white" />
+                            <input type="range" min={0} max={35} className="w-full accent-white" />
                             <div className="flex justify-between text-lg text-white mt-2">
                                 <span>0%</span>
-                                <span>100%</span>
+                                <span>35%</span>
                             </div>
                         </div>
                     )}

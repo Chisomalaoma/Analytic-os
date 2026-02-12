@@ -97,10 +97,10 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
     }
 
     const usdAmount = convertAmount(amountInNGN)
-    return `${usdAmount.toLocaleString('en-US', {
+    return `$${usdAmount.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    })} USDT`
+    })}`
   }
 
   const value: CurrencyContextType = {

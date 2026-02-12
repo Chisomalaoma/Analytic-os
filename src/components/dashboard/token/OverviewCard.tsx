@@ -11,7 +11,7 @@ interface OverviewCardProps {
   onTradeComplete?: () => void; // Callback to refresh data after trade
 }
 
-type Currency = 'NGN' | 'USDT';
+type Currency = 'NGN' | 'USD';
 type TradeType = 'buy' | 'sell';
 
 const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSymbol = 'INV', onTradeComplete }) => {
@@ -29,16 +29,16 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
   const [tradeType, setTradeType] = useState<TradeType>('buy');
   const { formatAmount: formatCurrencyAmount, currency: accountCurrency } = useCurrency();
   
-  // Initialize currency based on account preference: USD → USDT, NGN → NGN
-  const [currency, setCurrency] = useState<Currency>(accountCurrency === 'USD' ? 'USDT' : 'NGN');
+  // Initialize currency based on account preference: USD → USD, NGN → NGN
+  const [currency, setCurrency] = useState<Currency>(accountCurrency === 'USD' ? 'USD' : 'NGN');
 
-  const USDT_TO_NGN = 1650;
+  const USD_TO_NGN = 1650;
 
   const tokensAmount = amount ? parseFloat(amount) : 0;
 
   // Update local currency when account currency changes
   useEffect(() => {
-    setCurrency(accountCurrency === 'USD' ? 'USDT' : 'NGN');
+    setCurrency(accountCurrency === 'USD' ? 'USD' : 'NGN');
   }, [accountCurrency]);
 
   useEffect(() => {
@@ -95,7 +95,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
 
   const handleBuy = async () => {
     const inputAmount = parseFloat(amount);
-    const nairaAmount = currency === 'NGN' ? inputAmount : inputAmount * USDT_TO_NGN;
+    const nairaAmount = currency === 'NGN' ? inputAmount : inputAmount * USD_TO_NGN;
     
     if (!inputAmount || nairaAmount < tokenPrice) {
       setError(`Minimum purchase is ${formatCurrencyLocal(tokenPrice)}`);
@@ -170,7 +170,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
         const nairaReceived = data.sale.nairaReceived;
         const displayAmount = currency === 'NGN' 
           ? `₦${Math.round(nairaReceived).toLocaleString('en-NG')}` 
-          : `$${Math.round(nairaReceived / USDT_TO_NGN).toLocaleString('en-US')}`;
+          : `$${Math.round(nairaReceived / USD_TO_NGN).toLocaleString('en-US')}`;
         setSuccessMessage(`Sale successful! ${tokensToSell} ${tokenSymbol} sold for ${displayAmount}`);
         setTokenBalance(data.sale.newTokenBalance);
         setAmount('');
@@ -189,7 +189,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
     if (currency === 'NGN') {
       return formatCurrency(value);
     } else {
-      return `$${Math.round(value / USDT_TO_NGN).toLocaleString('en-US')}`;
+      return `$${Math.round(value / USD_TO_NGN).toLocaleString('en-US')}`;
     }
   };
 
@@ -197,17 +197,17 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
     if (currency === 'NGN') {
       return Math.round(walletBalance / 100).toLocaleString('en-NG');
     } else {
-      return Math.round((walletBalance / 100) / USDT_TO_NGN).toLocaleString('en-US');
+      return Math.round((walletBalance / 100) / USD_TO_NGN).toLocaleString('en-US');
     }
   };
 
   const getCurrencySymbol = () => currency === 'NGN' ? '₦' : '$';
-  const getCurrencyLabel = () => currency === 'NGN' ? 'Naira' : 'USDT';
+  const getCurrencyLabel = () => currency === 'NGN' ? 'Naira' : 'USD';
 
   const getEstimatedValue = () => {
     if (!amount) return '0';
     if (tradeType === 'buy') {
-      const tokens = Math.floor(tokensAmount / (currency === 'NGN' ? tokenPrice : tokenPrice / USDT_TO_NGN));
+      const tokens = Math.floor(tokensAmount / (currency === 'NGN' ? tokenPrice : tokenPrice / USD_TO_NGN));
       return `${tokens} ${tokenSymbol}`;
     } else {
       const value = tokensAmount * tokenPrice;
@@ -406,15 +406,15 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
                     </button>
                     <button
                       onClick={() => {
-                        setCurrency('USDT');
+                        setCurrency('USD');
                         setShowCurrencyDropdown(false);
                         setAmount('');
                       }}
                       className={`w-full px-3 py-2 text-left text-sm hover:bg-[#353945] transition-colors ${
-                        currency === 'USDT' ? 'bg-[#353945] text-blue-400' : 'text-white'
+                        currency === 'USD' ? 'bg-[#353945] text-blue-400' : 'text-white'
                       }`}
                     >
-                      <span className="font-bold">$</span> USDT
+                      <span className="font-bold">$</span> USD
                     </button>
                   </div>
                 </>
@@ -445,7 +445,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
       {tradeType === 'buy' ? (
         <div className="flex space-x-1.5 mb-2">
           {[tokenPrice, tokenPrice * 2, tokenPrice * 3, tokenPrice * 5].map((amt) => {
-            const displayAmount = currency === 'NGN' ? amt : amt / USDT_TO_NGN;
+            const displayAmount = currency === 'NGN' ? amt : amt / USD_TO_NGN;
             return (
               <button
                 key={amt}

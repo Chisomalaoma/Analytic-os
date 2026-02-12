@@ -306,7 +306,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                     }`}
                   >
                     <div className="font-medium">Personal</div>
-                    <div className="text-xs mt-1 opacity-70">Access investment features</div>
+                    <div className="text-xs mt-1 opacity-70">I am a retail investor</div>
                   </button>
                   <button
                     type="button"
@@ -318,7 +318,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                     }`}
                   >
                     <div className="font-medium">Business</div>
-                    <div className="text-xs mt-1 opacity-70">Manage platform settings</div>
+                    <div className="text-xs mt-1 opacity-70">Access fundraising features</div>
                   </button>
                 </div>
               </div>

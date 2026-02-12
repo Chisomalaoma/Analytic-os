@@ -42,7 +42,7 @@ export default function FiltersDropdown({ id, isOpen, onClose, onApplyFilters }:
     const [volumeMin, setVolumeMin] = useState(0);
     const [volumeMax, setVolumeMax] = useState(100000000); // 100M max volume
     const [yieldMin, setYieldMin] = useState(0);
-    const [yieldMax, setYieldMax] = useState(100);
+    const [yieldMax, setYieldMax] = useState(35);
 
     // Handle category selection
     const handleCategoryToggle = (category: string) => {
@@ -65,7 +65,7 @@ export default function FiltersDropdown({ id, isOpen, onClose, onApplyFilters }:
         setVolumeMin(0);
         setVolumeMax(100000000);
         setYieldMin(0);
-        setYieldMax(100);
+        setYieldMax(35);
     };
 
     // Apply filters
@@ -231,7 +231,7 @@ export default function FiltersDropdown({ id, isOpen, onClose, onApplyFilters }:
                             <input 
                                 type="range" 
                                 min={0} 
-                                max={100} 
+                                max={35} 
                                 step={1}
                                 value={yieldMax}
                                 onChange={(e) => setYieldMax(Number(e.target.value))}
