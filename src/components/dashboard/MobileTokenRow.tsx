@@ -37,10 +37,10 @@ export function MobileTokenRow({
   return (
     <div
       onClick={handleClick}
-      className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] hover:bg-[#0F0F0F] active:bg-[#151515] transition-colors cursor-pointer min-w-max touch-manipulation"
+      className="flex items-center px-4 py-3 border-b border-[#1A1A1A] hover:bg-[#0F0F0F] active:bg-[#151515] transition-colors cursor-pointer touch-manipulation"
     >
       {/* Token Icon & Info */}
-      <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {logo ? (
           <Image src={logo} alt={symbol} width={32} height={32} className="rounded-full flex-shrink-0" />
         ) : (
@@ -55,7 +55,7 @@ export function MobileTokenRow({
       </div>
 
       {/* Price & Change */}
-      <div className="text-right flex-shrink-0 w-20">
+      <div className="text-right flex-shrink-0 w-24">
         <div className="font-bold text-white text-sm">{formatAmount(price)}</div>
         <div className={`text-xs font-medium ${change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
           {change >= 0 ? '+' : ''}{change.toFixed(2)}%
@@ -63,8 +63,7 @@ export function MobileTokenRow({
       </div>
 
       {/* Volume */}
-      <div className="text-right flex-shrink-0 w-16 ml-2">
-        <div className="text-xs text-gray-500">VOL</div>
+      <div className="text-right flex-shrink-0 w-20">
         <div className="text-xs font-medium text-white">{formatAmount(volume)}</div>
       </div>
     </div>

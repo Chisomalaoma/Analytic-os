@@ -97,30 +97,30 @@ export default function MobileDashboardContainer() {
       {/* Token List */}
       <div className="pb-4">
         {/* Table Header - Sticky outside scrollable area */}
-        <div className="flex items-center px-4 py-2 border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[201px] z-20">
-          <div className="flex-1 text-xs text-gray-500 font-medium min-w-[200px]">TOKEN</div>
-          <div className="text-xs text-gray-500 font-medium text-right w-20">PRICE</div>
-          <div className="text-xs text-gray-500 font-medium text-right w-16 ml-2">VOLUME</div>
+        <div className="flex items-center px-4 py-3 border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[201px] z-20">
+          <div className="flex-1 text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
+          <div className="text-xs text-gray-500 font-medium text-right uppercase tracking-wide w-24">PRICE</div>
+          <div className="text-xs text-gray-500 font-medium text-right uppercase tracking-wide w-20">VOLUME</div>
         </div>
 
         {/* Scrollable Container */}
-        <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+        <div>
           {/* Loading State */}
           {loading && (
-            <div className="space-y-0 min-w-max">
+            <div className="space-y-0">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="flex items-center gap-3 px-4 py-3 border-b border-[#1A1A1A] animate-pulse">
-                  <div className="w-8 h-8 bg-[#1A1A1A] rounded-full" />
-                  <div className="flex-1 min-w-[150px]">
+                <div key={i} className="flex items-center px-4 py-3 border-b border-[#1A1A1A] animate-pulse">
+                  <div className="w-8 h-8 bg-[#1A1A1A] rounded-full flex-shrink-0" />
+                  <div className="flex-1 min-w-0 ml-2">
                     <div className="h-4 w-24 bg-[#1A1A1A] rounded mb-1" />
                     <div className="h-3 w-32 bg-[#1A1A1A] rounded" />
                   </div>
-                  <div className="text-right">
-                    <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
-                    <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
+                  <div className="text-right w-24 flex-shrink-0">
+                    <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1 ml-auto" />
+                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                   </div>
-                  <div className="text-right w-16">
-                    <div className="h-3 w-12 bg-[#1A1A1A] rounded" />
+                  <div className="text-right w-20 flex-shrink-0">
+                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                   </div>
                 </div>
               ))}
@@ -129,7 +129,7 @@ export default function MobileDashboardContainer() {
 
           {/* Token Rows */}
           {!loading && tokens.length > 0 && (
-            <div className="min-w-max">
+            <div>
               {tokens.map((token) => (
                 <MobileTokenRow
                   key={token.id}

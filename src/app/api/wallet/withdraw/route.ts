@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
-import { initiateDisbursement } from '@/lib/monnify-disbursement'
+import { initiateWithdrawal, getPaymentProvider } from '@/lib/payment-provider'
 import { notifyWithdrawal } from '@/lib/notifications'
 
 const withdrawSchema = z.object({
@@ -53,16 +53,21 @@ export async function POST(request: NextRequest) {
     // Generate unique reference
     const reference = `WD_${session.user.id}_${Date.now()}`
 
-    // Initiate disbursement
+    // Get payment provider
+    const provider = getPaymentProvider()
+    console.log(`[WITHDRAWAL] Using payment provider: ${provider}`)
+
+    // Initiate withdrawal
     try {
-      const result = await initiateDisbursement(
-        bankAccount.accountNumber,
-        bankAccount.accountName,
-        bankAccount.bankCode,
-        data.amount,
-        data.narration,
-        reference
-      )
+      const result = await initiateWithdrawal({
+        accountNumber: bankAccount.accountNumber,
+        accountName: bankAccount.accountName,
+        bankCode: bankAccount.bankCode,
+        amount: data.amount,
+        narration: data.narration,
+        reference,
+        sourceAccountNumber: wallet.accountNumber // For SafeHaven
+      })
 
       // Create debit transaction
       await prisma.$transaction([

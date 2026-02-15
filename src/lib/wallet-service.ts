@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { createReservedAccount } from './monnify'
+import { createVirtualAccount, getPaymentProvider } from './payment-provider'
 
 /**
  * Sleep utility for retry delays
@@ -40,24 +40,27 @@ export async function createWalletWithRetry(params: {
         return { success: true, wallet: existingWallet }
       }
       
-      // Create Monnify reserved account
-      const monnifyAccount = await createReservedAccount({
+      // Create virtual account (Monnify or SafeHaven based on env)
+      const provider = getPaymentProvider()
+      console.log(`[WALLET-SERVICE] Using payment provider: ${provider}`)
+      
+      const virtualAccount = await createVirtualAccount({
         email,
         firstName,
         lastName,
         reference: `WALLET_${userId}_${Date.now()}`
       })
       
-      console.log(`[WALLET-SERVICE] Monnify account created: ${monnifyAccount.accountNumber}`)
+      console.log(`[WALLET-SERVICE] Virtual account created: ${virtualAccount.accountNumber}`)
       
       // Save wallet to database
       const wallet = await prisma.wallet.create({
         data: {
           userId,
-          accountNumber: monnifyAccount.accountNumber,
-          bankName: monnifyAccount.bankName,
-          accountName: monnifyAccount.accountName,
-          accountRef: monnifyAccount.accountReference,
+          accountNumber: virtualAccount.accountNumber,
+          bankName: virtualAccount.bankName,
+          accountName: virtualAccount.accountName,
+          accountRef: virtualAccount.accountReference,
           balance: 0
         }
       })
@@ -150,4 +153,69 @@ export async function ensureUserHasWallet(userId: string): Promise<{
       error: error.message || 'Unknown error'
     }
   }
+}
+
+/**
+ * Credit wallet with transaction
+ */
+export async function creditWallet(params: {
+  walletId: string
+  amount: number // in kobo
+  description: string
+  reference: string
+  monnifyRef?: string
+}): Promise<{
+  success: boolean
+  error?: string
+  transaction?: any
+}> {
+  try {
+    // Check for duplicate transaction
+    const existingTx = await prisma.transaction.findFirst({
+      where: {
+        OR: [
+          { reference: params.reference },
+          ...(params.monnifyRef ? [{ monnifyRef: params.monnifyRef }] : [])
+        ]
+      }
+    })
+
+    if (existingTx) {
+      console.log(`[WALLET-SERVICE] Duplicate transaction: ${params.reference}`)
+      return { success: false, error: 'Duplicate transaction' }
+    }
+
+    // Credit wallet and create transaction in a single database transaction
+    const [updatedWallet, transaction] = await prisma.$transaction([
+      prisma.wallet.update({
+        where: { id: params.walletId },
+        data: { balance: { increment: params.amount } }
+      }),
+      prisma.transaction.create({
+        data: {
+          walletId: params.walletId,
+          type: 'credit',
+          amount: params.amount,
+          description: params.description,
+          reference: params.reference,
+          monnifyRef: params.monnifyRef,
+          status: 'completed'
+        }
+      })
+    ])
+
+    console.log(`[WALLET-SERVICE] Credited ${params.amount} kobo to wallet ${params.walletId}`)
+    return { success: true, transaction }
+  } catch (error: any) {
+    console.error('[WALLET-SERVICE] Error crediting wallet:', error)
+    return { success: false, error: error.message || 'Failed to credit wallet' }
+  }
+}
+
+/**
+ * Format kobo to naira for display
+ */
+export function formatKoboToNaira(kobo: number): string {
+  const naira = kobo / 100
+  return `₦${naira.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }

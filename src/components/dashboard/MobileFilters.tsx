@@ -49,14 +49,14 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
   return (
     <div className="sticky top-[129px] z-20 bg-[#0A0A0A] border-b border-[#1A1A1A]">
       {/* Main Filters and Time Dropdown */}
-      <div className="flex items-center justify-between gap-2 px-4 py-3">
-        {/* Filter Buttons */}
-        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
+      <div className="flex items-center gap-2 px-4 py-3">
+        {/* Filter Buttons - Full width scrollable */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1 min-w-0">
           {filters.map((filter) => (
             <button
               key={filter.id}
               onClick={() => onFilterChange(filter.id)}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 ${
                 activeFilter === filter.id
                   ? 'bg-[#4459FF] text-white'
                   : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#252525]'
@@ -71,14 +71,14 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
         <div className="relative flex-shrink-0" ref={dropdownRef}>
           <button
             onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors min-w-[100px]"
+            className="flex items-center gap-1.5 px-3 py-2 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span className="text-sm font-medium">{getActiveTimeLabel()}</span>
             <svg 
-              className={`w-4 h-4 transition-transform ${showTimeDropdown ? 'rotate-180' : ''}`} 
+              className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${showTimeDropdown ? 'rotate-180' : ''}`} 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"

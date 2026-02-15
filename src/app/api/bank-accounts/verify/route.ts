@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
-import { verifyBankAccount } from '@/lib/monnify-disbursement'
+import { verifyBankAccount } from '@/lib/payment-provider'
 
 const verifySchema = z.object({
   accountNumber: z.string().min(10).max(10).regex(/^\d+$/),
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = verifySchema.parse(body)
 
-    // Verify account name with Monnify
+    // Verify account name with payment provider (Monnify or SafeHaven)
     const { accountName, accountNumber } = await verifyBankAccount(
       data.accountNumber,
       data.bankCode
