@@ -47,13 +47,13 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
   }
 
   return (
-    <div className="sticky top-[129px] z-20 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+    <div className="sticky top-[129px] z-40 bg-[#0A0A0A] border-b border-[#1A1A1A]">
       {/* Two Row Layout for Better Spacing */}
       <div className="px-4 py-2">
         {/* Row 1: Time Filter on Left */}
         <div className="flex items-center justify-between mb-2">
           {/* Time Dropdown - Moved to Left */}
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative z-50" ref={dropdownRef}>
             <button
               onClick={() => setShowTimeDropdown(!showTimeDropdown)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors"
@@ -74,7 +74,7 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
 
             {/* Dropdown Menu */}
             {showTimeDropdown && (
-              <div className="absolute left-0 top-full mt-2 w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-50">
+              <div className="absolute left-0 top-full mt-2 w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[100]">
                 {timeFilters.map((time) => (
                   <button
                     key={time.id}
