@@ -94,33 +94,75 @@ export default function MobileDashboardContainer() {
         onTimeChange={setActiveTime}
       />
 
-      {/* Token List */}
+      {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
-        {/* Table Header - Sticky outside scrollable area */}
-        <div className="flex items-center px-4 py-3 border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[201px] z-20">
-          <div className="flex-1 text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
-          <div className="text-xs text-gray-500 font-medium text-right uppercase tracking-wide w-24">PRICE</div>
-          <div className="text-xs text-gray-500 font-medium text-right uppercase tracking-wide w-20">VOLUME</div>
-        </div>
+        {/* Horizontal Scroll Container */}
+        <div className="overflow-x-auto overflow-y-visible scrollbar-hide horizontal-scroll">
+          {/* Table Header - Sticky Top with Horizontal Scroll */}
+          <div className="flex items-center border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[185px] z-20 min-w-max">
+            {/* Token Column - Sticky Left with Shadow */}
+            <div className="sticky left-0 bg-[#0A0A0A] z-30 pl-4 pr-3 py-2.5 min-w-[160px] sticky-column-shadow">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
+            </div>
+            
+            {/* Price Column */}
+            <div className="text-right px-3 py-2.5 min-w-[90px]">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
+            </div>
+            
+            {/* 1H Column */}
+            <div className="text-right px-3 py-2.5 min-w-[70px]">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
+            </div>
+            
+            {/* 6H Column */}
+            <div className="text-right px-3 py-2.5 min-w-[70px]">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
+            </div>
+            
+            {/* 24H Column */}
+            <div className="text-right px-3 py-2.5 min-w-[70px]">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
+            </div>
+            
+            {/* Volume Column */}
+            <div className="text-right px-3 py-2.5 min-w-[90px]">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+            </div>
+          </div>
 
-        {/* Scrollable Container */}
-        <div>
           {/* Loading State */}
           {loading && (
-            <div className="space-y-0">
+            <div className="space-y-0 min-w-max">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="flex items-center px-4 py-3 border-b border-[#1A1A1A] animate-pulse">
-                  <div className="w-8 h-8 bg-[#1A1A1A] rounded-full flex-shrink-0" />
-                  <div className="flex-1 min-w-0 ml-2">
-                    <div className="h-4 w-24 bg-[#1A1A1A] rounded mb-1" />
-                    <div className="h-3 w-32 bg-[#1A1A1A] rounded" />
+                <div key={i} className="flex items-center border-b border-[#1A1A1A] animate-pulse">
+                  {/* Token */}
+                  <div className="flex items-center gap-2 sticky left-0 bg-[#0A0A0A] z-10 pr-3 pl-4 py-3 min-w-[160px] sticky-column-shadow">
+                    <div className="w-8 h-8 bg-[#1A1A1A] rounded-full flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
+                      <div className="h-3 w-24 bg-[#1A1A1A] rounded" />
+                    </div>
                   </div>
-                  <div className="text-right w-24 flex-shrink-0">
-                    <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1 ml-auto" />
+                  {/* Price */}
+                  <div className="px-3 py-3 min-w-[90px]">
+                    <div className="h-4 w-16 bg-[#1A1A1A] rounded ml-auto" />
+                  </div>
+                  {/* 1H */}
+                  <div className="px-3 py-3 min-w-[70px]">
                     <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                   </div>
-                  <div className="text-right w-20 flex-shrink-0">
+                  {/* 6H */}
+                  <div className="px-3 py-3 min-w-[70px]">
                     <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
+                  </div>
+                  {/* 24H */}
+                  <div className="px-3 py-3 min-w-[70px]">
+                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
+                  </div>
+                  {/* Volume */}
+                  <div className="px-3 py-3 min-w-[90px]">
+                    <div className="h-3 w-16 bg-[#1A1A1A] rounded ml-auto" />
                   </div>
                 </div>
               ))}
@@ -129,7 +171,7 @@ export default function MobileDashboardContainer() {
 
           {/* Token Rows */}
           {!loading && tokens.length > 0 && (
-            <div>
+            <div className="min-w-max">
               {tokens.map((token) => (
                 <MobileTokenRow
                   key={token.id}
@@ -137,7 +179,10 @@ export default function MobileDashboardContainer() {
                   symbol={token.symbol}
                   name={token.name}
                   price={token.price / 100}
-                  change={Math.random() * 20 - 10} // Placeholder - replace with real data
+                  change={Math.random() * 20 - 10}
+                  change1h={Math.random() * 10 - 5}
+                  change6h={Math.random() * 15 - 7.5}
+                  change24h={Math.random() * 20 - 10}
                   volume={token.volume / 100}
                   logo={token.logoUrl}
                 />

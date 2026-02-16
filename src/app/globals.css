@@ -205,3 +205,24 @@ button, .no-select {
     overscroll-behavior-y: contain;
   }
 }
+
+/* Smooth horizontal scrolling for token table */
+.horizontal-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+/* Scroll indicator shadow */
+.scroll-shadow-left {
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-shadow-right {
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Sticky column shadow */
+.sticky-column-shadow {
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
+}
