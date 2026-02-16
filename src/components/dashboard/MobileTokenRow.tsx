@@ -9,12 +9,12 @@ interface MobileTokenRowProps {
   symbol: string
   name: string
   price: number
-  change: number
-  change1h?: number
-  change6h?: number
-  change24h?: number
   volume: number
   logo: string | null
+  industry?: string
+  annualYield?: number
+  yieldPayout?: string
+  timePeriod?: string
 }
 
 export function MobileTokenRow({
@@ -22,12 +22,12 @@ export function MobileTokenRow({
   symbol,
   name,
   price,
-  change,
-  change1h,
-  change6h,
-  change24h,
   volume,
-  logo
+  logo,
+  industry,
+  annualYield,
+  yieldPayout,
+  timePeriod
 }: MobileTokenRowProps) {
   const router = useRouter()
   const { formatAmount } = useCurrency()
@@ -38,14 +38,6 @@ export function MobileTokenRow({
       navigator.vibrate(10)
     }
     router.push(`/dashboard/token?symbol=${symbol}`)
-  }
-
-  const formatChange = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
-  }
-
-  const getChangeColor = (value: number) => {
-    return value >= 0 ? 'text-green-500' : 'text-red-500'
   }
 
   return (
@@ -78,30 +70,29 @@ export function MobileTokenRow({
             <div className="font-bold text-white text-sm">{formatAmount(price)}</div>
           </div>
 
-          {/* 1H Change */}
-          <div className="w-[80px] px-3 py-3 text-right">
-            <div className={`text-xs font-medium ${getChangeColor(change1h || change)}`}>
-              {formatChange(change1h || change)}
-            </div>
+          {/* Industry */}
+          <div className="w-[100px] px-3 py-3 text-left">
+            <div className="text-xs font-medium text-gray-400">{industry || '-'}</div>
           </div>
 
-          {/* 6H Change */}
-          <div className="w-[80px] px-3 py-3 text-right">
-            <div className={`text-xs font-medium ${getChangeColor(change6h || change * 1.5)}`}>
-              {formatChange(change6h || change * 1.5)}
-            </div>
+          {/* Annual Yield */}
+          <div className="w-[100px] px-3 py-3 text-right">
+            <div className="text-xs font-medium text-white">{annualYield ? `${annualYield}%` : '-'}</div>
           </div>
 
-          {/* 24H Change */}
-          <div className="w-[80px] px-3 py-3 text-right">
-            <div className={`text-xs font-medium ${getChangeColor(change24h || change * 2)}`}>
-              {formatChange(change24h || change * 2)}
-            </div>
+          {/* Yield Payout */}
+          <div className="w-[100px] px-3 py-3 text-right">
+            <div className="text-xs font-medium text-green-500">{yieldPayout || 'N0'}</div>
           </div>
 
           {/* Volume */}
           <div className="w-[100px] px-3 py-3 text-right">
             <div className="text-xs font-medium text-gray-400">{formatAmount(volume)}</div>
+          </div>
+
+          {/* Time Period (from dropdown) */}
+          <div className="w-[80px] px-3 py-3 text-right">
+            <div className="text-xs font-medium text-gray-400">{timePeriod || '-'}</div>
           </div>
         </div>
       </div>

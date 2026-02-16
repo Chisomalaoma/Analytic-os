@@ -8,6 +8,7 @@ import { MobileTokenRow } from '@/components/dashboard/MobileTokenRow'
 import { MobileExploreMenu } from '@/components/dashboard/MobileExploreMenu'
 import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav'
 import SearchDropdown from '@/components/dashboard/SearchDropdown'
+import { useCurrency } from '@/contexts/CurrencyContext'
 
 interface Token {
   id: string
@@ -28,8 +29,10 @@ export default function MobileDashboardContainer() {
   const [activeTime, setActiveTime] = useState('1d')
   const [tokens, setTokens] = useState<Token[]>([])
   const [loading, setLoading] = useState(true)
+  const [yieldPayouts, setYieldPayouts] = useState<{ [key: string]: number }>({})
   const searchDropdownRef = useRef<HTMLDivElement>(null)
   const headerScrollRef = useRef<HTMLDivElement>(null)
+  const { formatAmount } = useCurrency()
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -37,12 +40,20 @@ export default function MobileDashboardContainer() {
         const res = await fetch('/api/tokens')
         const data = await res.json()
         
+        // Fetch yield payouts
+        const yieldRes = await fetch(`/api/tokens/yield-payouts?period=${activeTime}`)
+        const yieldData = await yieldRes.json()
+        
         if (data.success && data.tokens) {
           // Sort by newest first
           const sorted = [...data.tokens].sort((a: Token, b: Token) => 
             new Date(b.listingDate).getTime() - new Date(a.listingDate).getTime()
           )
           setTokens(sorted)
+        }
+        
+        if (yieldData.success) {
+          setYieldPayouts(yieldData.yieldPayouts)
         }
       } catch (error) {
         console.error('Failed to fetch tokens:', error)
@@ -52,7 +63,7 @@ export default function MobileDashboardContainer() {
     }
 
     fetchTokens()
-  }, [])
+  }, [activeTime])
 
   // Close search dropdown on click outside
   useEffect(() => {
@@ -156,24 +167,29 @@ export default function MobileDashboardContainer() {
                   <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
                 </div>
                 
-                {/* 1H Column */}
-                <div className="w-[80px] px-3 py-2.5 text-right">
-                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
+                {/* Industry Column */}
+                <div className="w-[100px] px-3 py-2.5 text-left">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">INDUSTRY</div>
                 </div>
                 
-                {/* 6H Column */}
-                <div className="w-[80px] px-3 py-2.5 text-right">
-                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
+                {/* Annual Yield Column */}
+                <div className="w-[100px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">ANNUAL YIELD</div>
                 </div>
                 
-                {/* 24H Column */}
-                <div className="w-[80px] px-3 py-2.5 text-right">
-                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
+                {/* Yield Payout Column */}
+                <div className="w-[100px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">YIELD PAYOUT</div>
                 </div>
                 
                 {/* Volume Column */}
                 <div className="w-[100px] px-3 py-2.5 text-right">
                   <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+                </div>
+                
+                {/* Time Period Column (dynamic based on dropdown) */}
+                <div className="w-[80px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">{activeTime}</div>
                 </div>
               </div>
             </div>
@@ -206,21 +222,25 @@ export default function MobileDashboardContainer() {
                       <div className="w-[100px] px-3 py-3 text-right">
                         <div className="h-4 w-16 bg-[#1A1A1A] rounded ml-auto" />
                       </div>
-                      {/* 1H */}
-                      <div className="w-[80px] px-3 py-3 text-right">
+                      {/* Industry */}
+                      <div className="w-[100px] px-3 py-3 text-left">
+                        <div className="h-3 w-16 bg-[#1A1A1A] rounded" />
+                      </div>
+                      {/* Annual Yield */}
+                      <div className="w-[100px] px-3 py-3 text-right">
                         <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                       </div>
-                      {/* 6H */}
-                      <div className="w-[80px] px-3 py-3 text-right">
-                        <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
-                      </div>
-                      {/* 24H */}
-                      <div className="w-[80px] px-3 py-3 text-right">
+                      {/* Yield Payout */}
+                      <div className="w-[100px] px-3 py-3 text-right">
                         <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                       </div>
                       {/* Volume */}
                       <div className="w-[100px] px-3 py-3 text-right">
                         <div className="h-3 w-16 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                      {/* Time Period */}
+                      <div className="w-[80px] px-3 py-3 text-right">
+                        <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
                       </div>
                     </div>
                   </div>
@@ -239,12 +259,12 @@ export default function MobileDashboardContainer() {
                   symbol={token.symbol}
                   name={token.name}
                   price={token.price / 100}
-                  change={Math.random() * 20 - 10}
-                  change1h={Math.random() * 10 - 5}
-                  change6h={Math.random() * 15 - 7.5}
-                  change24h={Math.random() * 20 - 10}
                   volume={token.volume / 100}
                   logo={token.logoUrl}
+                  industry={token.industry}
+                  annualYield={token.annualYield}
+                  yieldPayout={formatAmount(yieldPayouts[token.symbol] || 0)}
+                  timePeriod={activeTime}
                 />
               ))}
             </div>
