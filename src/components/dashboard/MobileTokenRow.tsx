@@ -71,7 +71,7 @@ export function MobileTokenRow({
       </div>
 
       {/* Scrollable Columns */}
-      <div className="flex-1 overflow-x-auto scrollbar-hide horizontal-scroll data-scroll-container">
+      <div className="flex-1 overflow-x-auto scrollbar-hide horizontal-scroll data-scroll-container" style={{ pointerEvents: 'auto' }}>
         <div className="flex min-w-max">
           {/* Price */}
           <div className="w-[100px] px-3 py-3 text-right">

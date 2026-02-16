@@ -81,38 +81,43 @@ export default function MobileDashboardContainer() {
     const headerScroll = headerScrollRef.current
     if (!headerScroll) return
 
-    // Get all data scroll containers
-    const dataScrollElements = document.querySelectorAll('.data-scroll-container')
-    
-    const syncFromHeader = () => {
-      dataScrollElements.forEach((el) => {
-        (el as HTMLElement).scrollLeft = headerScroll.scrollLeft
-      })
-    }
+    // Use a slight delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      // Get all data scroll containers
+      const dataScrollElements = document.querySelectorAll('.data-scroll-container')
+      
+      const syncFromHeader = () => {
+        dataScrollElements.forEach((el) => {
+          (el as HTMLElement).scrollLeft = headerScroll.scrollLeft
+        })
+      }
 
-    const syncToHeader = (e: Event) => {
-      const target = e.target as HTMLElement
-      headerScroll.scrollLeft = target.scrollLeft
-      // Sync all other data containers
-      dataScrollElements.forEach((el) => {
-        if (el !== target) {
-          (el as HTMLElement).scrollLeft = target.scrollLeft
-        }
-      })
-    }
+      const syncToHeader = (e: Event) => {
+        const target = e.target as HTMLElement
+        headerScroll.scrollLeft = target.scrollLeft
+        // Sync all other data containers
+        dataScrollElements.forEach((el) => {
+          if (el !== target) {
+            (el as HTMLElement).scrollLeft = target.scrollLeft
+          }
+        })
+      }
 
-    headerScroll.addEventListener('scroll', syncFromHeader)
-    dataScrollElements.forEach((el) => {
-      el.addEventListener('scroll', syncToHeader)
-    })
-
-    return () => {
-      headerScroll.removeEventListener('scroll', syncFromHeader)
+      headerScroll.addEventListener('scroll', syncFromHeader)
       dataScrollElements.forEach((el) => {
-        el.removeEventListener('scroll', syncToHeader)
+        el.addEventListener('scroll', syncToHeader)
       })
-    }
-  }, [loading])
+
+      return () => {
+        headerScroll.removeEventListener('scroll', syncFromHeader)
+        dataScrollElements.forEach((el) => {
+          el.removeEventListener('scroll', syncToHeader)
+        })
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [loading, tokens.length])
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] pb-20 safe-bottom">
@@ -144,7 +149,7 @@ export default function MobileDashboardContainer() {
             </div>
             
             {/* Scrollable Columns Header */}
-            <div ref={headerScrollRef} className="flex-1 overflow-x-auto scrollbar-hide horizontal-scroll">
+            <div ref={headerScrollRef} className="flex-1 overflow-x-auto scrollbar-hide horizontal-scroll" style={{ pointerEvents: 'auto' }}>
               <div className="flex min-w-max">
                 {/* Price Column */}
                 <div className="w-[100px] px-3 py-2.5 text-right">

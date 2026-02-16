@@ -208,9 +208,16 @@ button, .no-select {
 
 /* Smooth horizontal scrolling for token table */
 .horizontal-scroll {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+}
+
+/* Ensure data scroll containers sync properly */
+.data-scroll-container {
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 /* Scroll indicator shadow */
