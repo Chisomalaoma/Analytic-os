@@ -29,6 +29,8 @@ export default function MobileDashboardContainer() {
   const [tokens, setTokens] = useState<Token[]>([])
   const [loading, setLoading] = useState(true)
   const searchDropdownRef = useRef<HTMLDivElement>(null)
+  const headerScrollRef = useRef<HTMLDivElement>(null)
+  const dataScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -75,6 +77,29 @@ export default function MobileDashboardContainer() {
     }
   }, [showSearch])
 
+  // Sync header scroll with data scroll
+  useEffect(() => {
+    const headerScroll = headerScrollRef.current
+    const dataScroll = dataScrollRef.current
+
+    if (!headerScroll || !dataScroll) return
+
+    const syncScroll = (source: HTMLDivElement, target: HTMLDivElement) => {
+      target.scrollLeft = source.scrollLeft
+    }
+
+    const handleDataScroll = () => syncScroll(dataScroll, headerScroll)
+    const handleHeaderScroll = () => syncScroll(headerScroll, dataScroll)
+
+    dataScroll.addEventListener('scroll', handleDataScroll)
+    headerScroll.addEventListener('scroll', handleHeaderScroll)
+
+    return () => {
+      dataScroll.removeEventListener('scroll', handleDataScroll)
+      headerScroll.removeEventListener('scroll', handleHeaderScroll)
+    }
+  }, [loading])
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] pb-20 safe-bottom">
       {/* Header */}
@@ -96,40 +121,45 @@ export default function MobileDashboardContainer() {
 
       {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
-        {/* Horizontal Scroll Container */}
-        <div className="overflow-x-auto overflow-y-visible scrollbar-hide horizontal-scroll">
-          {/* Table Header - Sticky Top with Horizontal Scroll */}
-          <div className="flex items-center border-b border-[#1A1A1A] bg-[#0A0A0A] sticky top-[185px] z-20 min-w-max">
-            {/* Token Column - Sticky Left with Shadow */}
-            <div className="sticky left-0 bg-[#0A0A0A] z-30 pl-4 pr-3 py-2.5 min-w-[160px] sticky-column-shadow">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
-            </div>
-            
-            {/* Price Column */}
-            <div className="text-right px-3 py-2.5 min-w-[90px]">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
-            </div>
-            
-            {/* 1H Column */}
-            <div className="text-right px-3 py-2.5 min-w-[70px]">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
-            </div>
-            
-            {/* 6H Column */}
-            <div className="text-right px-3 py-2.5 min-w-[70px]">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
-            </div>
-            
-            {/* 24H Column */}
-            <div className="text-right px-3 py-2.5 min-w-[70px]">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
-            </div>
-            
-            {/* Volume Column */}
-            <div className="text-right px-3 py-2.5 min-w-[90px]">
-              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+        {/* Table Header - Fixed Position Above Scroll Container */}
+        <div className="sticky top-[175px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+          <div ref={headerScrollRef} className="overflow-x-auto scrollbar-hide horizontal-scroll">
+            <div className="flex items-center min-w-max">
+              {/* Token Column - Sticky Left with Shadow */}
+              <div className="sticky left-0 bg-[#0A0A0A] z-10 pl-4 pr-3 py-2.5 min-w-[160px] sticky-column-shadow">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
+              </div>
+              
+              {/* Price Column */}
+              <div className="text-right px-3 py-2.5 min-w-[90px]">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
+              </div>
+              
+              {/* 1H Column */}
+              <div className="text-right px-3 py-2.5 min-w-[70px]">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
+              </div>
+              
+              {/* 6H Column */}
+              <div className="text-right px-3 py-2.5 min-w-[70px]">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
+              </div>
+              
+              {/* 24H Column */}
+              <div className="text-right px-3 py-2.5 min-w-[70px]">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
+              </div>
+              
+              {/* Volume Column */}
+              <div className="text-right px-3 py-2.5 min-w-[90px]">
+                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Horizontal Scroll Container for Data */}
+        <div ref={dataScrollRef} className="overflow-x-auto scrollbar-hide horizontal-scroll">
 
           {/* Loading State */}
           {loading && (
