@@ -30,7 +30,6 @@ export default function MobileDashboardContainer() {
   const [loading, setLoading] = useState(true)
   const searchDropdownRef = useRef<HTMLDivElement>(null)
   const headerScrollRef = useRef<HTMLDivElement>(null)
-  const dataScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -80,23 +79,38 @@ export default function MobileDashboardContainer() {
   // Sync header scroll with data scroll
   useEffect(() => {
     const headerScroll = headerScrollRef.current
-    const dataScroll = dataScrollRef.current
+    if (!headerScroll) return
 
-    if (!headerScroll || !dataScroll) return
-
-    const syncScroll = (source: HTMLDivElement, target: HTMLDivElement) => {
-      target.scrollLeft = source.scrollLeft
+    // Get all data scroll containers
+    const dataScrollElements = document.querySelectorAll('.data-scroll-container')
+    
+    const syncFromHeader = () => {
+      dataScrollElements.forEach((el) => {
+        (el as HTMLElement).scrollLeft = headerScroll.scrollLeft
+      })
     }
 
-    const handleDataScroll = () => syncScroll(dataScroll, headerScroll)
-    const handleHeaderScroll = () => syncScroll(headerScroll, dataScroll)
+    const syncToHeader = (e: Event) => {
+      const target = e.target as HTMLElement
+      headerScroll.scrollLeft = target.scrollLeft
+      // Sync all other data containers
+      dataScrollElements.forEach((el) => {
+        if (el !== target) {
+          (el as HTMLElement).scrollLeft = target.scrollLeft
+        }
+      })
+    }
 
-    dataScroll.addEventListener('scroll', handleDataScroll)
-    headerScroll.addEventListener('scroll', handleHeaderScroll)
+    headerScroll.addEventListener('scroll', syncFromHeader)
+    dataScrollElements.forEach((el) => {
+      el.addEventListener('scroll', syncToHeader)
+    })
 
     return () => {
-      dataScroll.removeEventListener('scroll', handleDataScroll)
-      headerScroll.removeEventListener('scroll', handleHeaderScroll)
+      headerScroll.removeEventListener('scroll', syncFromHeader)
+      dataScrollElements.forEach((el) => {
+        el.removeEventListener('scroll', syncToHeader)
+      })
     }
   }, [loading])
 
@@ -121,78 +135,89 @@ export default function MobileDashboardContainer() {
 
       {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
-        {/* Table Header - Fixed Position Above Scroll Container */}
+        {/* Table Header - Sticky with Fixed TOKEN and Scrollable Columns */}
         <div className="sticky top-[175px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
-          <div ref={headerScrollRef} className="overflow-x-auto scrollbar-hide horizontal-scroll">
-            <div className="flex items-center min-w-max">
-              {/* Token Column - Sticky Left with Shadow */}
-              <div className="sticky left-0 bg-[#0A0A0A] z-10 pl-4 pr-3 py-2.5 min-w-[160px] sticky-column-shadow">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
-              </div>
-              
-              {/* Price Column */}
-              <div className="text-right px-3 py-2.5 min-w-[90px]">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
-              </div>
-              
-              {/* 1H Column */}
-              <div className="text-right px-3 py-2.5 min-w-[70px]">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
-              </div>
-              
-              {/* 6H Column */}
-              <div className="text-right px-3 py-2.5 min-w-[70px]">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
-              </div>
-              
-              {/* 24H Column */}
-              <div className="text-right px-3 py-2.5 min-w-[70px]">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
-              </div>
-              
-              {/* Volume Column */}
-              <div className="text-right px-3 py-2.5 min-w-[90px]">
-                <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+          <div className="flex">
+            {/* Fixed TOKEN Column Header */}
+            <div className="flex-shrink-0 w-[180px] pl-4 pr-2 py-2.5">
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">TOKEN</div>
+            </div>
+            
+            {/* Scrollable Columns Header */}
+            <div ref={headerScrollRef} className="flex-1 overflow-x-auto scrollbar-hide horizontal-scroll">
+              <div className="flex min-w-max">
+                {/* Price Column */}
+                <div className="w-[100px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">PRICE</div>
+                </div>
+                
+                {/* 1H Column */}
+                <div className="w-[80px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">1H</div>
+                </div>
+                
+                {/* 6H Column */}
+                <div className="w-[80px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">6H</div>
+                </div>
+                
+                {/* 24H Column */}
+                <div className="w-[80px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">24H</div>
+                </div>
+                
+                {/* Volume Column */}
+                <div className="w-[100px] px-3 py-2.5 text-right">
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">VOLUME</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Horizontal Scroll Container for Data */}
-        <div ref={dataScrollRef} className="overflow-x-auto scrollbar-hide horizontal-scroll">
+        {/* Data Rows Container */}
+        <div>
 
           {/* Loading State */}
           {loading && (
-            <div className="space-y-0 min-w-max">
+            <div className="space-y-0">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="flex items-center border-b border-[#1A1A1A] animate-pulse">
-                  {/* Token */}
-                  <div className="flex items-center gap-2 sticky left-0 bg-[#0A0A0A] z-10 pr-3 pl-4 py-3 min-w-[160px] sticky-column-shadow">
-                    <div className="w-8 h-8 bg-[#1A1A1A] rounded-full flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
-                      <div className="h-3 w-24 bg-[#1A1A1A] rounded" />
+                <div key={i} className="flex border-b border-[#1A1A1A] animate-pulse">
+                  {/* Fixed TOKEN Column */}
+                  <div className="flex-shrink-0 w-[180px] pl-4 pr-2 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-[#1A1A1A] rounded-full flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="h-4 w-16 bg-[#1A1A1A] rounded mb-1" />
+                        <div className="h-3 w-24 bg-[#1A1A1A] rounded" />
+                      </div>
                     </div>
                   </div>
-                  {/* Price */}
-                  <div className="px-3 py-3 min-w-[90px]">
-                    <div className="h-4 w-16 bg-[#1A1A1A] rounded ml-auto" />
-                  </div>
-                  {/* 1H */}
-                  <div className="px-3 py-3 min-w-[70px]">
-                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
-                  </div>
-                  {/* 6H */}
-                  <div className="px-3 py-3 min-w-[70px]">
-                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
-                  </div>
-                  {/* 24H */}
-                  <div className="px-3 py-3 min-w-[70px]">
-                    <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
-                  </div>
-                  {/* Volume */}
-                  <div className="px-3 py-3 min-w-[90px]">
-                    <div className="h-3 w-16 bg-[#1A1A1A] rounded ml-auto" />
+                  
+                  {/* Scrollable Columns */}
+                  <div className="flex-1 overflow-x-auto scrollbar-hide data-scroll-container">
+                    <div className="flex min-w-max">
+                      {/* Price */}
+                      <div className="w-[100px] px-3 py-3 text-right">
+                        <div className="h-4 w-16 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                      {/* 1H */}
+                      <div className="w-[80px] px-3 py-3 text-right">
+                        <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                      {/* 6H */}
+                      <div className="w-[80px] px-3 py-3 text-right">
+                        <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                      {/* 24H */}
+                      <div className="w-[80px] px-3 py-3 text-right">
+                        <div className="h-3 w-12 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                      {/* Volume */}
+                      <div className="w-[100px] px-3 py-3 text-right">
+                        <div className="h-3 w-16 bg-[#1A1A1A] rounded ml-auto" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -201,7 +226,7 @@ export default function MobileDashboardContainer() {
 
           {/* Token Rows */}
           {!loading && tokens.length > 0 && (
-            <div className="min-w-max">
+            <div>
               {tokens.map((token) => (
                 <MobileTokenRow
                   key={token.id}
