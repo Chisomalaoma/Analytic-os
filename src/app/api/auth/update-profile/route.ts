@@ -18,7 +18,7 @@ const updateProfileSchema = z.object({
   image: z
     .string()
     .refine(
-      (val) => val.startsWith('data:') || z.string().url().safeParse(val).success,
+      (val) => !val || val.startsWith('data:') || val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'),
       'Invalid image URL or data URL'
     )
     .optional()

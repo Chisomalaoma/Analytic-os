@@ -1,10 +1,23 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PortfolioSummary from '@/components/portfolio/PortfolioSummary';
 import PortfolioHoldings from '@/components/portfolio/PortfolioHoldings';
 
 export default function PortfolioContainer() {
+    const router = useRouter();
     const [lastUpdated, setLastUpdated] = useState<string>('');
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        // Check if mobile
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         // Fetch portfolio summary to get last updated time
@@ -39,10 +52,24 @@ export default function PortfolioContainer() {
         <div className="flex-1 w-full p-4 sm:p-8">
             {/* Header Row */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                <div>
-                    <h2 className="text-2xl font-semibold text-white mb-1">My Portfolio</h2>
-                    <div className="text-gray-400 text-sm">
-                        {lastUpdated ? `Last updated: ${formatLastUpdated(lastUpdated)}` : 'Loading...'}
+                <div className="flex items-center gap-3">
+                    {/* Back Button - Mobile Only */}
+                    {isMobile && (
+                        <button
+                            onClick={() => router.back()}
+                            className="p-2 hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                            aria-label="Go back"
+                        >
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    )}
+                    <div>
+                        <h2 className="text-2xl font-semibold text-white mb-1">My Portfolio</h2>
+                        <div className="text-gray-400 text-sm">
+                            {lastUpdated ? `Last updated: ${formatLastUpdated(lastUpdated)}` : 'Loading...'}
+                        </div>
                     </div>
                 </div>
                 <button className="bg-[#18181C] text-white px-4 py-2 rounded flex items-center gap-2 border border-gray-700 hover:bg-[#23262F] transition mt-4 sm:mt-0">

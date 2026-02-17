@@ -2,6 +2,7 @@
 
 import { Camera, Save, RefreshCw } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useRef, useState, useEffect } from "react";
 import ToggleSwitch from "./ToggleSwitch";
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -11,11 +12,13 @@ import ComplianceSection from "@/components/account/ComplianceSection";
 
 const AccountContainer = () => {
   const { data: session, update: updateSession } = useSession();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [settingsLoading, setSettingsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   const user = session?.user;
 
@@ -39,6 +42,13 @@ const AccountContainer = () => {
 
   // Load user settings
   useEffect(() => {
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
     const loadSettings = async () => {
       try {
         const res = await fetch('/api/settings');
@@ -82,6 +92,8 @@ const AccountContainer = () => {
     if (user) {
       loadSettings();
     }
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, [user]);
 
   // Update form data when session loads
@@ -173,7 +185,8 @@ const AccountContainer = () => {
     setMessage("");
 
     try {
-      const imageUrl = preview || user?.image;
+      // Use preview if available, otherwise keep existing image
+      const imageUrl = preview || user?.image || null;
 
       const res = await fetch("/api/auth/update-profile", {
         method: "PUT",
@@ -207,11 +220,17 @@ const AccountContainer = () => {
         });
         
         setMessage("Profile updated successfully!");
+        
+        // Clear preview after successful save
         if (preview) {
           setPreview(null);
         }
+        
+        // Force a small delay before any navigation to ensure session is updated
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     } catch (error) {
+      console.error('Profile update error:', error);
       setMessage("Something went wrong");
     } finally {
       setLoading(false);
@@ -231,7 +250,21 @@ const AccountContainer = () => {
 
   return (
     <div className="p-4 sm:p-8 pb-20 sm:pb-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-white">My Account</h1>
+      <div className="flex items-center gap-3 mb-6 sm:mb-8">
+        {/* Back Button - Mobile Only */}
+        {isMobile && (
+          <button
+            onClick={() => router.back()}
+            className="p-2 hover:bg-[#1A1A1A] rounded-lg transition-colors"
+            aria-label="Go back"
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+        <h1 className="text-2xl sm:text-3xl font-bold text-white">My Account</h1>
+      </div>
       <div className="max-w-3xl mx-auto flex flex-col gap-6 sm:gap-8">
         {/* Profile Settings */}
         <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4 sm:p-6">

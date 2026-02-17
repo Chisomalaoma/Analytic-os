@@ -57,14 +57,26 @@ export function MobileExploreMenu({ isOpen, onClose }: MobileExploreMenuProps) {
         {status === 'authenticated' && session?.user && (
           <div className="px-4 py-3 border-b border-[#1A1A1A]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">
-                  {session.user.email?.[0].toUpperCase() || 'U'}
-                </span>
-              </div>
+              {session.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="Profile"
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">
+                    {session.user.firstName?.[0]?.toUpperCase() || session.user.email?.[0].toUpperCase() || 'U'}
+                  </span>
+                </div>
+              )}
               <div>
                 <div className="text-white text-sm font-medium">
-                  {session.user.name || 'User'}
+                  {session.user.firstName && session.user.lastName 
+                    ? `${session.user.firstName} ${session.user.lastName}`
+                    : session.user.name || 'User'}
                 </div>
                 <div className="text-gray-500 text-xs">
                   {session.user.email}

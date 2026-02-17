@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { MobileHeader } from '@/components/dashboard/MobileHeader'
-import { MobileStatsBar } from '@/components/dashboard/MobileStatsBar'
 import { MobileFilters } from '@/components/dashboard/MobileFilters'
 import { MobileTokenRow } from '@/components/dashboard/MobileTokenRow'
 import { MobileExploreMenu } from '@/components/dashboard/MobileExploreMenu'
@@ -138,9 +137,6 @@ export default function MobileDashboardContainer() {
         onOpenSearch={() => setShowSearch(true)}
       />
 
-      {/* Stats Bar */}
-      <MobileStatsBar />
-
       {/* Filters */}
       <MobileFilters
         activeFilter={activeFilter}
@@ -152,7 +148,7 @@ export default function MobileDashboardContainer() {
       {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
         {/* Table Header - Sticky with Fixed TOKEN and Scrollable Columns */}
-        <div className="sticky top-[175px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+        <div className="sticky top-[95px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
           <div className="flex">
             {/* Fixed TOKEN Column Header */}
             <div className="flex-shrink-0 w-[180px] pl-4 pr-2 py-2.5">
@@ -168,7 +164,7 @@ export default function MobileDashboardContainer() {
                 </div>
                 
                 {/* Industry Column */}
-                <div className="w-[100px] px-3 py-2.5 text-left">
+                <div className="w-[120px] px-3 py-2.5 text-center">
                   <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">INDUSTRY</div>
                 </div>
                 
@@ -223,8 +219,8 @@ export default function MobileDashboardContainer() {
                         <div className="h-4 w-16 bg-[#1A1A1A] rounded ml-auto" />
                       </div>
                       {/* Industry */}
-                      <div className="w-[100px] px-3 py-3 text-left">
-                        <div className="h-3 w-16 bg-[#1A1A1A] rounded" />
+                      <div className="w-[120px] px-3 py-3 text-center">
+                        <div className="h-3 w-16 bg-[#1A1A1A] rounded mx-auto" />
                       </div>
                       {/* Annual Yield */}
                       <div className="w-[100px] px-3 py-3 text-right">

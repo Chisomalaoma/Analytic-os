@@ -71,7 +71,7 @@ export function MobileTokenRow({
           </div>
 
           {/* Industry */}
-          <div className="w-[100px] px-3 py-3 text-left">
+          <div className="w-[120px] px-3 py-3 text-center">
             <div className="text-xs font-medium text-gray-400">{industry || '-'}</div>
           </div>
 
