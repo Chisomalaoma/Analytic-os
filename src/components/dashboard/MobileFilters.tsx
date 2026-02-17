@@ -54,8 +54,17 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
           {/* Time Dropdown */}
           <div className="relative z-50 flex-shrink-0" ref={dropdownRef}>
             <button
-              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowTimeDropdown(!showTimeDropdown);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowTimeDropdown(!showTimeDropdown);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
