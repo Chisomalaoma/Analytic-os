@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { MobileHeader } from '@/components/dashboard/MobileHeader'
+import { MobileStatsBar } from '@/components/dashboard/MobileStatsBar'
 import { MobileFilters } from '@/components/dashboard/MobileFilters'
 import { MobileTokenRow } from '@/components/dashboard/MobileTokenRow'
 import { MobileExploreMenu } from '@/components/dashboard/MobileExploreMenu'
@@ -137,6 +138,9 @@ export default function MobileDashboardContainer() {
         onOpenSearch={() => setShowSearch(true)}
       />
 
+      {/* Stats Bar */}
+      <MobileStatsBar />
+
       {/* Filters */}
       <MobileFilters
         activeFilter={activeFilter}
@@ -148,7 +152,7 @@ export default function MobileDashboardContainer() {
       {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
         {/* Table Header - Sticky with Fixed TOKEN and Scrollable Columns */}
-        <div className="sticky top-[95px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+        <div className="sticky top-[175px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
           <div className="flex">
             {/* Fixed TOKEN Column Header */}
             <div className="flex-shrink-0 w-[180px] pl-4 pr-2 py-2.5">
