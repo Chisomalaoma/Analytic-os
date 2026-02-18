@@ -112,12 +112,64 @@ const AccountContainer = () => {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage('Image size must be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        setMessage('Please select a valid image file');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
-        setPreview(reader.result as string);
+        const result = reader.result as string;
+        // Compress if data URL is too large (> 1MB base64)
+        if (result.length > 1024 * 1024) {
+          compressImage(result, (compressed) => {
+            setPreview(compressed);
+          });
+        } else {
+          setPreview(result);
+        }
+      };
+      reader.onerror = () => {
+        setMessage('Failed to read image file');
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const compressImage = (dataUrl: string, callback: (compressed: string) => void) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      
+      // Resize if too large
+      const maxSize = 800;
+      if (width > height && width > maxSize) {
+        height = (height * maxSize) / width;
+        width = maxSize;
+      } else if (height > maxSize) {
+        width = (width * maxSize) / height;
+        height = maxSize;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      // Compress to JPEG with 0.8 quality
+      callback(canvas.toDataURL('image/jpeg', 0.8));
+    };
+    img.src = dataUrl;
   };
 
   const handleCurrencyChange = async (newCurrency: 'NGN' | 'USD') => {
@@ -188,6 +240,13 @@ const AccountContainer = () => {
       // Use preview if available, otherwise keep existing image
       const imageUrl = preview || user?.image || null;
 
+      // Validate image URL length to prevent issues
+      if (imageUrl && imageUrl.length > 2 * 1024 * 1024) {
+        setMessage("Image is too large. Please try a smaller image.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/auth/update-profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -204,35 +263,38 @@ const AccountContainer = () => {
 
       if (!res.ok) {
         setMessage(data.error || "Failed to update profile");
-      } else {
-        // Update the session with new data
-        await updateSession({
-          ...session,
-          user: {
-            ...session?.user,
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            name: formData.username,
-            username: formData.username,
-            phone: formData.phone,
-            image: imageUrl,
-          },
-        });
-        
-        setMessage("Profile updated successfully!");
-        
-        // Clear preview after successful save
-        if (preview) {
-          setPreview(null);
-        }
-        
-        // Force a small delay before any navigation to ensure session is updated
-        await new Promise(resolve => setTimeout(resolve, 500));
+        setLoading(false);
+        return;
       }
+
+      // Update the session with new data
+      await updateSession({
+        ...session,
+        user: {
+          ...session?.user,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          name: formData.username,
+          username: formData.username,
+          phone: formData.phone,
+          image: imageUrl,
+        },
+      });
+      
+      setMessage("Profile updated successfully!");
+      
+      // Clear preview after successful save
+      if (preview) {
+        setPreview(null);
+      }
+      
+      // Small delay to ensure session is updated
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setLoading(false);
     } catch (error) {
       console.error('Profile update error:', error);
-      setMessage("Something went wrong");
-    } finally {
+      setMessage("Something went wrong. Please try again.");
       setLoading(false);
     }
   };

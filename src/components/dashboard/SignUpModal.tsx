@@ -37,6 +37,20 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
 
   if (!open) return null
 
+  // List of public email domains to block for business accounts
+  const publicEmailDomains = [
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+    'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com', 'yandex.com',
+    'gmx.com', 'inbox.com', 'live.com', 'msn.com', 'yahoo.co.uk',
+    'googlemail.com', 'me.com', 'mac.com'
+  ];
+
+  // Function to validate business email
+  const isValidBusinessEmail = (email: string): boolean => {
+    const domain = email.split('@')[1]?.toLowerCase();
+    return domain && !publicEmailDomains.includes(domain);
+  };
+
   // Password validation
   const hasMinLength = password.length >= 8
   const hasUpperCase = /[A-Z]/.test(password)
@@ -56,6 +70,13 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Validate business email for ADMIN role
+    if (role === 'ADMIN' && !isValidBusinessEmail(workEmail)) {
+      setError('Please use a work or office email address. Public email domains (Gmail, Yahoo, Hotmail, etc.) are not allowed for business accounts.')
+      setLoading(false)
+      return
+    }
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -135,11 +156,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
       onClose()
       // Use setTimeout to allow session to update
       setTimeout(() => {
-        if (role === 'ADMIN') {
-          router.push('/admin/dashboard')
-        } else {
-          router.push('/dashboard')
-        }
+        // All users go to the main dashboard, regardless of role
+        router.push('/dashboard')
         router.refresh()
       }, 100)
     } catch (err) {
@@ -385,10 +403,19 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                       type="email"
                       value={workEmail}
                       onChange={(e) => setWorkEmail(e.target.value)}
-                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                      className={`w-full bg-[#1A1A1A] border rounded-lg px-4 py-3 text-white focus:outline-none ${
+                        workEmail && !isValidBusinessEmail(workEmail)
+                          ? 'border-red-500 focus:border-red-500'
+                          : 'border-[#23262F] focus:border-[#4459FF]'
+                      }`}
                       placeholder="Enter work email"
                       required
                     />
+                    {workEmail && !isValidBusinessEmail(workEmail) && (
+                      <p className="text-red-500 text-xs mt-1">
+                        Please use a work or office email. Public email domains (Gmail, Yahoo, etc.) are not allowed.
+                      </p>
+                    )}
                   </div>
                 </>
               )}
@@ -437,7 +464,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -458,7 +485,7 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>

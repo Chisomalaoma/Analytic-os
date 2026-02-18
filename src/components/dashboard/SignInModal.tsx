@@ -114,13 +114,10 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
       }
 
       onClose()
-      // Allow session to update, then redirect based on role
+      // Allow session to update, then redirect to dashboard
       setTimeout(() => {
-        if (session?.user?.role === 'ADMIN') {
-          router.push('/admin/dashboard')
-        } else {
-          router.push('/dashboard')
-        }
+        // All users go to the main dashboard, regardless of role
+        router.push('/dashboard')
         router.refresh()
       }, 100)
     } catch {
@@ -288,7 +285,7 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>

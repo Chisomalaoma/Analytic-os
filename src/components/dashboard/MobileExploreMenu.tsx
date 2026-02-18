@@ -66,9 +66,13 @@ export function MobileExploreMenu({ isOpen, onClose }: MobileExploreMenuProps) {
                   className="rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#4459FF] to-[#3448EE] rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">
-                    {session.user.firstName?.[0]?.toUpperCase() || session.user.email?.[0].toUpperCase() || 'U'}
+                    {(() => {
+                      const first = session.user.firstName?.[0]?.toUpperCase() || '';
+                      const last = session.user.lastName?.[0]?.toUpperCase() || '';
+                      return first + last || session.user.email?.[0].toUpperCase() || 'U';
+                    })()}
                   </span>
                 </div>
               )}

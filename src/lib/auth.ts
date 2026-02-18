@@ -146,7 +146,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.phone = (user as any).phone
         token.walletAddress = (user as any).walletAddress
         token.role = (user as any).role
-        token.image = (user as any).image
+        // DON'T store image in JWT to prevent header size issues
+        // token.image = (user as any).image
       }
       
       // For OAuth users on initial sign in, fetch fresh data from database after a short delay
@@ -186,7 +187,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.phone = dbUser.phone
             token.walletAddress = dbUser.walletAddress
             token.role = dbUser.role
-            token.image = dbUser.image
+            // DON'T store image in JWT
+            // token.image = dbUser.image
           }
         } catch (error) {
           console.error('[JWT] Failed to fetch user data for OAuth:', error)
@@ -199,7 +201,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.firstName = session.user?.firstName || token.firstName
         token.lastName = session.user?.lastName || token.lastName
         token.phone = session.user?.phone || token.phone
-        token.image = session.user?.image || token.image
+        // DON'T store image in JWT
+        // token.image = session.user?.image || token.image
       }
       
       // Fetch fresh role from database for existing sessions
@@ -229,7 +232,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.lastName = token.lastName as string | null
         session.user.phone = token.phone as string | null
         session.user.walletAddress = token.walletAddress as string | null
-        session.user.image = token.image as string | null
+        // Fetch image from database instead of storing in JWT
+        if (token.id) {
+          try {
+            const user = await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: { image: true }
+            })
+            session.user.image = user?.image || null
+          } catch (error) {
+            console.error('[SESSION] Failed to fetch user image:', error)
+            session.user.image = null
+          }
+        }
         session.user.role = token.role as string | null
       }
       return session

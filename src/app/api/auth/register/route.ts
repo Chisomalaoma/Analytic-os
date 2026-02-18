@@ -32,6 +32,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = registerSchema.parse(body)
 
+    // List of public email domains to block for business accounts
+    const publicEmailDomains = [
+      'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+      'icloud.com', 'mail.com', 'protonmail.com', 'zoho.com', 'yandex.com',
+      'gmx.com', 'inbox.com', 'live.com', 'msn.com', 'yahoo.co.uk',
+      'googlemail.com', 'me.com', 'mac.com'
+    ];
+
+    // Validate business email for ADMIN role
+    if (data.role === 'ADMIN') {
+      const emailDomain = data.email.split('@')[1]?.toLowerCase();
+      if (emailDomain && publicEmailDomains.includes(emailDomain)) {
+        return NextResponse.json(
+          { error: 'Please use a work or office email address. Public email domains (Gmail, Yahoo, Hotmail, etc.) are not allowed for business accounts.' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check if email already exists
     const existingEmail = await prisma.user.findUnique({
       where: { email: data.email },
