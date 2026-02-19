@@ -17,6 +17,7 @@ const updateProfileSchema = z.object({
   phone: z.string().optional(),
   image: z
     .string()
+    .max(500 * 1024, 'Image is too large. Maximum size is 500KB')
     .refine(
       (val) => !val || val.startsWith('data:') || val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/'),
       'Invalid image URL or data URL'

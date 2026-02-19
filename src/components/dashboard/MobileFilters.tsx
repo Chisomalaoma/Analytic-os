@@ -12,6 +12,8 @@ interface MobileFiltersProps {
 export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTimeChange }: MobileFiltersProps) {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
 
   const filters = [
     { id: 'all', label: 'All listings' },
@@ -25,6 +27,17 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
     { id: '30d', label: '30D' },
     { id: '1yr', label: '1YR' },
   ]
+
+  // Calculate dropdown position when it opens
+  useEffect(() => {
+    if (showTimeDropdown && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDropdownPosition({
+        top: rect.bottom + 8,
+        left: rect.left
+      })
+    }
+  }, [showTimeDropdown])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -47,19 +60,15 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
   }
 
   return (
-    <div className="sticky top-[129px] z-40 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+    <div className="sticky top-[129px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
       {/* Single Row Layout with Time Dropdown and Filter Buttons */}
       <div className="px-4 py-2">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">
           {/* Time Dropdown */}
-          <div className="relative z-50 flex-shrink-0" ref={dropdownRef}>
+          <div className="relative flex-shrink-0" ref={dropdownRef}>
             <button
+              ref={buttonRef}
               onClick={(e) => {
-                e.stopPropagation();
-                setShowTimeDropdown(!showTimeDropdown);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 setShowTimeDropdown(!showTimeDropdown);
               }}
@@ -82,7 +91,13 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
 
             {/* Dropdown Menu */}
             {showTimeDropdown && (
-              <div className="absolute left-0 top-full mt-2 w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[100]">
+              <div 
+                className="fixed w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[100]"
+                style={{ 
+                  top: `${dropdownPosition.top}px`, 
+                  left: `${dropdownPosition.left}px` 
+                }}
+              >
                 {timeFilters.map((time) => (
                   <button
                     key={time.id}

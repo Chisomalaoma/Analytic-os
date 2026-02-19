@@ -112,9 +112,9 @@ const AccountContainer = () => {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setMessage('Image size must be less than 5MB');
+      // Check file size (max 2MB for better compression)
+      if (file.size > 2 * 1024 * 1024) {
+        setMessage('Image size must be less than 2MB');
         return;
       }
 
@@ -127,14 +127,15 @@ const AccountContainer = () => {
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
-        // Compress if data URL is too large (> 1MB base64)
-        if (result.length > 1024 * 1024) {
-          compressImage(result, (compressed) => {
-            setPreview(compressed);
-          });
-        } else {
-          setPreview(result);
-        }
+        // Always compress images to ensure they're small enough
+        compressImage(result, (compressed) => {
+          // Final size check - base64 should be under 500KB
+          if (compressed.length > 500 * 1024) {
+            setMessage('Image is too large even after compression. Please use a smaller image.');
+            return;
+          }
+          setPreview(compressed);
+        });
       };
       reader.onerror = () => {
         setMessage('Failed to read image file');
@@ -150,8 +151,8 @@ const AccountContainer = () => {
       let width = img.width;
       let height = img.height;
       
-      // Resize if too large
-      const maxSize = 800;
+      // Resize to max 400x400 for profile pictures
+      const maxSize = 400;
       if (width > height && width > maxSize) {
         height = (height * maxSize) / width;
         width = maxSize;
@@ -166,8 +167,11 @@ const AccountContainer = () => {
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, width, height);
       
-      // Compress to JPEG with 0.8 quality
-      callback(canvas.toDataURL('image/jpeg', 0.8));
+      // Compress to JPEG with 0.7 quality for smaller file size
+      callback(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.onerror = () => {
+      setMessage('Failed to process image. Please try a different image.');
     };
     img.src = dataUrl;
   };
@@ -240,9 +244,9 @@ const AccountContainer = () => {
       // Use preview if available, otherwise keep existing image
       const imageUrl = preview || user?.image || null;
 
-      // Validate image URL length to prevent issues
-      if (imageUrl && imageUrl.length > 2 * 1024 * 1024) {
-        setMessage("Image is too large. Please try a smaller image.");
+      // Strict validation for image size
+      if (imageUrl && imageUrl.length > 500 * 1024) {
+        setMessage("Image is too large. Please try a smaller image or contact support.");
         setLoading(false);
         return;
       }

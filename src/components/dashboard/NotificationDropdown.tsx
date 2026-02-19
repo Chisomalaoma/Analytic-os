@@ -205,7 +205,11 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
   })
 
   return (
-    <div className="fixed sm:absolute right-2 sm:right-0 top-[60px] sm:top-full mt-0 sm:mt-2 w-[calc(100vw-1rem)] sm:w-[420px] bg-[#0A0A0A] rounded-xl shadow-2xl border border-[#23262F] overflow-hidden z-[9999] max-w-md">
+    <>
+      {/* Backdrop overlay for mobile */}
+      <div className="fixed inset-0 bg-black/60 z-[9998] sm:hidden" onClick={onClose} />
+      
+      <div className="fixed sm:absolute right-2 sm:right-0 top-[60px] sm:top-full mt-0 sm:mt-2 w-[calc(100vw-1rem)] sm:w-[420px] bg-[#0A0A0A] rounded-xl shadow-2xl border border-[#23262F] overflow-hidden z-[9999] max-w-md">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-[#23262F]">
         <div>
@@ -307,5 +311,6 @@ export default function NotificationDropdown({ onClose, onUnreadCountChange }: N
         )}
       </div>
     </div>
+    </>
   )
 }
