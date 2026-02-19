@@ -18,6 +18,10 @@ export async function uploadToCloudinary(
   folder: string = 'profile-images'
 ): Promise<string> {
   try {
+    console.log('Starting Cloudinary upload...')
+    console.log('Folder:', folder)
+    console.log('Image size:', base64Image.length)
+    
     const result = await cloudinary.uploader.upload(base64Image, {
       folder,
       resource_type: 'image',
@@ -27,10 +31,13 @@ export async function uploadToCloudinary(
       ]
     })
 
+    console.log('Upload successful:', result.secure_url)
     return result.secure_url
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cloudinary upload error:', error)
-    throw new Error('Failed to upload image')
+    console.error('Error message:', error.message)
+    console.error('Error details:', error.error)
+    throw new Error(`Failed to upload image: ${error.message}`)
   }
 }
 

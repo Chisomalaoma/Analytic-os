@@ -23,6 +23,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary environment variables not set')
+      return NextResponse.json(
+        { error: 'Image upload service not configured' },
+        { status: 500 }
+      )
+    }
+
     // Upload to Cloudinary
     const imageUrl = await uploadToCloudinary(image, 'profile-images')
 
@@ -30,10 +39,11 @@ export async function POST(req: NextRequest) {
       success: true,
       imageUrl
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Image upload error:', error)
+    console.error('Error details:', error.message, error.stack)
     return NextResponse.json(
-      { error: 'Failed to upload image' },
+      { error: error.message || 'Failed to upload image' },
       { status: 500 }
     )
   }
