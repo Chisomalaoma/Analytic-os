@@ -21,10 +21,7 @@ const updateProfileSchema = z.object({
     .refine(
       (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
       'Image must be a valid URL'
-    ),
-      'Invalid image URL or data URL'
     )
-    .optional()
     .nullable(),
 })
 
