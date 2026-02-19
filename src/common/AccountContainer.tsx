@@ -379,7 +379,7 @@ const AccountContainer = () => {
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-1 right-1 w-9 h-9 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors border-2 border-[#0A0A0A]"
+                  className="absolute bottom-0 right-0 w-9 h-9 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors border-2 border-[#0A0A0A]"
                 >
                   <Camera className="w-4 h-4" />
                 </button>

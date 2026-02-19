@@ -14,7 +14,7 @@ interface EmailOptions {
 export async function sendEmail({ to, subject, html }: EmailOptions): Promise<boolean> {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'WTXONLINE <support@wtxonline.com>',
+      from: 'WTX <support@wtxonline.com>',
       to,
       subject,
       html,
@@ -67,7 +67,7 @@ export async function sendOTPEmail(email: string, otp: string): Promise<boolean>
 
   return sendEmail({
     to: email,
-    subject: 'Your AnalytiOS verification code',
+    subject: 'Your verification code',
     html,
   })
 }

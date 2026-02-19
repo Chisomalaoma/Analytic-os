@@ -1,7 +1,5 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-
 interface MobileFiltersProps {
   activeFilter: string
   onFilterChange: (filter: string) => void
@@ -10,11 +8,6 @@ interface MobileFiltersProps {
 }
 
 export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTimeChange }: MobileFiltersProps) {
-  const [showTimeDropdown, setShowTimeDropdown] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
-
   const filters = [
     { id: 'all', label: 'All listings' },
     { id: 'volume', label: 'Top volume' },
@@ -28,104 +21,30 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
     { id: '1yr', label: '1YR' },
   ]
 
-  // Calculate dropdown position when it opens
-  useEffect(() => {
-    if (showTimeDropdown && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect()
-      setDropdownPosition({
-        top: rect.bottom + 8,
-        left: rect.left
-      })
-    }
-  }, [showTimeDropdown])
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowTimeDropdown(false)
-      }
-    }
-    if (showTimeDropdown) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showTimeDropdown])
-
-  const getActiveTimeLabel = () => {
-    const activeFilter = timeFilters.find(t => t.id === activeTime)
-    return activeFilter?.label || '24H'
-  }
-
   return (
     <div className="sticky top-[129px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
-      {/* Single Row Layout with Time Dropdown and Filter Buttons */}
+      {/* Single Row Layout with Time Buttons and Filter Buttons */}
       <div className="px-4 py-2">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">
-          {/* Time Dropdown */}
-          <div className="relative flex-shrink-0" ref={dropdownRef}>
+          {/* Time Filter Buttons */}
+          {timeFilters.map((time) => (
             <button
-              ref={buttonRef}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowTimeDropdown(!showTimeDropdown);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4459FF] text-white rounded-lg hover:bg-[#3448EE] transition-colors touch-manipulation"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
+              key={time.id}
+              onClick={() => onTimeChange(time.id)}
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 ${
+                activeTime === time.id
+                  ? 'bg-[#4459FF] text-white'
+                  : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#252525]'
+              }`}
             >
-              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-xs font-medium">{getActiveTimeLabel()}</span>
-              <svg 
-                className={`w-3 h-3 flex-shrink-0 transition-transform ${showTimeDropdown ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <span className="text-xs font-medium">{time.label}</span>
             </button>
+          ))}
 
-            {/* Dropdown Menu */}
-            {showTimeDropdown && (
-              <>
-                {/* Backdrop to prevent interaction with content below */}
-                <div 
-                  className="fixed inset-0 z-[8999]"
-                  onClick={() => setShowTimeDropdown(false)}
-                />
-                <div 
-                  className="fixed w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[9000]"
-                  style={{ 
-                    top: `${dropdownPosition.top}px`, 
-                    left: `${dropdownPosition.left}px` 
-                  }}
-                >
-                {timeFilters.map((time) => (
-                  <button
-                    key={time.id}
-                    onClick={() => {
-                      onTimeChange(time.id)
-                      setShowTimeDropdown(false)
-                    }}
-                    className={`w-full px-3 py-2 text-left text-xs transition-colors ${
-                      activeTime === time.id
-                        ? 'bg-[#4459FF] text-white'
-                        : 'text-gray-400 hover:bg-[#252525] hover:text-white'
-                    }`}
-                  >
-                    {time.label}
-                  </button>
-                ))}
-              </div>
-              </>
-            )}
-          </div>
+          {/* Divider */}
+          <div className="w-px h-6 bg-[#1A1A1A] flex-shrink-0 mx-1" />
 
-          {/* Filter Buttons */}
+          {/* Category Filter Buttons */}
           {filters.map((filter) => (
             <button
               key={filter.id}

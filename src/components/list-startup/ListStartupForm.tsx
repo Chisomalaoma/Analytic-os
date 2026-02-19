@@ -80,23 +80,6 @@ export default function ListStartupForm() {
 
     return (
         <form className="bg-transparent" onSubmit={handleSubmit}>
-            {/* Back Button */}
-            <button
-                type="button"
-                onClick={() => router.back()}
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 group"
-            >
-                <svg 
-                    className="w-5 h-5 transition-transform group-hover:-translate-x-1" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="text-sm font-medium">Back to Dashboard</span>
-            </button>
-
             <h2 className="text-3xl font-bold mb-2 flex items-center gap-2">
                 List your token
                 <span className="bg-[#E6F7FF] text-[#013131] text-xs px-2 py-1 rounded-full font-medium">new</span>
