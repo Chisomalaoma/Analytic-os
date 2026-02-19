@@ -91,13 +91,19 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
 
             {/* Dropdown Menu */}
             {showTimeDropdown && (
-              <div 
-                className="fixed w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[100]"
-                style={{ 
-                  top: `${dropdownPosition.top}px`, 
-                  left: `${dropdownPosition.left}px` 
-                }}
-              >
+              <>
+                {/* Backdrop to prevent interaction with content below */}
+                <div 
+                  className="fixed inset-0 z-[8999]"
+                  onClick={() => setShowTimeDropdown(false)}
+                />
+                <div 
+                  className="fixed w-28 bg-[#1A1A1A] rounded-lg shadow-xl border border-[#252525] py-1 z-[9000]"
+                  style={{ 
+                    top: `${dropdownPosition.top}px`, 
+                    left: `${dropdownPosition.left}px` 
+                  }}
+                >
                 {timeFilters.map((time) => (
                   <button
                     key={time.id}
@@ -115,6 +121,7 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
                   </button>
                 ))}
               </div>
+              </>
             )}
           </div>
 
