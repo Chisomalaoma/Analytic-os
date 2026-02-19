@@ -45,11 +45,27 @@ export default function MobileDashboardContainer() {
         const yieldData = await yieldRes.json()
         
         if (data.success && data.tokens) {
-          // Sort by newest first
-          const sorted = [...data.tokens].sort((a: Token, b: Token) => 
-            new Date(b.listingDate).getTime() - new Date(a.listingDate).getTime()
-          )
-          setTokens(sorted)
+          let filtered = [...data.tokens]
+          
+          // Filter based on active filter (tab)
+          if (activeFilter === 'volume') {
+            // Sort by volume (highest first)
+            filtered = filtered.sort((a: Token, b: Token) => b.volume - a.volume)
+          } else if (activeFilter === 'upcoming') {
+            // Show tokens with future listing dates
+            const now = new Date()
+            filtered = filtered.filter((t: Token) => new Date(t.listingDate) > now)
+            filtered = filtered.sort((a: Token, b: Token) => 
+              new Date(a.listingDate).getTime() - new Date(b.listingDate).getTime()
+            )
+          } else {
+            // All listings - sort by newest first
+            filtered = filtered.sort((a: Token, b: Token) => 
+              new Date(b.listingDate).getTime() - new Date(a.listingDate).getTime()
+            )
+          }
+          
+          setTokens(filtered)
         }
         
         if (yieldData.success) {
@@ -63,7 +79,7 @@ export default function MobileDashboardContainer() {
     }
 
     fetchTokens()
-  }, [activeTime])
+  }, [activeTime, activeFilter])
 
   // Close search dropdown on click outside
   useEffect(() => {

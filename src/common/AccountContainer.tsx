@@ -112,9 +112,9 @@ const AccountContainer = () => {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check file size (max 2MB for better compression)
-      if (file.size > 2 * 1024 * 1024) {
-        setMessage('Image size must be less than 2MB');
+      // Check file size (max 10MB - Cloudinary will handle compression)
+      if (file.size > 10 * 1024 * 1024) {
+        setMessage('Image size must be less than 10MB');
         return;
       }
 
@@ -127,13 +127,8 @@ const AccountContainer = () => {
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
-        // Always compress images to ensure they're small enough
+        // Compress for preview only
         compressImage(result, (compressed) => {
-          // Final size check - base64 should be under 500KB
-          if (compressed.length > 500 * 1024) {
-            setMessage('Image is too large even after compression. Please use a smaller image.');
-            return;
-          }
           setPreview(compressed);
         });
       };
@@ -241,14 +236,25 @@ const AccountContainer = () => {
     setMessage("");
 
     try {
-      // Use preview if available, otherwise keep existing image
-      const imageUrl = preview || user?.image || null;
+      let imageUrl = user?.image || null;
 
-      // Strict validation for image size
-      if (imageUrl && imageUrl.length > 500 * 1024) {
-        setMessage("Image is too large. Please try a smaller image or contact support.");
-        setLoading(false);
-        return;
+      // If there's a new image preview, upload it to Cloudinary first
+      if (preview) {
+        const uploadRes = await fetch('/api/upload/image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: preview })
+        });
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadRes.ok) {
+          setMessage(uploadData.error || 'Failed to upload image');
+          setLoading(false);
+          return;
+        }
+
+        imageUrl = uploadData.imageUrl;
       }
 
       const res = await fetch("/api/auth/update-profile", {
@@ -379,9 +385,9 @@ const AccountContainer = () => {
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 w-9 h-9 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors border-2 border-[#0A0A0A]"
+                  className="absolute bottom-0 right-0 w-6 h-6 bg-[#4459FF] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#3448EE] transition-colors border border-[#0A0A0A]"
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-2.5 h-2.5" />
                 </button>
               </div>
               <input
