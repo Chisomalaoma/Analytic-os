@@ -58,17 +58,26 @@ export function MobileExploreMenu({ isOpen, onClose }: MobileExploreMenuProps) {
           <div className="px-4 py-3 border-b border-[#1A1A1A]">
             <div className="flex items-center gap-3">
               {session.user.image ? (
-                <Image
+                <img
                   src={session.user.image}
                   alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover"
+                  className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 h-10 bg-gradient-to-br from-[#4459FF] to-[#3448EE] rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">
                     {(() => {
+                      // For business accounts, use company name
+                      const companyName = (session.user as any).companyName;
+                      if (companyName) {
+                        const words = companyName.trim().split(' ');
+                        if (words.length >= 2) {
+                          return (words[0][0] + words[1][0]).toUpperCase();
+                        }
+                        return companyName.substring(0, 2).toUpperCase();
+                      }
+                      
+                      // For personal accounts, use first and last name
                       const first = session.user.firstName?.[0]?.toUpperCase() || '';
                       const last = session.user.lastName?.[0]?.toUpperCase() || '';
                       return first + last || session.user.email?.[0].toUpperCase() || 'U';
@@ -78,9 +87,11 @@ export function MobileExploreMenu({ isOpen, onClose }: MobileExploreMenuProps) {
               )}
               <div>
                 <div className="text-white text-sm font-medium">
-                  {session.user.firstName && session.user.lastName 
-                    ? `${session.user.firstName} ${session.user.lastName}`
-                    : session.user.name || 'User'}
+                  {(session.user as any).companyName 
+                    ? `${(session.user as any).companyName} Business`
+                    : session.user.firstName && session.user.lastName 
+                      ? `${session.user.firstName} ${session.user.lastName}`
+                      : session.user.name || 'User'}
                 </div>
                 <div className="text-gray-500 text-xs">
                   {session.user.email}

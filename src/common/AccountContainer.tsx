@@ -25,10 +25,14 @@ const AccountContainer = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    companyName: "",
     username: "",
     email: "",
     phone: "",
   });
+
+  // Check if this is a business account
+  const isBusinessAccount = user?.role === 'ADMIN' || !!user?.companyName;
 
   // Currency hook
   const { currency, exchangeRate, loading: currencyLoading, setCurrency } = useCurrency();
@@ -102,6 +106,7 @@ const AccountContainer = () => {
       setFormData({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
+        companyName: (user as any).companyName || "",
         username: user.username || user.name || "",
         email: user.email || "",
         phone: user.phone || "",
@@ -263,6 +268,7 @@ const AccountContainer = () => {
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
+          companyName: formData.companyName,
           username: formData.username,
           phone: formData.phone,
           image: imageUrl,
@@ -284,6 +290,7 @@ const AccountContainer = () => {
           ...session?.user,
           firstName: formData.firstName,
           lastName: formData.lastName,
+          companyName: formData.companyName,
           name: formData.username,
           username: formData.username,
           phone: formData.phone,
@@ -314,7 +321,17 @@ const AccountContainer = () => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
-  const getInitials = (firstName?: string | null, lastName?: string | null) => {
+  const getInitials = (firstName?: string | null, lastName?: string | null, companyName?: string | null) => {
+    // For business accounts, use company name initials
+    if (companyName) {
+      const words = companyName.trim().split(' ');
+      if (words.length >= 2) {
+        return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+      }
+      return companyName.substring(0, 2).toUpperCase();
+    }
+    
+    // For personal accounts, use first and last name
     const first = firstName?.charAt(0)?.toUpperCase() || "";
     const last = lastName?.charAt(0)?.toUpperCase() || "";
     return first + last || "U";
@@ -379,7 +396,7 @@ const AccountContainer = () => {
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#4459FF] to-[#3448EE] flex items-center justify-center text-white text-2xl sm:text-3xl font-semibold">
-                      {getInitials(user?.firstName, user?.lastName)}
+                      {getInitials(user?.firstName, user?.lastName, (user as any)?.companyName)}
                     </div>
                   )}
                 </div>
@@ -402,89 +419,167 @@ const AccountContainer = () => {
 
             {/* Form Fields */}
             <div className="flex-1 space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, firstName: e.target.value })
-                    }
-                    className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-1">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, lastName: e.target.value })
-                    }
-                    className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
-                  />
-                </div>
-              </div>
+              {isBusinessAccount ? (
+                // Business Account Fields
+                <>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Business Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.companyName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, companyName: e.target.value })
+                      }
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="Enter business name"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) =>
-                    setFormData({ ...formData, username: e.target.value })
-                  }
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  User ID
-                </label>
-                <input
-                  type="text"
-                  value={user?.userId || ''}
-                  disabled
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60 font-mono"
-                />
-                <p className="text-xs text-gray-500 mt-1">Your unique user identifier</p>
-              </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      User ID
+                    </label>
+                    <input
+                      type="text"
+                      value={user?.userId || ''}
+                      disabled
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60 font-mono"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Your unique user identifier</p>
+                  </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  disabled
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60"
-                />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-              </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Work Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      disabled
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                  </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
-                  placeholder="+1 (555) 000-0000"
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </>
+              ) : (
+                // Personal Account Fields
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, firstName: e.target.value })
+                        }
+                        className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.lastName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, lastName: e.target.value })
+                        }
+                        className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      User ID
+                    </label>
+                    <input
+                      type="text"
+                      value={user?.userId || ''}
+                      disabled
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60 font-mono"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Your unique user identifier</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      disabled
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-gray-300 cursor-not-allowed opacity-60"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#4459FF]"
+                      placeholder="+1 (555) 000-0000"
+                    />
+                  </div>
+                </>
+              )}
 
               <button
                 onClick={handleSave}
