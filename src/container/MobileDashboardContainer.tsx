@@ -168,7 +168,7 @@ export default function MobileDashboardContainer() {
       {/* Token List - Horizontally Scrollable */}
       <div className="pb-4">
         {/* Table Header - Sticky with Fixed TOKEN and Scrollable Columns */}
-        <div className="sticky top-[175px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+        <div className="sticky top-[175px] z-20 bg-[#0A0A0A] border-b border-[#1A1A1A]">
           <div className="flex">
             {/* Fixed TOKEN Column Header */}
             <div className="flex-shrink-0 w-[180px] pl-4 pr-2 py-2.5">

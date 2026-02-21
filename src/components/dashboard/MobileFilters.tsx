@@ -44,7 +44,7 @@ export function MobileFilters({ activeFilter, onFilterChange, activeTime, onTime
   const activeTimeLabel = timeFilters.find(t => t.id === activeTime)?.label || '24H'
 
   return (
-    <div className="sticky top-[129px] z-30 bg-[#0A0A0A] border-b border-[#1A1A1A]">
+    <div className="sticky top-[129px] z-40 bg-[#0A0A0A] border-b border-[#1A1A1A]">
       {/* Single Row Layout with Time Dropdown and Filter Buttons */}
       <div className="px-4 py-2">
         <div className="flex items-center gap-2">
