@@ -2,11 +2,13 @@
 
 import {
   ArrowRight,
-  Building2,
   CheckCircle,
-  CreditCard,
+  TrendingUp,
   Shield,
   Wallet,
+  DollarSign,
+  Clock,
+  Building2,
 } from "lucide-react";
 import { useState } from "react";
 import { HeroBackground } from "./AnimatedSVG";
@@ -18,55 +20,68 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
-  const [email, setEmail] = useState("");
+  const [selectedToken, setSelectedToken] = useState("opay");
+  const [investmentAmount, setInvestmentAmount] = useState(1000000);
+
+  const tokens = [
+    {
+      id: "opay",
+      name: "Opay Digital Services",
+      yield: 15,
+      industry: "Fintech",
+      monthlyPayout: true,
+    },
+    {
+      id: "fcmb",
+      name: "First City Monument Bank",
+      yield: 18,
+      industry: "Banking",
+      monthlyPayout: true,
+    },
+    {
+      id: "abmfb",
+      name: "AB Microfinance Bank",
+      yield: 19,
+      industry: "Banking",
+      monthlyPayout: true,
+    },
+  ];
+
+  const selectedTokenData = tokens.find((t) => t.id === selectedToken) || tokens[0];
+  const monthlyYield = (investmentAmount * selectedTokenData.yield) / 100 / 12;
+  const totalEarning = investmentAmount + (investmentAmount * selectedTokenData.yield) / 100;
 
   const features = [
     {
-      icon: <Wallet size={24} />,
-      title: "Virtual NGN Account",
-      description:
-        "Get your own dedicated Naira account number. Share it and receive transfers from any Nigerian bank instantly.",
+      icon: <TrendingUp size={24} />,
+      title: "Earn up to 30% annual yields",
+      description: "Get competitive returns on your investments with transparent, fixed-income opportunities.",
     },
     {
-      icon: <Building2 size={24} />,
-      title: "Instant Bank Transfers",
-      description:
-        "Powered by Monnify. Transfer from any Nigerian bank and your wallet is credited automatically.",
+      icon: <Clock size={24} />,
+      title: "Monthly payouts",
+      description: "Receive consistent income every month directly into your wallet.",
     },
     {
       icon: <Shield size={24} />,
-      title: "Secure & Protected",
-      description:
-        "Bank-grade security with Monnify integration. Your money is always safe and protected.",
-    },
-  ];
-
-  const stats = [
-    {
-      value: "Instant",
-      label: "Account Created",
-      change: "In seconds",
-      positive: true,
+      title: "Backed by real world assets",
+      description: "Your investments are secured by tangible assets from established companies.",
     },
     {
-      value: "Zero",
-      label: "Setup Fees",
-      change: "Free to start",
-      positive: true,
+      icon: <Building2 size={24} />,
+      title: "Multiple investment options",
+      description: "Choose from various opportunities with just one account.",
     },
     {
-      value: "24/7",
-      label: "Account Access",
-      change: "Anytime, anywhere",
-      positive: true,
+      icon: <Wallet size={24} />,
+      title: "Withdraw anytime",
+      description: "Access your funds when you need them with flexible withdrawal options.",
     },
-  ];
-
-  const benefits = [
-    { text: "No minimum balance required" },
-    { text: "Instant notification on payment" },
-    { text: "View all transactions history" },
-    { text: "Secure Monnify integration" },
+    {
+      icon: <DollarSign size={24} />,
+      title: "Better rates from top companies",
+      description: "Get exclusive access to premium investment opportunities.",
+    },
   ];
 
   return (
@@ -78,9 +93,9 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
       <nav className="relative z-50 flex items-center justify-between px-6 py-4 lg:px-12">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-white" />
+            <TrendingUp className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-white">Analyti</span>
+          <span className="text-xl font-bold text-white">WTX</span>
         </div>
 
         <div className="hidden md:flex items-center gap-6">
@@ -94,7 +109,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
             onClick={onOpenSignUp}
             className="px-5 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25"
           >
-            Join Us
+            Start Earning Today
           </button>
         </div>
       </nav>
@@ -109,7 +124,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
               </span>
-              <span className="text-sm text-gray-300">Powered by Monnify</span>
+              <span className="text-sm text-gray-300">Invest with WTX</span>
             </div>
           </GlassCard>
         </div>
@@ -117,73 +132,53 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
         {/* Main Heading */}
         <h1 className="animate-fadeInUp stagger-1 text-center max-w-4xl mx-auto">
           <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-            Your NGN Wallet
+            Earn up to 30%
             <br />
             <span className="bg-gradient-to-r from-[#4459FF] via-[#7C3AED] to-[#4459FF] bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">
-              Reimagined
+              Monthly Income
             </span>
           </span>
         </h1>
 
         {/* Subheading */}
         <p className="animate-fadeInUp stagger-2 text-center max-w-2xl mx-auto mt-6 text-gray-400 text-lg md:text-xl leading-relaxed">
-          Get a dedicated virtual bank account. Receive payments instantly.
-          Manage your Naira with confidence — all in one modern app.
+          Invest in fixed income-generating opportunities and get paid every month — transparently, securely, and on your terms.
         </p>
 
-        {/* CTA Section */}
-        <div className="animate-fadeInUp stagger-3 flex flex-col sm:flex-row gap-4 mt-10 w-full max-w-lg">
+        {/* Feature Pills */}
+        <div className="animate-fadeInUp stagger-3 flex flex-wrap justify-center gap-3 mt-8 max-w-4xl">
+          {[
+            "Earn up to 30% annual yields",
+            "Monthly payouts",
+            "Backed by real world assets",
+            "Multiple investment options",
+            "Withdraw anytime",
+            "Better rates from top companies",
+          ].map((feature, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] border border-[#252525] rounded-full"
+            >
+              <CheckCircle size={16} className="text-green-400" />
+              <span className="text-sm text-gray-300">{feature}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Button */}
+        <div className="animate-fadeInUp stagger-4 mt-10">
           <button
             onClick={onOpenSignUp}
-            className="group relative px-8 py-4 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-xl text-lg font-semibold flex-1 transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25 hover:-translate-y-0.5"
+            className="group relative px-10 py-5 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-xl text-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25 hover:-translate-y-0.5"
           >
             <span className="flex items-center justify-center gap-2">
-              Get Started Free
+              Start Earning Today
               <ArrowRight
-                size={20}
+                size={24}
                 className="transition-transform group-hover:translate-x-1"
               />
             </span>
           </button>
-          <button
-            onClick={onOpenSignIn}
-            className="px-8 py-4 bg-[#23262F] hover:bg-[#2D3139] text-white rounded-xl text-lg font-semibold flex-1 transition-all duration-300 hover:-translate-y-0.5"
-          >
-            Sign In
-          </button>
-        </div>
-
-        {/* Trust indicators */}
-        <div className="animate-fadeInUp stagger-4 mt-8">
-          <GlassCard padding="sm" className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-400" />
-              <span className="text-sm text-gray-400">No crypto</span>
-            </div>
-            <div className="w-px h-4 bg-[#858B9A33]" />
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-400" />
-              <span className="text-sm text-gray-400">100% NGN</span>
-            </div>
-            <div className="w-px h-4 bg-[#858B9A33]" />
-            <div className="flex items-center gap-2">
-              <CheckCircle size={16} className="text-green-400" />
-              <span className="text-sm text-gray-400">Monnify Secured</span>
-            </div>
-          </GlassCard>
-        </div>
-
-        {/* Stats */}
-        <div className="animate-fadeInUp stagger-5 grid grid-cols-3 gap-4 mt-16 w-full max-w-3xl">
-          {stats.map((stat, index) => (
-            <StatCard
-              key={index}
-              value={stat.value}
-              label={stat.label}
-              change={stat.change}
-              positive={stat.positive}
-            />
-          ))}
         </div>
       </div>
 
@@ -191,31 +186,39 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
       <section className="relative z-10 px-6 lg:px-12 py-24 bg-gradient-to-b from-transparent to-[#0A0A0A]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               How It Works
             </h2>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              Get your NGN wallet in three simple steps. No paperwork, no
-              waiting.
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Start earning predictable income in four simple steps
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             {[
               {
                 step: "01",
-                title: "Create Account",
-                desc: "Sign up with your email and basic details",
+                title: "Deposit",
+                desc: "Create an account and fund your WTX account",
+                icon: <Wallet size={32} />,
               },
               {
                 step: "02",
-                title: "Get Virtual Account",
-                desc: "We create your dedicated NGN bank account",
+                title: "Invest",
+                desc: "Browse vetted investment options with clear pricing, yield, and payout schedules",
+                icon: <TrendingUp size={32} />,
               },
               {
                 step: "03",
-                title: "Start Receiving",
-                desc: "Share your account number and receive payments",
+                title: "Earn",
+                desc: "Earn predictable income every month directly into your wallet",
+                icon: <DollarSign size={32} />,
+              },
+              {
+                step: "04",
+                title: "Withdraw",
+                desc: "Withdraw profits or compound earnings directly from your dashboard",
+                icon: <ArrowRight size={32} />,
               },
             ].map((item, index) => (
               <div
@@ -223,40 +226,152 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
                 className="animate-fadeInUp relative"
                 style={{ animationDelay: `${index * 0.15}s` }}
               >
-                <GlassCard padding="lg" className="h-full">
-                  <span className="text-5xl font-bold text-[#4459FF]/20 mb-4 block">
+                <GlassCard padding="lg" className="h-full text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-[#4459FF]/20 flex items-center justify-center mx-auto mb-4">
+                    <div className="text-[#4459FF]">{item.icon}</div>
+                  </div>
+                  <span className="text-4xl font-bold text-[#4459FF]/30 mb-3 block">
                     {item.step}
                   </span>
-                  <h3 className="text-xl font-semibold text-white mb-2">
+                  <h3 className="text-xl font-semibold text-white mb-3">
                     {item.title}
                   </h3>
-                  <p className="text-gray-400">{item.desc}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
                 </GlassCard>
-                {index < 2 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 text-[#4459FF]">
-                    <ArrowRight size={24} className="opacity-50" />
-                  </div>
-                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Investment Calculator Section */}
       <section className="relative z-10 px-6 lg:px-12 py-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Everything you need for your Naira
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Investment Calculator
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Modern fintech tools designed for Nigerians. Simple, fast, and
-              secure.
+            <p className="text-gray-400 text-lg">
+              Explore available investments and calculate your potential earnings
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Token Selection */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-white mb-6">
+                Explore Available Investments
+              </h3>
+              {tokens.map((token) => (
+                <button
+                  key={token.id}
+                  onClick={() => setSelectedToken(token.id)}
+                  className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-300 ${
+                    selectedToken === token.id
+                      ? "border-[#4459FF] bg-[#4459FF]/10"
+                      : "border-[#252525] bg-[#1A1A1A] hover:border-[#353535]"
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="text-lg font-semibold text-white mb-1">
+                        {token.name}
+                      </h4>
+                      <p className="text-sm text-gray-400">Industry: {token.industry}</p>
+                    </div>
+                    {token.monthlyPayout && (
+                      <CheckCircle size={20} className="text-green-400 flex-shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <p className="text-sm text-gray-400">Annual Yield</p>
+                      <p className="text-2xl font-bold text-[#4459FF]">{token.yield}%</p>
+                    </div>
+                    <div className="h-8 w-px bg-[#252525]" />
+                    <div>
+                      <p className="text-sm text-gray-400">Monthly Payout</p>
+                      <p className="text-sm text-green-400 font-medium">30 days ✓</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Calculator */}
+            <GlowingCard className="p-8">
+              <h3 className="text-2xl font-bold text-white mb-6">
+                Investment Calculator
+              </h3>
+
+              {/* Selected Token Display */}
+              <div className="mb-6 p-4 bg-[#1A1A1A] rounded-lg border border-[#252525]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400">Selected Investment</span>
+                  <span className="text-sm font-medium text-[#4459FF]">
+                    {selectedTokenData.yield}% APY
+                  </span>
+                </div>
+                <p className="text-white font-semibold">{selectedTokenData.name}</p>
+                <p className="text-xs text-gray-500 mt-1">{selectedTokenData.industry}</p>
+              </div>
+
+              {/* Amount Input */}
+              <div className="mb-6">
+                <label className="block text-sm text-gray-400 mb-2">
+                  How much do you want to invest?
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    ₦
+                  </span>
+                  <input
+                    type="number"
+                    value={investmentAmount}
+                    onChange={(e) => setInvestmentAmount(Number(e.target.value))}
+                    className="w-full bg-[#1A1A1A] border border-[#252525] rounded-lg pl-8 pr-4 py-4 text-white text-lg focus:outline-none focus:border-[#4459FF] transition-colors"
+                    placeholder="1,000,000"
+                  />
+                </div>
+              </div>
+
+              {/* Results */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#252525]">
+                  <p className="text-sm text-gray-400 mb-1">Expected Yield Payout</p>
+                  <p className="text-2xl font-bold text-green-400">
+                    ₦{monthlyYield.toLocaleString('en-NG', { maximumFractionDigits: 0 })}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">per month</p>
+                </div>
+                <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#252525]">
+                  <p className="text-sm text-gray-400 mb-1">Total Earning</p>
+                  <p className="text-2xl font-bold text-[#4459FF]">
+                    ₦{totalEarning.toLocaleString('en-NG', { maximumFractionDigits: 0 })}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">after 1 year</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500 mb-6">
+                * Total earning includes your principal investment
+              </p>
+
+              <button
+                onClick={onOpenSignUp}
+                className="w-full py-4 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25"
+              >
+                Start Investing
+              </button>
+            </GlowingCard>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="relative z-10 px-6 lg:px-12 py-24 bg-gradient-to-b from-[#0A0A0A] to-[#0D0D0D]">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -270,120 +385,52 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="relative z-10 px-6 lg:px-12 py-24 bg-gradient-to-b from-[#0A0A0A] to-[#0D0D0D]">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Why choose Analyti?
-              </h2>
-              <p className="text-gray-400 mb-8 leading-relaxed">
-                We&apos;ve built a wallet that puts Nigerians first. No
-                cryptocurrency, no DeFi complexity — just a simple, reliable way
-                to manage your Naira.
-              </p>
-              <ul className="space-y-4">
-                {benefits.map((benefit, index) => (
-                  <li key={index} className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-green-400/20 flex items-center justify-center">
-                      <CheckCircle size={14} className="text-green-400" />
-                    </div>
-                    <span className="text-gray-300">{benefit.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="relative">
-              <GlassCard padding="lg" glow>
-                {/* Visual representation of a wallet card */}
-                <div className="bg-gradient-to-br from-[#23262F] to-[#181A20] rounded-xl p-6 border border-[#858B9A33]">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#4459FF]/20 flex items-center justify-center">
-                        <Wallet size={20} className="text-[#4459FF]" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-400">Analyti Wallet</p>
-                        <p className="text-xs text-gray-500">NGN Account</p>
-                      </div>
-                    </div>
-                    <CreditCard size={24} className="text-gray-500" />
-                  </div>
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-400 mb-1">Account Number</p>
-                    <p className="text-xl font-mono text-white tracking-wider">
-                      809 876 5432
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">Bank</p>
-                      <p className="text-white font-medium">
-                        {" "}
-                        Guaranty Trust Bank
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Status</p>
-                      <p className="text-green-400 font-medium flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-400"></span>
-                        Active
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+      {/* Final CTA Section */}
       <section className="relative z-10 px-6 lg:px-12 py-24">
         <div className="max-w-4xl mx-auto">
           <GlowingCard className="text-center py-16 px-8">
             <div className="mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-[#4459FF]/20 flex items-center justify-center mx-auto mb-4">
-                <Wallet size={32} className="text-[#4459FF]" />
+              <div className="w-20 h-20 rounded-2xl bg-[#4459FF]/20 flex items-center justify-center mx-auto mb-6">
+                <TrendingUp size={40} className="text-[#4459FF]" />
               </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to get started?
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Let your money work for you — Every Month
             </h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Join thousands of Nigerians managing their money with Analyti.
-              Create your free NGN wallet account today.
+            <p className="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+              Start earning consistent income from trusted real world assets today.
             </p>
             <button
               onClick={onOpenSignUp}
-              className="group inline-flex items-center gap-2 px-8 py-4 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-xl text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25 hover:-translate-y-0.5"
+              className="group inline-flex items-center gap-2 px-10 py-5 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-xl text-xl font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25 hover:-translate-y-0.5"
             >
-              Create Your Account
+              Create Free Account
               <ArrowRight
-                size={20}
+                size={24}
                 className="transition-transform group-hover:translate-x-1"
               />
             </button>
-            <p className="mt-4 text-sm text-gray-500">
-              No hidden fees. No minimum balance. Cancel anytime.
-            </p>
           </GlowingCard>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 px-6 lg:px-12 py-8 border-t border-[#23262F]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
+      <footer className="relative z-10 px-6 lg:px-12 py-12 border-t border-[#23262F]">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-white">WTX</span>
             </div>
-            <span className="text-white font-medium">Analyti</span>
           </div>
-          <p className="text-sm text-gray-500">
-            Powered by Monnify. Licensed payment service provider.
-          </p>
+          <div className="pt-6 border-t border-[#23262F]">
+            <p className="text-sm text-gray-500 text-center">
+              <strong>Disclaimer:</strong> Returns are not guaranteed. Investment values may fluctuate. 
+              Please read all risk disclosures before investing.
+            </p>
+          </div>
         </div>
       </footer>
     </section>
