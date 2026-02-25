@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { ArrowLeft, Shield, Eye, Lock, FileText } from 'lucide-react';
+import { ArrowLeft, Shield, Eye, Lock, FileText, Database, Users, Globe } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function PrivacyPolicyPage() {
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Privacy Policy</h1>
-                <p className="text-gray-400 text-sm">Last updated: {new Date().toLocaleDateString()}</p>
+                <p className="text-gray-400 text-sm">Effective Date: February 23, 2026 | Last Updated: February 23, 2026</p>
               </div>
             </div>
           </div>
@@ -36,49 +36,101 @@ export default function PrivacyPolicyPage() {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="prose prose-invert max-w-none">
+          {/* Introduction */}
           <div className="bg-[#1A1A1A] border border-[#262626] rounded-lg p-6 mb-8">
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-6 h-6 text-[#4459FF]" />
-              <h2 className="text-xl font-semibold text-white m-0">Your Privacy Matters</h2>
+              <h2 className="text-xl font-semibold text-white m-0">Introduction</h2>
             </div>
             <p className="text-gray-300 m-0">
-              This Privacy Policy describes how we collect, use, and protect your personal information 
-              when you use our financial technology platform. We are committed to maintaining the 
-              highest standards of data protection and transparency.
+              WTX ("Company", "we", "our", or "us") is committed to protecting your personal data. 
+              This Privacy Policy explains how we collect, process, store, disclose, and protect personal 
+              data when you use our website, mobile application, and related investment services (the "Platform").
+            </p>
+            <p className="text-gray-300 mt-4 m-0">
+              By using the Platform, you consent to the practices described in this Privacy Policy.
             </p>
           </div>
 
           <div className="space-y-8">
-            {/* Information We Collect */}
+            {/* Legal Basis */}
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
               <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#4459FF]" />
-                Information We Collect
+                Legal Basis for Processing
               </h2>
               <div className="space-y-4 text-gray-300">
+                <p>We process personal data in accordance with:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Nigeria Data Protection Act (NDPA) 2023</li>
+                  <li>Applicable anti-money laundering laws</li>
+                  <li>Securities and capital market regulations</li>
+                  <li>Contractual obligations</li>
+                </ul>
+                <p className="mt-4">Our lawful bases for processing include:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Performance of a contract</li>
+                  <li>Legal obligation</li>
+                  <li>Legitimate interest</li>
+                  <li>Consent (where applicable)</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* Information We Collect */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <Database className="w-5 h-5 text-[#4459FF]" />
+                Information We Collect
+              </h2>
+              <div className="space-y-6 text-gray-300">
                 <div>
-                  <h3 className="text-white font-medium mb-2">Personal Information</h3>
-                  <p>
-                    We collect information you provide directly to us, including:
-                  </p>
+                  <h3 className="text-white font-semibold mb-3">3.1 Personal Identification Information</h3>
+                  <p className="mb-2">We may collect:</p>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Name, email address, and phone number</li>
-                    <li>Government-issued identification documents</li>
-                    <li>Financial information and bank account details</li>
-                    <li>Transaction history and investment preferences</li>
+                    <li>Full name</li>
+                    <li>Date of birth</li>
+                    <li>Gender</li>
+                    <li>Nationality</li>
+                    <li>Residential address</li>
+                    <li>Phone number</li>
+                    <li>Email address</li>
+                    <li>Government-issued identification (NIN, Passport, Driver's License)</li>
+                    <li>Photograph/selfie verification</li>
                   </ul>
                 </div>
                 
                 <div>
-                  <h3 className="text-white font-medium mb-2">Automatically Collected Information</h3>
-                  <p>
-                    When you use our platform, we automatically collect:
-                  </p>
+                  <h3 className="text-white font-semibold mb-3">3.2 Financial Information</h3>
                   <ul className="list-disc list-inside ml-4 space-y-1">
-                    <li>Device information and IP address</li>
-                    <li>Browser type and operating system</li>
-                    <li>Usage patterns and interaction data</li>
-                    <li>Location information (with your consent)</li>
+                    <li>Bank account details</li>
+                    <li>Transaction history</li>
+                    <li>Investment portfolio data</li>
+                    <li>Wallet balances</li>
+                    <li>Withdrawal details</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-white font-semibold mb-3">3.3 Technical Information</h3>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>IP address</li>
+                    <li>Device type</li>
+                    <li>Operating system</li>
+                    <li>Browser type</li>
+                    <li>Login timestamps</li>
+                    <li>Cookies and usage analytics</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-white font-semibold mb-3">3.4 Investment Data</h3>
+                  <ul className="list-disc list-inside ml-4 space-y-1">
+                    <li>Fixed income asset purchases</li>
+                    <li>Token holdings</li>
+                    <li>Monthly payout records</li>
+                    <li>Secondary market transactions</li>
+                    <li>Redemption history</li>
                   </ul>
                 </div>
               </div>
@@ -88,33 +140,57 @@ export default function PrivacyPolicyPage() {
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
               <h2 className="text-xl font-semibold text-white mb-4">How We Use Your Information</h2>
               <div className="space-y-4 text-gray-300">
-                <p>We use the information we collect to:</p>
+                <p>We use personal data to:</p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li>Provide, maintain, and improve our financial services</li>
-                  <li>Process transactions and manage your account</li>
-                  <li>Verify your identity and prevent fraud</li>
-                  <li>Send you important notices and updates</li>
-                  <li>Comply with legal and regulatory requirements</li>
-                  <li>Analyze usage patterns to enhance user experience</li>
-                  <li>Provide customer support and respond to inquiries</li>
+                  <li>Create and manage your account</li>
+                  <li>Verify your identity (KYC)</li>
+                  <li>Comply with AML/CFT obligations</li>
+                  <li>Process investments and token purchases</li>
+                  <li>Distribute monthly yield payouts</li>
+                  <li>Facilitate secondary sales and withdrawals</li>
+                  <li>Detect fraud and suspicious activity</li>
+                  <li>Improve platform functionality</li>
+                  <li>Provide customer support</li>
+                  <li>Comply with regulatory reporting requirements</li>
                 </ul>
               </div>
             </section>
 
-            {/* Information Sharing */}
+            {/* Disclosure of Information */}
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Information Sharing and Disclosure</h2>
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <Users className="w-5 h-5 text-[#4459FF]" />
+                Disclosure of Information
+              </h2>
               <div className="space-y-4 text-gray-300">
-                <p>
-                  We do not sell, trade, or otherwise transfer your personal information to third parties 
-                  without your consent, except in the following circumstances:
-                </p>
+                <p>We may share your information with:</p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li><strong>Service Providers:</strong> We may share information with trusted third-party service providers who assist us in operating our platform</li>
-                  <li><strong>Legal Requirements:</strong> We may disclose information when required by law or to protect our rights and safety</li>
-                  <li><strong>Business Transfers:</strong> Information may be transferred in connection with a merger, acquisition, or sale of assets</li>
-                  <li><strong>Consent:</strong> We may share information with your explicit consent for specific purposes</li>
+                  <li>Licensed asset managers</li>
+                  <li>Custodian banks</li>
+                  <li>Payment processors</li>
+                  <li>Identity verification providers</li>
+                  <li>Legal and compliance advisors</li>
+                  <li>Government or regulatory authorities where required by law</li>
+                  <li>Law enforcement agencies under lawful request</li>
                 </ul>
+                <p className="mt-4 font-semibold text-white">We do not sell personal data.</p>
+              </div>
+            </section>
+
+            {/* Data Retention */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Data Retention</h2>
+              <div className="space-y-4 text-gray-300">
+                <p>We retain personal data:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>For as long as your account remains active</li>
+                  <li>For statutory record-keeping periods required under Nigerian law</li>
+                  <li>For regulatory and audit purposes</li>
+                  <li>As required under AML/CFT regulations</li>
+                </ul>
+                <p className="mt-4">
+                  After retention periods expire, data will be securely deleted or anonymized.
+                </p>
               </div>
             </section>
 
@@ -126,94 +202,132 @@ export default function PrivacyPolicyPage() {
               </h2>
               <div className="space-y-4 text-gray-300">
                 <p>
-                  We implement industry-standard security measures to protect your personal information:
+                  We implement technical and organizational measures to protect personal data, including:
                 </p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li>End-to-end encryption for sensitive data transmission</li>
-                  <li>Secure data storage with regular backups</li>
-                  <li>Multi-factor authentication for account access</li>
-                  <li>Regular security audits and vulnerability assessments</li>
-                  <li>Employee training on data protection best practices</li>
-                  <li>Compliance with financial industry security standards</li>
+                  <li>Data encryption</li>
+                  <li>Secure servers</li>
+                  <li>Role-based access controls</li>
+                  <li>Two-factor authentication</li>
+                  <li>Regular security audits</li>
                 </ul>
+                <p className="mt-4 text-yellow-400">
+                  However, no system is completely secure. Users are responsible for safeguarding login credentials.
+                </p>
               </div>
             </section>
 
-            {/* Your Rights */}
+            {/* Your Rights Under NDPA */}
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Your Privacy Rights</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Your Rights Under NDPA</h2>
               <div className="space-y-4 text-gray-300">
-                <p>You have the following rights regarding your personal information:</p>
+                <p>Under the Nigeria Data Protection Act, you have the right to:</p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
-                  <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
-                  <li><strong>Deletion:</strong> Request deletion of your personal information (subject to legal requirements)</li>
-                  <li><strong>Portability:</strong> Request transfer of your data to another service provider</li>
-                  <li><strong>Objection:</strong> Object to certain types of data processing</li>
-                  <li><strong>Restriction:</strong> Request restriction of processing in certain circumstances</li>
+                  <li>Access your personal data</li>
+                  <li>Request correction of inaccurate data</li>
+                  <li>Request deletion (subject to legal retention requirements)</li>
+                  <li>Object to certain processing</li>
+                  <li>Withdraw consent (where processing is based on consent)</li>
+                  <li>Lodge a complaint with the Nigeria Data Protection Commission</li>
                 </ul>
+                <p className="mt-4">
+                  Requests may be made via <span className="text-[#4459FF]">Support@wtxonline.com</span>
+                </p>
               </div>
             </section>
 
             {/* Cookies and Tracking */}
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Cookies and Tracking Technologies</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Cookies and Tracking</h2>
+              <div className="space-y-4 text-gray-300">
+                <p>We use cookies to:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Authenticate users</li>
+                  <li>Improve performance</li>
+                  <li>Analyze platform usage</li>
+                  <li>Enhance security</li>
+                </ul>
+                <p className="mt-4">
+                  You may disable cookies in your browser settings, but certain features may not function properly.
+                </p>
+              </div>
+            </section>
+
+            {/* Cross-Border Data Transfers */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <Globe className="w-5 h-5 text-[#4459FF]" />
+                Cross-Border Data Transfers
+              </h2>
+              <div className="space-y-4 text-gray-300">
+                <p>If data is transferred outside Nigeria:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Transfers will comply with NDPA requirements</li>
+                  <li>Adequate safeguards will be implemented</li>
+                  <li>Data protection agreements will be executed where required</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* Third-Party Links */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Third-Party Links</h2>
               <div className="space-y-4 text-gray-300">
                 <p>
-                  We use cookies and similar technologies to enhance your experience on our platform:
+                  The Platform may contain links to third-party websites. We are not responsible for 
+                  the privacy practices of those sites.
                 </p>
-                <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li><strong>Essential Cookies:</strong> Required for basic platform functionality</li>
-                  <li><strong>Analytics Cookies:</strong> Help us understand how you use our platform</li>
-                  <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
-                  <li><strong>Security Cookies:</strong> Protect against fraud and unauthorized access</li>
-                </ul>
+              </div>
+            </section>
+
+            {/* Children's Privacy */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Children's Privacy</h2>
+              <div className="space-y-4 text-gray-300">
                 <p>
-                  You can control cookie settings through your browser preferences, though disabling 
-                  certain cookies may affect platform functionality.
+                  The Platform is not intended for individuals under 18 years of age. We do not 
+                  knowingly collect data from minors.
+                </p>
+              </div>
+            </section>
+
+            {/* Automated Decision-Making */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Automated Decision-Making</h2>
+              <div className="space-y-4 text-gray-300">
+                <p>We may use automated systems for:</p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Fraud detection</li>
+                  <li>Risk scoring</li>
+                  <li>Transaction monitoring</li>
+                </ul>
+                <p className="mt-4">These systems assist compliance and security processes.</p>
+              </div>
+            </section>
+
+            {/* Changes to This Policy */}
+            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Changes to This Policy</h2>
+              <div className="space-y-4 text-gray-300">
+                <p>
+                  We may update this Privacy Policy periodically. Continued use of the Platform 
+                  constitutes acceptance of any updates.
                 </p>
               </div>
             </section>
 
             {/* Contact Information */}
             <section className="bg-[#1A1A1A] border border-[#262626] rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Contact Us</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Contact Information</h2>
               <div className="space-y-4 text-gray-300">
-                <p>
-                  If you have any questions about this Privacy Policy or our data practices, 
-                  please contact us:
-                </p>
                 <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4">
+                  <p className="font-semibold text-white mb-3">WTX</p>
                   <ul className="space-y-2">
-                    <li><strong>Email:</strong> privacy@yourplatform.com</li>
-                    <li><strong>Phone:</strong> +1 (555) 123-4567</li>
-                    <li><strong>Address:</strong> 123 Financial District, Suite 100, City, State 12345</li>
+                    <li><strong>RC Number:</strong> [To be provided]</li>
+                    <li><strong>Location:</strong> Lagos, Nigeria</li>
+                    <li><strong>Email:</strong> <a href="mailto:Support@wtxonline.com" className="text-[#4459FF] hover:underline">Support@wtxonline.com</a></li>
                   </ul>
                 </div>
-                <p className="text-sm text-gray-400">
-                  We will respond to your inquiry within 30 days of receipt.
-                </p>
-              </div>
-            </section>
-
-            {/* Updates */}
-            <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Policy Updates</h2>
-              <div className="space-y-4 text-gray-300">
-                <p>
-                  We may update this Privacy Policy from time to time to reflect changes in our 
-                  practices or legal requirements. When we make significant changes, we will:
-                </p>
-                <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li>Notify you via email or platform notification</li>
-                  <li>Update the "Last updated" date at the top of this policy</li>
-                  <li>Provide a summary of key changes</li>
-                  <li>Give you time to review before changes take effect</li>
-                </ul>
-                <p>
-                  Your continued use of our platform after policy updates constitutes acceptance 
-                  of the revised terms.
-                </p>
               </div>
             </section>
           </div>
