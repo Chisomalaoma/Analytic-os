@@ -75,14 +75,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
       profile(profile) {
-        console.log('[TWITTER-PROFILE] Raw profile data:', {
+        console.log('🐦 [TWITTER-PROFILE] Raw profile data:', {
           id: profile.data?.id,
           name: profile.data?.name,
           username: profile.data?.username,
           profile_image_url: profile.data?.profile_image_url
         })
         
-        return {
+        const userData = {
           id: profile.data.id,
           name: profile.data.name,
           email: profile.data.email || `${profile.data.username}@twitter.placeholder`,
@@ -90,6 +90,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           firstName: profile.data.name?.split(' ')[0] || 'User',
           lastName: profile.data.name?.split(' ').slice(1).join(' ') || 'User',
         }
+        
+        console.log('✅ [TWITTER-PROFILE] Processed user data:', userData)
+        return userData
       },
       allowDangerousEmailAccountLinking: true,
     }),
@@ -274,7 +277,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           
           // Twitter-specific confirmation
           if (account?.provider === 'twitter') {
-            console.log('✅ [TWITTER-SIGNIN] Twitter OAuth is working! User:', user.name || user.email)
+            console.log('🎉 [TWITTER-SIGNIN] Twitter OAuth authentication successful!')
+            console.log('✅ [TWITTER-SIGNIN] User authenticated:', {
+              name: user.name,
+              email: user.email,
+              provider: account.provider
+            })
           }
           
           // Extract first and last name from profile FIRST (most reliable source)
