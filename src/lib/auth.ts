@@ -82,10 +82,13 @@ if (twitterClientId && twitterClientSecret) {
       clientId: twitterClientId,
       clientSecret: twitterClientSecret,
       authorization: {
+        url: 'https://twitter.com/i/oauth2/authorize',
         params: {
           scope: 'tweet.read users.read offline.access',
         },
       },
+      token: 'https://api.twitter.com/2/oauth2/token',
+      userinfo: 'https://api.twitter.com/2/users/me',
       profile(profile) {
         console.log('🐦 [TWITTER-PROFILE] Raw profile data:', {
           id: profile.data?.id,
