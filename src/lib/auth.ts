@@ -74,6 +74,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           prompt: 'consent',
         },
       },
+      profile(profile) {
+        console.log('[TWITTER-PROFILE] Raw profile data:', {
+          id: profile.data?.id,
+          name: profile.data?.name,
+          username: profile.data?.username,
+          profile_image_url: profile.data?.profile_image_url
+        })
+        
+        return {
+          id: profile.data.id,
+          name: profile.data.name,
+          email: profile.data.email || `${profile.data.username}@twitter.placeholder`,
+          image: profile.data.profile_image_url,
+          firstName: profile.data.name?.split(' ')[0] || 'User',
+          lastName: profile.data.name?.split(' ').slice(1).join(' ') || 'User',
+        }
+      },
       allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
@@ -254,6 +271,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (account?.provider === 'google' || account?.provider === 'facebook' || account?.provider === 'twitter') {
         try {
           console.log('[OAUTH-SIGNIN] Starting OAuth sign-in for:', user.email, 'Provider:', account.provider)
+          
+          // Twitter-specific confirmation
+          if (account?.provider === 'twitter') {
+            console.log('✅ [TWITTER-SIGNIN] Twitter OAuth is working! User:', user.name || user.email)
+          }
           
           // Extract first and last name from profile FIRST (most reliable source)
           let firstName = 'User'
