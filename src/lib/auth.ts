@@ -68,10 +68,15 @@ const providers: any[] = [
 
 // Add Twitter provider only if credentials are available
 if (process.env.TWITTER_CLIENT_ID && process.env.TWITTER_CLIENT_SECRET) {
+  console.log('✅ [AUTH-INIT] Twitter OAuth credentials found, adding provider')
+  console.log('   Client ID length:', process.env.TWITTER_CLIENT_ID.length)
+  console.log('   Client Secret length:', process.env.TWITTER_CLIENT_SECRET.length)
+  
   providers.push(
     Twitter({
       clientId: process.env.TWITTER_CLIENT_ID,
       clientSecret: process.env.TWITTER_CLIENT_SECRET,
+      version: '2.0', // Explicitly use OAuth 2.0
       authorization: {
         params: {
           scope: 'tweet.read users.read offline.access',
