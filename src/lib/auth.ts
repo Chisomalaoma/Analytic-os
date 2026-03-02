@@ -67,20 +67,23 @@ const providers: any[] = [
 ]
 
 // Add Twitter provider only if credentials are available
-if (process.env.TWITTER_CLIENT_ID && process.env.TWITTER_CLIENT_SECRET) {
-  console.log('✅ [AUTH-INIT] Twitter OAuth credentials found, adding provider')
-  console.log('   Client ID length:', process.env.TWITTER_CLIENT_ID.length)
-  console.log('   Client Secret length:', process.env.TWITTER_CLIENT_SECRET.length)
+// Twitter OAuth 2.0 uses Client ID and Client Secret (not Consumer Key/API Key)
+const twitterClientId = process.env.AUTH_TWITTER_ID || process.env.TWITTER_CLIENT_ID
+const twitterClientSecret = process.env.AUTH_TWITTER_SECRET || process.env.TWITTER_CLIENT_SECRET
+
+if (twitterClientId && twitterClientSecret) {
+  console.log('✅ [AUTH-INIT] Twitter OAuth 2.0 credentials found')
+  console.log('   Using:', process.env.AUTH_TWITTER_ID ? 'AUTH_TWITTER_ID' : 'TWITTER_CLIENT_ID')
+  console.log('   Client ID length:', twitterClientId.length)
+  console.log('   Client Secret length:', twitterClientSecret.length)
   
   providers.push(
     Twitter({
-      clientId: process.env.TWITTER_CLIENT_ID,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET,
-      version: '2.0', // Explicitly use OAuth 2.0
+      clientId: twitterClientId,
+      clientSecret: twitterClientSecret,
       authorization: {
         params: {
           scope: 'tweet.read users.read offline.access',
-          prompt: 'consent',
         },
       },
       profile(profile) {
