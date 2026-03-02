@@ -169,6 +169,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  debug: true, // Enable debug mode to see detailed errors
+  logger: {
+    error(code, ...message) {
+      console.error('❌ [NEXTAUTH-ERROR]', code, message)
+    },
+    warn(code, ...message) {
+      console.warn('⚠️ [NEXTAUTH-WARN]', code, message)
+    },
+    debug(code, ...message) {
+      console.log('🔍 [NEXTAUTH-DEBUG]', code, message)
+    },
+  },
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
       // Initial sign in - user object is available
@@ -292,20 +304,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
     async signIn({ user, account, profile }) {
-      // Handle OAuth sign-in
-      if (account?.provider === 'google' || account?.provider === 'facebook' || account?.provider === 'twitter') {
-        try {
-          console.log('[OAUTH-SIGNIN] Starting OAuth sign-in for:', user.email, 'Provider:', account.provider)
-          
-          // Twitter-specific confirmation
-          if (account?.provider === 'twitter') {
-            console.log('🎉 [TWITTER-SIGNIN] Twitter OAuth authentication successful!')
-            console.log('✅ [TWITTER-SIGNIN] User authenticated:', {
-              name: user.name,
-              email: user.email,
-              provider: account.provider
-            })
-          }
+      try {
+        console.log('🔐 [SIGNIN] Sign-in attempt:', {
+          provider: account?.provider,
+          userId: user?.id,
+          userEmail: user?.email,
+          hasAccount: !!account,
+          hasProfile: !!profile
+        })
+
+        // Handle OAuth sign-in
+        if (account?.provider === 'google' || account?.provider === 'facebook' || account?.provider === 'twitter') {
+          try {
+            console.log('[OAUTH-SIGNIN] Starting OAuth sign-in for:', user.email, 'Provider:', account.provider)
+            
+            // Twitter-specific confirmation
+            if (account?.provider === 'twitter') {
+              console.log('🎉 [TWITTER-SIGNIN] Twitter OAuth authentication successful!')
+              console.log('✅ [TWITTER-SIGNIN] User authenticated:', {
+                name: user.name,
+                email: user.email,
+                provider: account.provider,
+                accountDetails: account
+              })
+            }
           
           // Extract first and last name from profile FIRST (most reliable source)
           let firstName = 'User'
@@ -413,13 +435,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
         } catch (error) {
-          console.error('[OAUTH-SIGNIN] Error in signIn callback:', error)
+          console.error('❌ [OAUTH-SIGNIN] Error in signIn callback:', error)
+          console.error('❌ [OAUTH-SIGNIN] Error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            provider: account?.provider
+          })
           // Don't block sign-in on errors
         }
         return true
       }
       // Credentials handled separately
       return true
+    } catch (error) {
+      console.error('❌ [SIGNIN] Fatal error in signIn callback:', error)
+      console.error('❌ [SIGNIN] Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      return false
+    }
     },
   },
   events: {
