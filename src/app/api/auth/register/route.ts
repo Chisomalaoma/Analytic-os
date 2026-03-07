@@ -17,6 +17,8 @@ const registerSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
+  bvn: z.string().length(11, 'BVN must be 11 digits').optional().or(z.literal('')),
+  nin: z.string().length(11, 'NIN must be 11 digits').optional().or(z.literal('')),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -91,6 +93,8 @@ export async function POST(request: NextRequest) {
         lastName: data.lastName,
         companyName: data.companyName || null, // Store company name for business accounts
         phone: data.phone || null,
+        bvn: data.bvn || null,
+        nin: data.nin || null,
         passwordHash,
         emailVerified: null, // Require OTP verification
         role: data.role || 'USER',

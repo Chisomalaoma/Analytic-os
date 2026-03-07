@@ -16,13 +16,15 @@ export async function createWalletWithRetry(params: {
   email: string
   firstName: string
   lastName: string
+  bvn?: string
+  nin?: string
   maxRetries?: number
 }): Promise<{
   success: boolean
   wallet?: any
   error?: string
 }> {
-  const { userId, email, firstName, lastName, maxRetries = 3 } = params
+  const { userId, email, firstName, lastName, bvn, nin, maxRetries = 3 } = params
   
   let lastError: any = null
   
@@ -48,6 +50,8 @@ export async function createWalletWithRetry(params: {
         email,
         firstName,
         lastName,
+        bvn,
+        nin,
         reference: `WALLET_${userId}_${Date.now()}`
       })
       
@@ -117,13 +121,22 @@ export async function ensureUserHasWallet(userId: string): Promise<{
         email: true,
         firstName: true,
         lastName: true,
-        username: true
+        username: true,
+        bvn: true,
+        nin: true
       }
     })
     
     if (!user) {
       const error = 'User not found'
       console.error('[WALLET-SERVICE]', error, userId)
+      return { success: false, error }
+    }
+    
+    // Check if BVN or NIN is provided
+    if (!user.bvn && !user.nin) {
+      const error = 'BVN or NIN is required. Please update your profile.'
+      console.error('[WALLET-SERVICE]', error)
       return { success: false, error }
     }
     
@@ -137,7 +150,9 @@ export async function ensureUserHasWallet(userId: string): Promise<{
       userId,
       email: user.email,
       firstName,
-      lastName
+      lastName,
+      bvn: user.bvn || undefined,
+      nin: user.nin || undefined
     })
     
     if (!result.success) {

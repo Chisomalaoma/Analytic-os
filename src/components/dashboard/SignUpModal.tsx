@@ -28,6 +28,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [bvn, setBvn] = useState('')
+  const [nin, setNin] = useState('')
   const [otp, setOtp] = useState('')
   const [role, setRole] = useState<'INVESTOR' | 'ADMIN'>('INVESTOR')
   const [showComingSoon, setShowComingSoon] = useState(false)
@@ -105,6 +107,8 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
           phone,
           email: role === 'ADMIN' ? workEmail : email,
           password,
+          bvn: bvn || undefined,
+          nin: nin || undefined,
           role,
         }),
       })
@@ -444,6 +448,57 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                     const value = e.target.value.replace(/\D/g, '')
                     if (value.length <= 13) {
                       setPhone(value)
+                    }
+                  }}
+                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+                  placeholder="+234 80 0000 0000"
+                  maxLength={13}
+                />
+              </div>
+
+              {/* BVN or NIN - Required for wallet */}
+              <div className="bg-[#1A1A1A] border border-[#23262F] rounded-lg p-4">
+                <p className="text-sm text-gray-400 mb-3">
+                  <span className="text-white font-medium">Wallet Verification</span> - Provide either BVN or NIN (required by CBN for wallet creation)
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">BVN (Optional)</label>
+                    <input
+                      type="text"
+                      value={bvn}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '')
+                        if (value.length <= 11) {
+                          setBvn(value)
+                        }
+                      }}
+                      className="w-full bg-[#0D0D0D] border border-[#23262F] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#4459FF]"
+                      placeholder="11 digits"
+                      maxLength={11}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">NIN (Optional)</label>
+                    <input
+                      type="text"
+                      value={nin}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '')
+                        if (value.length <= 11) {
+                          setNin(value)
+                        }
+                      }}
+                      className="w-full bg-[#0D0D0D] border border-[#23262F] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#4459FF]"
+                      placeholder="11 digits"
+                      maxLength={11}
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  You can add this later in settings, but wallet features will be disabled until provided.
+                </p>
+              </div>
                     }
                   }}
                   className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
