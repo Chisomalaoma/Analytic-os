@@ -3,7 +3,7 @@ const prisma = new PrismaClient()
 
 async function addNinAndCreateWallet() {
   try {
-    const email = 'Chisomalaoma@wtxonline.com'
+    const email = 'chisomalaoma@wtxonline.com'
     const nin = '27897918926'
 
     console.log(`\n🔍 Finding user: ${email}`)
@@ -48,9 +48,10 @@ async function addNinAndCreateWallet() {
 
     // Create wallet with NIN
     console.log('\n💰 Creating wallet with NIN...')
-    const { ensureUserHasWallet } = require('./src/lib/wallet-service')
     
-    const result = await ensureUserHasWallet(user.id)
+    // Import using dynamic import for TypeScript modules
+    const walletService = await import('./src/lib/wallet-service.ts')
+    const result = await walletService.ensureUserHasWallet(user.id)
     
     if (result.success) {
       console.log('✅ Wallet created successfully!')
