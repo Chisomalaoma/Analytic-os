@@ -499,13 +499,6 @@ export default function SignUpModal({ open, onClose, onSwitchToSignin }: SignUpM
                   You can add this later in settings, but wallet features will be disabled until provided.
                 </p>
               </div>
-                    }
-                  }}
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
-                  placeholder="+234 80 0000 0000"
-                  maxLength={13}
-                />
-              </div>
 
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Create Password</label>
