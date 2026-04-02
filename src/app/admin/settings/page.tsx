@@ -30,7 +30,7 @@ export default function AdminSettingsPage() {
               <label className="block text-sm text-gray-400 mb-1">Platform Name</label>
               <input
                 type="text"
-                defaultValue="WTX"
+                defaultValue="XTes"
                 className="w-full px-3 py-2 bg-[#1A1D24] border border-[#858B9A33] rounded-lg text-white text-sm focus:outline-none focus:border-[#4459FF]"
               />
             </div>
@@ -38,7 +38,7 @@ export default function AdminSettingsPage() {
               <label className="block text-sm text-gray-400 mb-1">Support Email</label>
               <input
                 type="email"
-                defaultValue="support@wtx.com"
+                defaultValue="support@xtes.app"
                 className="w-full px-3 py-2 bg-[#1A1D24] border border-[#858B9A33] rounded-lg text-white text-sm focus:outline-none focus:border-[#4459FF]"
               />
             </div>

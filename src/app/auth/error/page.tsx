@@ -116,7 +116,7 @@ function ErrorContent() {
           <div className="mt-6 pt-6 border-t border-[#23262F]">
             <p className="text-sm text-gray-500">
               Need help?{' '}
-              <a href="mailto:support@wtxonline.com" className="text-[#4459FF] hover:underline">
+              <a href="mailto:support@xtes.app" className="text-[#4459FF] hover:underline">
                 Contact Support
               </a>
             </p>

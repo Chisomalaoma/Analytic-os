@@ -95,7 +95,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-white">WTX</span>
+          <span className="text-xl font-bold text-white">XTes</span>
         </div>
 
         <div className="hidden md:flex items-center gap-6">
@@ -124,7 +124,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
               </span>
-              <span className="text-sm text-gray-300">Invest with WTX</span>
+              <span className="text-sm text-gray-300">Invest with XTes</span>
             </div>
           </GlassCard>
         </div>
@@ -199,7 +199,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
               {
                 step: "01",
                 title: "Deposit",
-                desc: "Create an account and fund your WTX account",
+                desc: "Create an account and fund your XTes account",
                 icon: <Wallet size={32} />,
               },
               {
@@ -422,7 +422,7 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">WTX</span>
+              <span className="text-xl font-bold text-white">XTes</span>
             </div>
           </div>
           <div className="pt-6 border-t border-[#23262F]">

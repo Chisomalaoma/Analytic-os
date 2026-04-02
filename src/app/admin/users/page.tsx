@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
             </div>
           </td>
           <td className="px-5 py-4">
-            <span className="text-sm text-gray-300">admin@wtx.com</span>
+            <span className="text-sm text-gray-300">admin@xtes.app</span>
           </td>
           <td className="px-5 py-4">
             <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-500">

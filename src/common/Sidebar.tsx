@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             >
                 <FaTimes />
             </button>
-            <div className="text-2xl font-bold mb-12 px-4 pt-8">WTX</div>
+            <div className="text-2xl font-bold mb-12 px-4 pt-8">XTes</div>
             <nav className="flex flex-col gap-2 px-4">
                 <Link
                     href="/dashboard"

@@ -59,7 +59,7 @@ export default function AdminSidebar({ isOpen = false, onClose }: AdminSidebarPr
 
       {/* Logo */}
       <div className="text-2xl font-bold mb-8 px-4 pt-8">
-        <span className="text-white">WTX</span>
+        <span className="text-white">XTes</span>
         <span className="text-xs ml-2 px-2 py-1 bg-[#4459FF] rounded text-white">Admin</span>
       </div>
 
