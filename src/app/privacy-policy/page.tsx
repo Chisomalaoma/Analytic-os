@@ -26,6 +26,7 @@ export default function PrivacyPolicyPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Privacy Policy</h1>
+                <p className="text-xl font-semibold text-white mt-1">XTES</p>
                 <p className="text-gray-400 text-sm">Effective Date: February 23, 2026 | Last Updated: February 23, 2026</p>
               </div>
             </div>

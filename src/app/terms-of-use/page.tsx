@@ -26,6 +26,7 @@ export default function TermsOfUsePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Terms of Use</h1>
+                <p className="text-xl font-semibold text-white mt-1">XTes</p>
                 <p className="text-gray-400 text-sm">Effective Date: April 2, 2026 | Governing Law: Federal Republic of Nigeria</p>
               </div>
             </div>
