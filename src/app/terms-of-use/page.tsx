@@ -26,7 +26,7 @@ export default function TermsOfUsePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Terms of Use</h1>
-                <p className="text-gray-400 text-sm">Effective Date: February 23, 2026 | Governing Law: Federal Republic of Nigeria</p>
+                <p className="text-gray-400 text-sm">Effective Date: April 2, 2026 | Governing Law: Federal Republic of Nigeria</p>
               </div>
             </div>
           </div>
@@ -43,7 +43,7 @@ export default function TermsOfUsePage() {
               <h2 className="text-xl font-semibold text-white m-0">Introduction</h2>
             </div>
             <p className="text-gray-300 m-0 mb-4">
-              These Terms of Use ("Terms") govern access to and use of the WTX website, mobile application, 
+              These Terms of Use ("Terms") govern access to and use of the XTes website, mobile application, 
               and related services (collectively, the "Platform").
             </p>
             <p className="text-gray-300 m-0 mb-4">
@@ -159,7 +159,7 @@ export default function TermsOfUsePage() {
                 </p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
                   <li>An internal marketplace; or</li>
-                  <li>A liquidity facility provided by the Platform (if applicable)</li>
+                  <li>A liquidity facility provided by the Platform</li>
                 </ul>
                 <p>
                   <strong>6.2</strong> Liquidity depends on market demand and availability of buyers unless a 
@@ -200,7 +200,11 @@ export default function TermsOfUsePage() {
                   <li>Applicable processing timelines</li>
                 </ul>
                 <p>
-                  <strong>7.3</strong> The Platform may delay withdrawals where required by law, regulatory inquiry, 
+                  <strong>7.3</strong> If a user liquidates their investment before the maturity date, all earnings 
+                  accrued for that current month will be forfeited in full.
+                </p>
+                <p>
+                  <strong>7.4</strong> The Platform may delay withdrawals where required by law, regulatory inquiry, 
                   or security concerns.
                 </p>
               </div>
@@ -210,9 +214,11 @@ export default function TermsOfUsePage() {
             <section className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-6">
               <h2 className="text-xl font-semibold text-white mb-4">8. Fees</h2>
               <div className="space-y-4 text-gray-300">
-                <p>The Platform may charge:</p>
+                <p className="font-semibold text-white">
+                  The Platform charges a 0.35% trade fee on every buy and sell transaction.
+                </p>
+                <p className="mt-4">Additional fees may include:</p>
                 <ul className="list-disc list-inside ml-4 space-y-2">
-                  <li>Brokerage and trade fees</li>
                   <li>Early exit/redemption fees</li>
                   <li>Withdrawal fees</li>
                 </ul>
@@ -366,11 +372,11 @@ export default function TermsOfUsePage() {
               </h2>
               <div className="space-y-4 text-gray-300">
                 <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4">
-                  <p className="font-semibold text-white mb-3">WTX</p>
+                  <p className="font-semibold text-white mb-3">XTes Limited</p>
                   <ul className="space-y-2">
-                    <li><strong>RC Number:</strong> [To be provided]</li>
+                    <li><strong>RC Number:</strong> 9444998</li>
                     <li><strong>Location:</strong> Lagos, Nigeria</li>
-                    <li><strong>Email:</strong> <a href="mailto:Support@wtxonline.com" className="text-[#4459FF] hover:underline">Support@wtxonline.com</a></li>
+                    <li><strong>Email:</strong> <a href="mailto:support@xtes.app" className="text-[#4459FF] hover:underline">support@xtes.app</a></li>
                   </ul>
                 </div>
               </div>

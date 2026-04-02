@@ -43,7 +43,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-xl font-semibold text-white m-0">Introduction</h2>
             </div>
             <p className="text-gray-300 m-0">
-              WTX ("Company", "we", "our", or "us") is committed to protecting your personal data. 
+              XTes Limited ("Company", "we", "our", or "us") is committed to protecting your personal data. 
               This Privacy Policy explains how we collect, process, store, disclose, and protect personal 
               data when you use our website, mobile application, and related investment services (the "Platform").
             </p>
@@ -95,7 +95,7 @@ export default function PrivacyPolicyPage() {
                     <li>Residential address</li>
                     <li>Phone number</li>
                     <li>Email address</li>
-                    <li>Government-issued identification (NIN, Passport, Driver's License)</li>
+                    <li>Government-issued identification (NIN, Passport, Driver's License, voters card)</li>
                     <li>Photograph/selfie verification</li>
                   </ul>
                 </div>
@@ -231,7 +231,7 @@ export default function PrivacyPolicyPage() {
                   <li>Lodge a complaint with the Nigeria Data Protection Commission</li>
                 </ul>
                 <p className="mt-4">
-                  Requests may be made via <span className="text-[#4459FF]">Support@wtxonline.com</span>
+                  Requests may be made via <span className="text-[#4459FF]">support@xtes.app</span>
                 </p>
               </div>
             </section>
@@ -321,11 +321,11 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-xl font-semibold text-white mb-4">Contact Information</h2>
               <div className="space-y-4 text-gray-300">
                 <div className="bg-[#0A0A0A] border border-[#262626] rounded-lg p-4">
-                  <p className="font-semibold text-white mb-3">WTX</p>
+                  <p className="font-semibold text-white mb-3">XTES LIMITED</p>
                   <ul className="space-y-2">
-                    <li><strong>RC Number:</strong> [To be provided]</li>
+                    <li><strong>RC Number:</strong> 9444998</li>
                     <li><strong>Location:</strong> Lagos, Nigeria</li>
-                    <li><strong>Email:</strong> <a href="mailto:Support@wtxonline.com" className="text-[#4459FF] hover:underline">Support@wtxonline.com</a></li>
+                    <li><strong>Email:</strong> <a href="mailto:support@xtes.app" className="text-[#4459FF] hover:underline">support@xtes.app</a></li>
                   </ul>
                 </div>
               </div>

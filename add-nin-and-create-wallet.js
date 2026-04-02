@@ -3,7 +3,7 @@ const prisma = new PrismaClient()
 
 async function addNinAndCreateWallet() {
   try {
-    const email = 'chisomalaoma@wtxonline.com'
+    const email = 'chisomalaoma@xtes.app'
     const nin = '27897918926'
 
     console.log(`\n🔍 Finding user: ${email}`)
