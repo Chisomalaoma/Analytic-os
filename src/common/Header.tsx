@@ -11,7 +11,7 @@ import { WithdrawModal } from '@/components/dashboard/WithdrawModal'
 import { NotificationBell } from '@/components/dashboard/NotificationBell'
 import { useWallet } from '@/hooks/useWallet'
 import { useWalletSync } from '@/hooks/useWalletSync'
-import { useToken } from '@/contexts/TokenContext'
+import { KYCModal } from '@/components/dashboard/KYCModal'
 
 interface HeaderProps {
   onOpenSidebar?: () => void
@@ -27,6 +27,7 @@ export default function Header({
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const [showFundModal, setShowFundModal] = useState(false)
   const [showWithdrawModal, setShowWithdrawModal] = useState(false)
+  const [showKYCModal, setShowKYCModal] = useState(false)
 
   // Get token data from context
   const { tokenSymbol, tokenPrice, tokenChange, tokenPercentChange, annualYield, isInWatchlist, toggleWatchlist } = useToken()
@@ -90,12 +91,22 @@ export default function Header({
       console.error('[HEADER] Failed to create wallet:', error)
       console.error('[HEADER] Error details:', error.message)
       
-      // Show error to user
-      alert(`Failed to create wallet: ${error.message || 'Unknown error'}. Please try again or contact support.`)
+      // Check if error is due to missing BVN/NIN
+      if (error.message?.includes('BVN or NIN')) {
+        setShowKYCModal(true)
+      } else {
+        alert(`Failed to create wallet: ${error.message || 'Unknown error'}. Please try again or contact support.`)
+      }
     } finally {
       setIsCreating(false)
     }
   }, [createWallet, mutateWallet, isCreating])
+
+  const handleKYCSuccess = useCallback(async () => {
+    setShowKYCModal(false)
+    // Retry wallet creation after KYC update
+    await handleCreateWallet()
+  }, [handleCreateWallet])
 
   return (
     <>
@@ -308,6 +319,13 @@ export default function Header({
           }}
         />
       )}
+
+      {/* KYC Modal */}
+      <KYCModal
+        open={showKYCModal}
+        onClose={() => setShowKYCModal(false)}
+        onSuccess={handleKYCSuccess}
+      />
     </>
   )
 }
