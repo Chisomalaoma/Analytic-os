@@ -12,6 +12,7 @@ import { NotificationBell } from '@/components/dashboard/NotificationBell'
 import { useWallet } from '@/hooks/useWallet'
 import { useWalletSync } from '@/hooks/useWalletSync'
 import { KYCModal } from '@/components/dashboard/KYCModal'
+import { useToken } from '@/contexts/TokenContext'
 
 interface HeaderProps {
   onOpenSidebar?: () => void
