@@ -138,7 +138,8 @@ export function SmileIDKYCModal({ open, onClose, onSuccess }: SmileIDKYCModalPro
         onClose()
       }, 3000)
     } catch (err: any) {
-      setError(err.message)
+      console.error('[KYC-MODAL] Submission error:', err)
+      setError(err.message || 'Failed to submit KYC. Please try again.')
       setStep('error')
     } finally {
       setLoading(false)
@@ -307,6 +308,11 @@ export function SmileIDKYCModal({ open, onClose, onSuccess }: SmileIDKYCModalPro
               onChange={handleSelfieUpload}
               className="hidden"
             />
+
+            <div className="text-xs text-gray-500 mt-2">
+              On mobile: Opens camera automatically<br/>
+              On desktop: Upload a selfie photo
+            </div>
 
             <button
               onClick={handleSelfieNext}
