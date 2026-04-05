@@ -55,11 +55,22 @@ export class SmileIDClient {
   }
 
   private generateSignature(timestamp: string): string {
-    const message = `${timestamp}${this.config.partnerId}sid_request`
-    return crypto
-      .createHmac('sha256', this.config.apiKey)
-      .update(message)
-      .digest('hex')
+    // SmileID signature: HMAC-SHA256 with separate updates, then base64 encode
+    // Reference: https://docs.usesmileid.com/integration-options/rest-api/signing-your-api-request/generate-signature
+    const hmac = crypto.createHmac('sha256', this.config.apiKey)
+    hmac.update(timestamp, 'utf8')
+    hmac.update(this.config.partnerId, 'utf8')
+    hmac.update('sid_request', 'utf8')
+    
+    const signature = hmac.digest().toString('base64')
+    
+    console.log('[SMILEID] Signature generated:', {
+      timestamp,
+      partnerId: this.config.partnerId,
+      signaturePrefix: signature.substring(0, 20) + '...'
+    })
+    
+    return signature
   }
 
   async prepareUpload(data: BiometricKYCData): Promise<any> {
