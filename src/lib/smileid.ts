@@ -55,22 +55,29 @@ export class SmileIDClient {
         country: data.country,
       })
 
+      // Prepare partner params
+      const partner_params = {
+        job_id: data.jobId,
+        user_id: data.userId,
+        job_type: 1, // Biometric KYC
+      }
+
       // Prepare image array
-      const images = []
+      const image_details = []
       
-      // Add selfie image
+      // Add selfie image (base64)
       if (data.selfieImage) {
-        images.push({
-          image_type_id: 2, // Selfie
+        image_details.push({
+          image_type_id: 2, // Selfie base64
           image: data.selfieImage,
         })
       }
 
-      // Add liveness images
+      // Add liveness images (base64)
       if (data.livenessImages && data.livenessImages.length > 0) {
         data.livenessImages.forEach((image) => {
-          images.push({
-            image_type_id: 6, // Liveness
+          image_details.push({
+            image_type_id: 6, // Liveness base64
             image,
           })
         })
@@ -84,21 +91,31 @@ export class SmileIDClient {
         first_name: data.firstName,
         last_name: data.lastName,
         ...(data.dob && { dob: data.dob }),
-        entered: true,
+        entered: 'true', // Must be string
       }
+
+      // Options
+      const options = {
+        return_job_status: false,
+        signature: true,
+      }
+
+      console.log('[SMILEID] Calling submit_job with:', {
+        partner_params,
+        image_count: image_details.length,
+        id_info: { ...id_info, id_number: '***' },
+      })
 
       // Submit job using the SDK
       const result = await this.webApi.submit_job(
-        data.userId,
-        data.jobId,
-        'biometric_kyc',
-        {
-          id_info,
-          images,
-        }
+        partner_params,
+        image_details,
+        id_info,
+        options
       )
 
       console.log('[SMILEID] Job submitted successfully:', {
+        success: result.success,
         smileJobId: result.smile_job_id,
         code: result.code,
       })
@@ -112,10 +129,19 @@ export class SmileIDClient {
 
   async getJobStatus(userId: string, jobId: string): Promise<any> {
     try {
+      const partner_params = {
+        job_id: jobId,
+        user_id: userId,
+      }
+
+      const options = {
+        return_history: true,
+        return_image_links: true,
+      }
+
       const result = await this.webApi.get_job_status(
-        userId,
-        jobId,
-        {}
+        partner_params,
+        options
       )
       return result
     } catch (error: any) {
