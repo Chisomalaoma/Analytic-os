@@ -45,16 +45,32 @@ export async function POST(request: NextRequest) {
     let livenessCheckPassed = false
     let addressVerified = false
 
-    // Approved result codes: 1210 (Enroll User), 1012 (ID Validated)
-    if (['1210', '1012'].includes(ResultCode)) {
+    // Approved result codes: 1210 (Enroll User), 1012 (ID Validated), 0810 (Approved)
+    if (['1210', '1012', '0810'].includes(ResultCode)) {
       kycStatus = 'verified'
       livenessCheckPassed = Actions?.Liveness_Check === 'Passed' || 
                            Actions?.Selfie_Check === 'Passed'
     }
-    // Rejected result codes
-    else if (ResultCode.startsWith('2') || ResultCode.startsWith('3')) {
+    // Rejected result codes: starts with 2, 3, or specific rejection codes like 0813
+    else if (
+      ResultCode.startsWith('2') || 
+      ResultCode.startsWith('3') ||
+      ['0813', '0814', '0815'].includes(ResultCode) // Spoof/fraud detection codes
+    ) {
       kycStatus = 'rejected'
     }
+    // In-progress codes: 0, 1 (except approved ones)
+    else {
+      kycStatus = 'in_progress'
+    }
+
+    console.log('[SMILEID-WEBHOOK] Processing result:', {
+      userId,
+      SmileJobID,
+      ResultCode,
+      ResultText,
+      kycStatus,
+    })
 
     // Check if this is an address verification callback
     if (body.job_type === 'address_verification') {
