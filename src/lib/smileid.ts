@@ -80,6 +80,12 @@ export class SmileIDClient {
       signature,
     }
 
+    console.log('[SMILEID] Prepare upload request:', {
+      url: `${this.getBaseUrl()}/upload`,
+      partnerId: this.config.partnerId,
+      sandbox: this.config.sandbox,
+    })
+
     const response = await fetch(`${this.getBaseUrl()}/upload`, {
       method: 'POST',
       headers: {
@@ -88,12 +94,21 @@ export class SmileIDClient {
       body: JSON.stringify(payload),
     })
 
+    const responseText = await response.text()
+    console.log('[SMILEID] Response status:', response.status)
+    console.log('[SMILEID] Response body:', responseText)
+
     if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error || 'Failed to prepare upload')
+      let error
+      try {
+        error = JSON.parse(responseText)
+      } catch {
+        throw new Error(`SmileID API error (${response.status}): ${responseText}`)
+      }
+      throw new Error(error.error || error.message || 'Failed to prepare upload')
     }
 
-    return response.json()
+    return JSON.parse(responseText)
   }
 
   async uploadJob(
