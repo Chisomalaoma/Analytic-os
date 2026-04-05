@@ -33,6 +33,20 @@ model User {
   role          UserRole  @default(USER)
   bvn           String? // Bank Verification Number (for wallet KYC)
   nin           String? // National Identity Number (for wallet KYC)
+  
+  // SmileID KYC Fields
+  kycStatus         KYCStatus @default(pending)
+  kycProvider       String?   @default("smileid")
+  smileJobId        String?   @unique // SmileID job tracking ID
+  idType            String? // BVN, NIN, DRIVERS_LICENSE, VOTER_ID, PASSPORT
+  idNumber          String? // The actual ID number
+  kycVerifiedAt     DateTime?
+  addressVerified   Boolean   @default(false)
+  livenessCheckPassed Boolean @default(false)
+  kycRejectionReason String? @db.Text
+  kycDocumentUrl    String? // URL to uploaded ID document
+  kycSelfieUrl      String? // URL to uploaded selfie
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -155,6 +169,14 @@ enum UserRole {
   USER
   INVESTOR
   ADMIN
+}
+
+enum KYCStatus {
+  pending
+  in_progress
+  verified
+  rejected
+  expired
 }
 
 enum CreditDebit {

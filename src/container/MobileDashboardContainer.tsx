@@ -8,6 +8,8 @@ import { MobileTokenRow } from '@/components/dashboard/MobileTokenRow'
 import { MobileExploreMenu } from '@/components/dashboard/MobileExploreMenu'
 import { MobileBottomNav } from '@/components/dashboard/MobileBottomNav'
 import SearchDropdown from '@/components/dashboard/SearchDropdown'
+import { KYCBanner } from '@/components/dashboard/KYCBanner'
+import { SmileIDKYCModal } from '@/components/dashboard/SmileIDKYCModal'
 import { useCurrency } from '@/contexts/CurrencyContext'
 
 interface Token {
@@ -25,6 +27,8 @@ interface Token {
 export default function MobileDashboardContainer() {
   const [showExplore, setShowExplore] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
+  const [showKYCModal, setShowKYCModal] = useState(false)
+  const [kycStatus, setKycStatus] = useState<string>('pending')
   const [activeFilter, setActiveFilter] = useState('all')
   const [activeTime, setActiveTime] = useState('1d')
   const [tokens, setTokens] = useState<Token[]>([])
@@ -33,6 +37,22 @@ export default function MobileDashboardContainer() {
   const searchDropdownRef = useRef<HTMLDivElement>(null)
   const headerScrollRef = useRef<HTMLDivElement>(null)
   const { formatAmount } = useCurrency()
+
+  // Check KYC status
+  useEffect(() => {
+    const checkKYCStatus = async () => {
+      try {
+        const res = await fetch('/api/kyc/status')
+        const data = await res.json()
+        if (data.status) {
+          setKycStatus(data.status)
+        }
+      } catch (error) {
+        console.error('Failed to fetch KYC status:', error)
+      }
+    }
+    checkKYCStatus()
+  }, [])
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -156,6 +176,13 @@ export default function MobileDashboardContainer() {
 
       {/* Stats Bar */}
       <MobileStatsBar />
+
+      {/* KYC Banner - Show only if KYC is not verified */}
+      {kycStatus !== 'verified' && (
+        <div className="px-4 pt-4">
+          <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
+        </div>
+      )}
 
       {/* Filters */}
       <MobileFilters
@@ -317,6 +344,16 @@ export default function MobileDashboardContainer() {
 
       {/* Bottom Navigation */}
       <MobileBottomNav />
+
+      {/* SmileID KYC Modal */}
+      <SmileIDKYCModal
+        open={showKYCModal}
+        onClose={() => setShowKYCModal(false)}
+        onSuccess={() => {
+          setKycStatus('in_progress')
+          setShowKYCModal(false)
+        }}
+      />
     </div>
   )
 }

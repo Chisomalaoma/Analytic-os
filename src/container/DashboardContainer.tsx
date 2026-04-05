@@ -9,10 +9,14 @@ import Tabs from '../components/dashboard/Tabs';
 import TopTable from '../components/dashboard/TopTable';
 import FiltersDropdown, { FilterState } from '../components/dashboard/FiltersDropdown';
 import SearchDropdown from '@/components/dashboard/SearchDropdown';
+import { KYCBanner } from '@/components/dashboard/KYCBanner';
+import { SmileIDKYCModal } from '@/components/dashboard/SmileIDKYCModal';
 
 export default function DashboardContainer() {
     const [showFilters, setShowFilters] = useState(false);
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+    const [showKYCModal, setShowKYCModal] = useState(false);
+    const [kycStatus, setKycStatus] = useState<string>('pending');
     const [activeTab, setActiveTab] = useState('all');
     const [timePeriod, setTimePeriod] = useState<'1d' | '7d' | '30d' | '1yr'>('30d');
     const [tokenCount, setTokenCount] = useState(0);
@@ -39,6 +43,22 @@ export default function DashboardContainer() {
             }
         };
         fetchTokenCount();
+    }, []);
+
+    // Check KYC status
+    useEffect(() => {
+        const checkKYCStatus = async () => {
+            try {
+                const res = await fetch('/api/kyc/status');
+                const data = await res.json();
+                if (data.status) {
+                    setKycStatus(data.status);
+                }
+            } catch (error) {
+                console.error('Failed to fetch KYC status:', error);
+            }
+        };
+        checkKYCStatus();
     }, []);
 
     // Ensure user has a wallet (safety net for OAuth users)
@@ -113,6 +133,11 @@ export default function DashboardContainer() {
     return (
         <div className='flex-1'>
             <section className="mt-8 p-4 sm:p-6 md:p-8">
+                {/* KYC Banner - Show only if KYC is not verified */}
+                {kycStatus !== 'verified' && (
+                    <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
+                )}
+                
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1 sm:gap-0">
                         <h2 className="text-base xs:text-lg sm:text-xl font-semibold">
@@ -163,6 +188,16 @@ export default function DashboardContainer() {
                 isOpen={showFilters}
                 onClose={() => setShowFilters(false)}
                 onApplyFilters={setFilters}
+            />
+            
+            {/* SmileID KYC Modal */}
+            <SmileIDKYCModal
+                open={showKYCModal}
+                onClose={() => setShowKYCModal(false)}
+                onSuccess={() => {
+                    setKycStatus('in_progress');
+                    setShowKYCModal(false);
+                }}
             />
         </div>
     );
