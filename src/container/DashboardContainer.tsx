@@ -61,7 +61,7 @@ export default function DashboardContainer() {
         checkKYCStatus();
     }, []);
 
-    // Ensure user has a wallet (safety net for OAuth users)
+    // Ensure user has a wallet (only creates if user has BVN/NIN from regular signup)
     useEffect(() => {
         const ensureWallet = async () => {
             try {

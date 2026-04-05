@@ -101,7 +101,12 @@ export async function createReservedAccount(params: {
     getAllAvailableBanks: true
   }
 
-  // Add BVN or NIN if provided (required by Monnify for some account types)
+  // Add BVN or NIN if provided (Monnify may require this for some account types)
+  // If neither is provided, Monnify will reject - this is expected for OAuth users
+  if (!params.bvn && !params.nin) {
+    throw new Error('BVN or NIN is required by Monnify to create virtual account. Please complete KYC verification.')
+  }
+  
   if (params.bvn) {
     requestBody.bvn = params.bvn
   }

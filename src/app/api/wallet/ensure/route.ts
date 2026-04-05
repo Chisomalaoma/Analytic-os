@@ -19,11 +19,43 @@ export async function POST(request: NextRequest) {
 
     console.log('[WALLET-ENSURE] Checking wallet for user:', session.user.email)
 
-    // Ensure user has a wallet
+    // Check if user already has a wallet
+    const { prisma } = await import('@/lib/prisma')
+    const existingWallet = await prisma.wallet.findUnique({
+      where: { userId: session.user.id }
+    })
+
+    if (existingWallet) {
+      console.log('[WALLET-ENSURE] User already has wallet:', session.user.email)
+      return NextResponse.json({ 
+        success: true,
+        hasWallet: true,
+        wallet: existingWallet
+      })
+    }
+
+    // Check if user has BVN or NIN (required for Monnify)
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { bvn: true, nin: true }
+    })
+
+    if (!user?.bvn && !user?.nin) {
+      // User signed up with OAuth (Google/Twitter) - no BVN/NIN yet
+      // Don't try to create wallet, they'll create it later via "Create Wallet" button
+      console.log('[WALLET-ENSURE] User has no BVN/NIN, skipping wallet creation:', session.user.email)
+      return NextResponse.json({ 
+        success: true,
+        hasWallet: false,
+        message: 'Wallet creation requires BVN or NIN. Please complete KYC or use Create Wallet button.'
+      })
+    }
+
+    // User has BVN/NIN (regular signup), create wallet automatically
     const result = await ensureUserHasWallet(session.user.id)
 
     if (result.success) {
-      console.log('[WALLET-ENSURE] User has wallet:', session.user.email)
+      console.log('[WALLET-ENSURE] Wallet created for user:', session.user.email)
       return NextResponse.json({ 
         success: true,
         hasWallet: true,
