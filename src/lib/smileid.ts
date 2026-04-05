@@ -94,7 +94,15 @@ export class SmileIDClient {
     console.log('[SMILEID] Prepare upload request:', {
       url: `${this.getBaseUrl()}/upload`,
       partnerId: this.config.partnerId,
+      apiKeyPrefix: this.config.apiKey.substring(0, 8) + '...',
       sandbox: this.config.sandbox,
+      timestamp,
+      signatureLength: signature.length,
+      signaturePrefix: signature.substring(0, 20) + '...',
+      payload: {
+        ...payload,
+        signature: signature.substring(0, 20) + '...',
+      }
     })
 
     const response = await fetch(`${this.getBaseUrl()}/upload`, {
