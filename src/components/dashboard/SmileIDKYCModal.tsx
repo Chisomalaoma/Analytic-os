@@ -217,8 +217,15 @@ export function SmileIDKYCModal({ open, onClose, onSuccess }: SmileIDKYCModalPro
                 type="date"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0A0A0A] border border-[#262626] rounded-lg text-white focus:outline-none focus:border-[#4459FF]"
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-3 bg-[#0A0A0A] border border-[#262626] rounded-lg text-white focus:outline-none focus:border-[#4459FF] [color-scheme:dark]"
+                style={{
+                  colorScheme: 'dark',
+                }}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Click the calendar icon to select your date of birth
+              </p>
             </div>
 
             <button
