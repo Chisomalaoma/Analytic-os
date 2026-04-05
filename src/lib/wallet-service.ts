@@ -133,13 +133,8 @@ export async function ensureUserHasWallet(userId: string): Promise<{
       return { success: false, error }
     }
     
-    // Check if BVN or NIN is provided
-    if (!user.bvn && !user.nin) {
-      const error = 'BVN or NIN is required. Please update your profile.'
-      console.error('[WALLET-SERVICE]', error)
-      return { success: false, error }
-    }
-    
+    // Note: BVN/NIN not required for wallet creation
+    // Users can fund wallet without KYC, but withdrawals require KYC verification
     console.log('[WALLET-SERVICE] Creating wallet for:', user.email)
     
     // Create wallet
