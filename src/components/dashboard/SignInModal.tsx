@@ -40,6 +40,27 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
     setError('')
 
     try {
+      // OTP DISABLED - Direct sign in
+      const signInRes = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (signInRes?.error) {
+        setError('Invalid email or password')
+        setLoading(false)
+        return
+      }
+
+      onClose()
+      // Allow session to update, then redirect to dashboard
+      setTimeout(() => {
+        router.push('/dashboard')
+        router.refresh()
+      }, 100)
+
+      /* OTP FLOW DISABLED
       // Step 1: Verify credentials (but don't sign in yet)
       const verifyRes = await fetch('/api/auth/verify-credentials', {
         method: 'POST',
@@ -73,6 +94,7 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
       // Move to OTP step
       setStep('otp')
       setLoading(false)
+      */
     } catch {
       setError('Something went wrong')
       setLoading(false)
@@ -261,94 +283,55 @@ export default function SignInModal({ open, onClose, onSwitchToSignup }: SignInM
         )}
 
         {/* Sign In Form */}
-        {step === 'form' ? (
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Email</label>
+        <form onSubmit={handleSignIn} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Password</label>
+            <div className="relative">
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#4459FF]"
-                placeholder="Enter your email"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 pr-12 text-white focus:outline-none focus:border-[#4459FF]"
+                placeholder="Enter your password"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 pr-12 text-white focus:outline-none focus:border-[#4459FF]"
-                  placeholder="Enter your password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              <div className="text-right mt-1">
-                <button
-                  type="button"
-                  onClick={() => setShowForgotPassword(true)}
-                  className="text-sm text-[#4459FF] hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
+            <div className="text-right mt-1">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-[#4459FF] hover:underline"
+              >
+                Forgot password?
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Verifying...' : 'Continue'}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOTP} className="space-y-4">
-            <div className="text-center mb-4">
-              <p className="text-sm text-gray-400">Enter the 6-digit code sent to</p>
-              <p className="text-white font-medium">{email}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Verification Code</label>
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                maxLength={6}
-                className="w-full bg-[#1A1A1A] border border-[#23262F] rounded-lg px-4 py-3 text-white text-center text-2xl tracking-widest focus:outline-none focus:border-[#4459FF]"
-                placeholder="000000"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || otp.length !== 6}
-              className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Verifying...' : 'Sign In'}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleResendOTP}
-              disabled={loading}
-              className="w-full py-2 text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Did not receive the code? Resend
-            </button>
-          </form>
-        )}
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-[#4459FF] hover:bg-[#3448EE] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-400">
