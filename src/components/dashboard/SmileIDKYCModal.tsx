@@ -52,7 +52,13 @@ export function SmileIDKYCModal({ open, onClose, onSuccess }: SmileIDKYCModalPro
       return
     }
     setError('')
-    setStep('document-upload')
+    
+    // BVN and NIN don't require document upload - go straight to selfie
+    if (idType === 'BVN' || idType === 'NIN') {
+      setStep('selfie-capture')
+    } else {
+      setStep('document-upload')
+    }
   }
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,6 +249,12 @@ export function SmileIDKYCModal({ open, onClose, onSuccess }: SmileIDKYCModalPro
             <p className="text-sm text-gray-400">
               Upload a clear photo of your {idTypes.find(t => t.value === idType)?.label}
             </p>
+
+            <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <p className="text-sm text-blue-400">
+                📸 Take a clear photo of the front of your ID card
+              </p>
+            </div>
 
             <div
               onClick={() => documentInputRef.current?.click()}
