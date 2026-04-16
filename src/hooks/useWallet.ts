@@ -2,24 +2,51 @@
 
 import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => {
+  if (!res.ok && res.status === 401) {
+    // Return empty data for unauthorized instead of throwing
+    return { success: false, data: null }
+  }
+  return res.json()
+})
 
 export function useWallet() {
   const { data: balance, error: balanceError, mutate: mutateBalance } = useSWR(
     '/api/wallet/balance',
     fetcher,
-    { refreshInterval: 5000 } // Refresh every 5 seconds
+    { 
+      refreshInterval: 5000, // Refresh every 5 seconds
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true
+    }
   )
 
   const { data: walletData, error: walletError, mutate: mutateWallet } = useSWR(
     '/api/wallet/info',
-    fetcher
+    fetcher,
+    {
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true
+    }
   )
 
   const { data: transactions, error: txError, mutate: mutateTx } = useSWR(
     '/api/wallet/transactions',
     fetcher,
-    { refreshInterval: 5000 } // Refresh every 5 seconds
+    { 
+      refreshInterval: 5000, // Refresh every 5 seconds
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 1000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true
+    }
   )
 
   const createWallet = async () => {

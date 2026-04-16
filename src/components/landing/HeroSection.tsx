@@ -246,58 +246,17 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
 
       {/* Investment Calculator Section */}
       <section className="relative z-10 px-6 lg:px-12 py-24">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
               Investment Calculator
             </h2>
             <p className="text-gray-400 text-lg">
-              Explore available investments and calculate your potential earnings
+              Calculate your potential earnings from investments
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            {/* Token Selection */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-white mb-6">
-                Explore Available Investments
-              </h3>
-              {tokens.map((token) => (
-                <button
-                  key={token.id}
-                  onClick={() => setSelectedToken(token.id)}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-300 ${
-                    selectedToken === token.id
-                      ? "border-[#4459FF] bg-[#4459FF]/10"
-                      : "border-[#252525] bg-[#1A1A1A] hover:border-[#353535]"
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="text-lg font-semibold text-white mb-1">
-                        {token.name}
-                      </h4>
-                      <p className="text-sm text-gray-400">Industry: {token.industry}</p>
-                    </div>
-                    {token.monthlyPayout && (
-                      <CheckCircle size={20} className="text-green-400 flex-shrink-0" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <p className="text-sm text-gray-400">Annual Yield</p>
-                      <p className="text-2xl font-bold text-[#4459FF]">{token.yield}%</p>
-                    </div>
-                    <div className="h-8 w-px bg-[#252525]" />
-                    <div>
-                      <p className="text-sm text-gray-400">Monthly Payout</p>
-                      <p className="text-sm text-green-400 font-medium">30 days ✓</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
+          <div className="max-w-xl mx-auto">
             {/* Calculator */}
             <GlowingCard className="p-8">
               <h3 className="text-2xl font-bold text-white mb-6">
