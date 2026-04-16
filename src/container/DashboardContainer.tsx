@@ -138,7 +138,7 @@ export default function DashboardContainer() {
                     <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
                 )}
                 
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-6">
                     <div className="flex flex-col gap-1 sm:gap-0">
                         <h2 className="text-base xs:text-lg sm:text-xl font-semibold">
                             Explore Tokens

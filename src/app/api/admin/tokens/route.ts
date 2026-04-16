@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notifyNewTokenListed } from '@/lib/notifications'
+import crypto from 'crypto'
 
 const createTokenSchema = z.object({
   name: z.string().min(1, 'Token name is required'),
@@ -153,6 +154,9 @@ export async function POST(request: NextRequest) {
     // Generate unique tokenId
     const tokenId = await generateTokenId(data.symbol)
 
+    // Auto-generate contract address (Ethereum-style)
+    const contractAddress = data.contractAddress || `0x${crypto.randomBytes(20).toString('hex')}`
+
     // Create token
     const token = await prisma.token.create({
       data: {
@@ -171,7 +175,7 @@ export async function POST(request: NextRequest) {
         minimumInvestment: data.minimumInvestment,
         employeeCount: data.employeeCount,
         description: data.description || null,
-        contractAddress: data.contractAddress || null,
+        contractAddress,
         volume: 0,
         transactionCount: 0,
       },

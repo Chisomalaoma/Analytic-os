@@ -2,7 +2,12 @@
 
 import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url, {
+  credentials: 'include', // Include cookies for authentication
+  headers: {
+    'Content-Type': 'application/json',
+  }
+}).then((res) => res.json())
 
 export function useWallet() {
   const { data: balance, error: balanceError, mutate: mutateBalance } = useSWR(
@@ -23,7 +28,13 @@ export function useWallet() {
   )
 
   const createWallet = async () => {
-    const res = await fetch('/api/wallet/ensure', { method: 'POST' })
+    const res = await fetch('/api/wallet/ensure', { 
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
     const data = await res.json()
     
     if (!res.ok) {
@@ -38,7 +49,13 @@ export function useWallet() {
   }
 
   const syncWallet = async () => {
-    const res = await fetch('/api/wallet/sync', { method: 'GET' })
+    const res = await fetch('/api/wallet/sync', { 
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
     if (!res.ok) throw new Error('Failed to sync wallet')
     await mutateBalance()
     await mutateTx()

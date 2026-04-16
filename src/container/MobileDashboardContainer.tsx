@@ -174,15 +174,15 @@ export default function MobileDashboardContainer() {
         onOpenSearch={() => setShowSearch(true)}
       />
 
-      {/* Stats Bar */}
-      <MobileStatsBar />
-
       {/* KYC Banner - Show only if KYC is not verified */}
       {kycStatus !== 'verified' && (
         <div className="px-4 pt-4">
           <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
         </div>
       )}
+
+      {/* Stats Bar */}
+      <MobileStatsBar />
 
       {/* Filters */}
       <MobileFilters

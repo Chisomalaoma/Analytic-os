@@ -89,7 +89,7 @@ const SearchDropdown = forwardRef<HTMLDivElement, SearchDropdownProps>(({ isOpen
             <input
               ref={inputRef}
               className="flex-1 bg-transparent outline-none text-white placeholder-gray-400 text-base"
-              placeholder="Search startups, CA"
+              placeholder="Search token, CA"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {

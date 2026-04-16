@@ -76,7 +76,7 @@ const SearchModal = forwardRef<HTMLDivElement, { isOpen?: boolean; onClose: () =
                 <div className="border-b border-[#23262F] px-6 py-4">
                     <input
                         className="w-full bg-transparent outline-none text-white placeholder-gray-400 text-base"
-                        placeholder="Search startups, CA"
+                        placeholder="Search token, CA"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         autoFocus
