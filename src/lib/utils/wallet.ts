@@ -17,9 +17,9 @@ export function parseNaira(naira: string): number {
   return Math.round(num * 100)
 }
 
-// Format account number for display (e.g., 8098765432 -> 809 876 5432)
+// Format account number for display (no spaces)
 export function formatAccountNumber(accountNumber: string): string {
-  return accountNumber.replace(/(\d{3})(?=\d)/g, '$1 ')
+  return accountNumber
 }
 
 // Generate display initials from name

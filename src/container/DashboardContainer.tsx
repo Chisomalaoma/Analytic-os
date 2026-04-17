@@ -132,13 +132,15 @@ export default function DashboardContainer() {
 
     return (
         <div className='flex-1'>
-            <section className="mt-8 p-4 sm:p-6 md:p-8">
-                {/* KYC Banner - Show only if KYC is not verified */}
-                {kycStatus !== 'verified' && (
+            {/* KYC Banner - Show only if KYC is not verified */}
+            {kycStatus !== 'verified' && (
+                <div className="p-4 sm:p-6 md:p-8 pb-0">
                     <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
-                )}
-                
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-6">
+                </div>
+            )}
+            
+            <section className="mt-8 p-4 sm:p-6 md:p-8">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1 sm:gap-0">
                         <h2 className="text-base xs:text-lg sm:text-xl font-semibold">
                             Explore Tokens

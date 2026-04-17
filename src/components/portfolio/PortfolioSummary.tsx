@@ -13,6 +13,7 @@ interface PortfolioData {
     sellCount: number
     holdCount: number
     lastUpdated: string
+    lockedYield?: number
 }
 
 export default function PortfolioSummary() {
@@ -74,14 +75,15 @@ export default function PortfolioSummary() {
         )
     }
 
-    const { totalInvested, totalYield, yieldPercentage, transactionCount, buyCount, sellCount, holdCount } = portfolioData || {
+    const { totalInvested, totalYield, yieldPercentage, transactionCount, buyCount, sellCount, holdCount, lockedYield = 0 } = portfolioData || {
         totalInvested: 0,
         totalYield: 0,
         yieldPercentage: 0,
         transactionCount: 0,
         buyCount: 0,
         sellCount: 0,
-        holdCount: 0
+        holdCount: 0,
+        lockedYield: 0
     }
 
     return (
@@ -122,8 +124,15 @@ export default function PortfolioSummary() {
                     <div className="text-3xl font-bold text-white">
                         {formatAmount(totalYield)}
                     </div>
-                    <div className="text-green-400 text-sm font-medium">
-                        {totalInvested > 0 ? `Based on ${formatAmount(totalInvested)} invested` : 'Start investing to earn yield'}
+                    <div className="text-sm font-medium space-y-1">
+                        <div className="text-green-400">
+                            {totalInvested > 0 ? `Based on ${formatAmount(totalInvested)} invested` : 'Start investing to earn yield'}
+                        </div>
+                        {lockedYield > 0 && (
+                            <div className="text-yellow-400">
+                                {formatAmount(lockedYield)} locked until maturity
+                            </div>
+                        )}
                     </div>
                 </div>
 

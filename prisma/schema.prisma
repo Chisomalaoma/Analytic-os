@@ -263,6 +263,10 @@ model TokenHolding {
   averagePrice     Decimal  @default(1500) @db.Decimal(10, 2) // N1,500
   totalInvested    Decimal  @default(0) @db.Decimal(18, 2) // Total amount invested in Naira
   accumulatedYield Decimal  @default(0) @db.Decimal(18, 2) // Accumulated yield in Naira
+  lockedYield      Decimal  @default(0) @db.Decimal(18, 2) // Locked yield until maturity
+  monthlyYieldAmount Decimal @default(0) @db.Decimal(18, 2) // Fixed monthly yield amount
+  maturityDate     DateTime? // Date when yield becomes withdrawable
+  lastYieldAccrual DateTime @default(now()) // Last time yield was accrued
   lastYieldUpdate  DateTime @default(now()) // Last time yield was calculated
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -271,6 +275,7 @@ model TokenHolding {
 
   @@unique([userId, tokenId])
   @@index([userId])
+  @@index([maturityDate])
 }
 
 model TokenPurchase {

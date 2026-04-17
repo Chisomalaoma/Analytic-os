@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/sync-wallet-transactions",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/accrue-yields",
+      "schedule": "0 1 * * *"
     }
   ]
 }

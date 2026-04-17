@@ -168,18 +168,18 @@ export default function MobileDashboardContainer() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] pb-20 safe-bottom">
-      {/* Header */}
-      <MobileHeader
-        onOpenExplore={() => setShowExplore(true)}
-        onOpenSearch={() => setShowSearch(true)}
-      />
-
       {/* KYC Banner - Show only if KYC is not verified */}
       {kycStatus !== 'verified' && (
         <div className="px-4 pt-4">
           <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
         </div>
       )}
+      
+      {/* Header */}
+      <MobileHeader
+        onOpenExplore={() => setShowExplore(true)}
+        onOpenSearch={() => setShowSearch(true)}
+      />
 
       {/* Stats Bar */}
       <MobileStatsBar />

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { X } from 'lucide-react'
 
 interface KYCModalProps {
   open: boolean
@@ -55,9 +54,6 @@ export function KYCModal({ open, onClose, onSuccess }: KYCModalProps) {
       <div className="bg-[#1A1A1A] rounded-xl w-full max-w-md border border-[#262626]">
         <div className="flex items-center justify-between p-6 border-b border-[#262626]">
           <h2 className="text-xl font-semibold text-white">Complete KYC</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">

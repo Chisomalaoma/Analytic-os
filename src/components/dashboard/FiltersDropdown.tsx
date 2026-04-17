@@ -6,14 +6,8 @@ const FILTER_TABS = [
 
 const CATEGORIES = [
     'All',
-    'Software',
-    'EdTech',
+    'Logistics',
     'Fintech',
-    'AI',
-    'Blockchain',
-    'DeFi',
-    'Crypto',
-    'Automotive',
 ];
 
 export interface FilterState {

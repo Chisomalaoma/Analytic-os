@@ -13,6 +13,7 @@ interface PortfolioSummaryResponse {
     buyCount: number           // Buy transactions count
     sellCount: number          // Sell transactions count
     holdCount: number          // Number of different tokens currently held
+    lockedYield: number        // Locked yield until maturity
     lastUpdated: string        // ISO timestamp
   }
   error?: string
@@ -42,6 +43,7 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
       select: {
         totalInvested: true,
         accumulatedYield: true,
+        lockedYield: true,
         lastYieldUpdate: true,
         tokenId: true,
         quantity: true
@@ -50,6 +52,9 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
 
     // Calculate total invested from holdings
     const totalInvested = holdings.reduce((sum, h) => sum + Number(h.totalInvested), 0)
+
+    // Calculate total locked yield
+    const totalLockedYield = holdings.reduce((sum, h) => sum + Number(h.lockedYield), 0)
 
     // Get token info for APY
     const tokenIds = [...new Set(holdings.map(h => h.tokenId))]
@@ -142,6 +147,7 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
         buyCount: recentPurchases,
         sellCount: recentSales,
         holdCount,
+        lockedYield: Math.round(totalLockedYield * 100) / 100,
         lastUpdated: new Date().toISOString()
       }
     })

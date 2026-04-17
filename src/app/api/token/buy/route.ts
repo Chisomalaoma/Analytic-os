@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { notifyTokenPurchase } from '@/lib/notifications'
+import { calculateMonthlyYield, calculateMaturityDate } from '@/lib/yield-service'
 
 const buyTokenSchema = z.object({
   tokenSymbol: z.string().min(1, 'Token symbol is required'),
@@ -113,6 +114,9 @@ export async function POST(request: NextRequest) {
         const newAveragePrice = (oldTotalCost + newPurchaseCost) / newTotalQuantity
         const newTotalInvested = Number(existingHolding.totalInvested) + data.nairaAmount
 
+        // Calculate new monthly yield based on new total investment
+        const monthlyYield = calculateMonthlyYield(newTotalInvested, Number(token.annualYield))
+
         holding = await tx.tokenHolding.update({
           where: {
             userId_tokenId: {
@@ -124,12 +128,16 @@ export async function POST(request: NextRequest) {
             quantity: { increment: tokensReceived },
             averagePrice: newAveragePrice,
             totalInvested: newTotalInvested,
+            monthlyYieldAmount: monthlyYield,
             lastYieldUpdate: new Date(),
             updatedAt: new Date()
           }
         })
       } else {
-        // First purchase - set initial values
+        // First purchase - initialize yield tracking
+        const monthlyYield = calculateMonthlyYield(data.nairaAmount, Number(token.annualYield))
+        const maturityDate = calculateMaturityDate(new Date(), 12) // 12 months maturity
+
         holding = await tx.tokenHolding.create({
           data: {
             userId: session.user.id,
@@ -138,6 +146,10 @@ export async function POST(request: NextRequest) {
             averagePrice: TOKEN_PRICE_KOBO,
             totalInvested: data.nairaAmount,
             accumulatedYield: 0,
+            lockedYield: 0,
+            monthlyYieldAmount: monthlyYield,
+            maturityDate: maturityDate,
+            lastYieldAccrual: new Date(),
             lastYieldUpdate: new Date()
           }
         })
