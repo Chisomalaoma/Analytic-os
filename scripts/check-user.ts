@@ -1,39 +1,55 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { PrismaClient } from '../src/generated/prisma/client'
 
-async function main() {
-  const user = await prisma.user.findUnique({
-    where: { email: 'alifaraz22566@gmail.com' },
-    include: {
-      wallet: true,
-      tokenHoldings: true,
-      tokenPurchases: { orderBy: { createdAt: 'desc' }, take: 5 }
+const prisma = new PrismaClient()
+
+async function checkUser() {
+  const email1 = 'chisomalaoma@gmail.com'
+  const email2 = 'Chisomalaoma@gmail.com'
+
+  try {
+    const user1 = await prisma.user.findUnique({
+      where: { email: email1 },
+      select: { id: true, email: true, passwordHash: true }
+    })
+
+    const user2 = await prisma.user.findUnique({
+      where: { email: email2 },
+      select: { id: true, email: true, passwordHash: true }
+    })
+
+    console.log('User with lowercase email:', user1 ? '✅ Found' : '❌ Not found')
+    if (user1) {
+      console.log('  Email:', user1.email)
+      console.log('  Has password:', !!user1.passwordHash)
     }
-  });
-  
-  if (user) {
-    console.log('=== User Info ===');
-    console.log('Email:', user.email);
-    console.log('User ID:', user.userId);
-    console.log('');
-    console.log('=== Wallet ===');
-    console.log('Balance (kobo):', user.wallet?.balance);
-    console.log('Balance (NGN): ₦' + (user.wallet ? (Number(user.wallet.balance) / 100).toLocaleString() : 0));
-    console.log('');
-    console.log('=== Token Holdings ===');
-    user.tokenHoldings.forEach((h: { tokenId: string; quantity: number }) => {
-      console.log(`${h.tokenId}: ${h.quantity} tokens`);
-    });
-    console.log('');
-    console.log('=== Recent Purchases ===');
-    user.tokenPurchases.forEach((p: { createdAt: Date; tokensReceived: number; nairaAmountSpent: number }) => {
-      console.log(`- ${p.createdAt.toISOString()}: ${p.tokensReceived} tokens for ₦${p.nairaAmountSpent}`);
-    });
-  } else {
-    console.log('User not found');
+
+    console.log('\nUser with capital C email:', user2 ? '✅ Found' : '❌ Not found')
+    if (user2) {
+      console.log('  Email:', user2.email)
+      console.log('  Has password:', !!user2.passwordHash)
+    }
+
+    // Search for any user with similar email (case-insensitive)
+    const allUsers = await prisma.user.findMany({
+      where: {
+        email: {
+          contains: 'chisomalaoma',
+          mode: 'insensitive'
+        }
+      },
+      select: { id: true, email: true, passwordHash: true }
+    })
+
+    console.log('\n📋 All matching users:')
+    allUsers.forEach(user => {
+      console.log(`  - ${user.email} (has password: ${!!user.passwordHash})`)
+    })
+
+  } catch (error) {
+    console.error('❌ Error:', error)
+  } finally {
+    await prisma.$disconnect()
   }
-  
-  await prisma.$disconnect();
 }
 
-main();
+checkUser()
