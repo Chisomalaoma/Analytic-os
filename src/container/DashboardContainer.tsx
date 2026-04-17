@@ -134,12 +134,12 @@ export default function DashboardContainer() {
         <div className='flex-1'>
             {/* KYC Banner - Show only if KYC is not verified */}
             {kycStatus !== 'verified' && (
-                <div className="p-4 sm:p-6 md:p-8 pb-0">
+                <div className="pt-4 px-4 sm:px-6 md:px-8">
                     <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
                 </div>
             )}
             
-            <section className="mt-8 p-4 sm:p-6 md:p-8">
+            <section className="p-4 sm:p-6 md:p-8 pt-2">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex flex-col gap-1 sm:gap-0">
                         <h2 className="text-base xs:text-lg sm:text-xl font-semibold">

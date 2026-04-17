@@ -51,7 +51,7 @@ export default function ListStartupForm() {
                     industry: formData.industry,
                     payoutFrequency: 'Monthly', // Fixed to Monthly
                     investmentType: formData.investmentType,
-                    riskLevel: formData.riskLevel,
+                    riskLevel: 'Medium', // Default to Medium
                     minimumInvestment: parseFloat(formData.minimumInvestment) * 100, // Convert to kobo
                     employeeCount: parseInt(formData.employeeCount),
                     description: formData.description,
@@ -123,7 +123,7 @@ export default function ListStartupForm() {
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm">Minimum Investment (₦) *</label>
+                    <label className="block mb-2 text-sm">Set Minimum Price *</label>
                     <input 
                         name="price"
                         type="number"
@@ -162,20 +162,6 @@ export default function ListStartupForm() {
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm">Risk Level *</label>
-                    <select 
-                        name="riskLevel"
-                        value={formData.riskLevel}
-                        onChange={handleChange}
-                        required
-                        className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
-                    >
-                        <option value="Low" className="bg-gray-800">Low</option>
-                        <option value="Medium" className="bg-gray-800">Medium</option>
-                        <option value="High" className="bg-gray-800">High</option>
-                    </select>
-                </div>
-                <div>
                     <label className="block mb-2 text-sm">Payout Frequency *</label>
                     <input 
                         type="text"
@@ -197,6 +183,7 @@ export default function ListStartupForm() {
                         <option value="Equity" className="bg-gray-800">Equity</option>
                         <option value="Debt" className="bg-gray-800">Debt</option>
                         <option value="Hybrid" className="bg-gray-800">Hybrid</option>
+                        <option value="Fixed Income" className="bg-gray-800">Fixed Income</option>
                     </select>
                 </div>
                 <div>

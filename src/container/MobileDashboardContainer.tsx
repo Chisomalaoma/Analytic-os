@@ -170,7 +170,7 @@ export default function MobileDashboardContainer() {
     <div className="min-h-screen bg-[#0A0A0A] pb-20 safe-bottom">
       {/* KYC Banner - Show only if KYC is not verified */}
       {kycStatus !== 'verified' && (
-        <div className="px-4 pt-4">
+        <div className="px-4 pt-2 pb-1">
           <KYCBanner onStartKYC={() => setShowKYCModal(true)} />
         </div>
       )}
