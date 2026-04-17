@@ -506,7 +506,7 @@ const OverviewCard: React.FC<OverviewCardProps> = ({ walletBalance = 0, tokenSym
             Processing...
           </>
         ) : (
-          tradeType === 'buy' ? 'Place Order' : 'Sell'
+          tradeType === 'buy' ? 'Place Order' : 'Place Order'
         )}
       </button>
         </>
