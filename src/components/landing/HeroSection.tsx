@@ -249,10 +249,10 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              Investment Calculator
+              Calculate Your Returns
             </h2>
             <p className="text-gray-400 text-lg">
-              Calculate your potential earnings from investments
+              See how much you can earn from your investments
             </p>
           </div>
 
