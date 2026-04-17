@@ -24,23 +24,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = withdrawSchema.parse(body)
 
-    // Check KYC status
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { kycStatus: true },
-    })
-
-    if (!user || user.kycStatus !== 'verified') {
-      return NextResponse.json(
-        { 
-          error: 'KYC verification required',
-          message: 'Please complete your KYC verification to withdraw funds',
-          requiresKYC: true 
-        },
-        { status: 403 }
-      )
-    }
-
     // Get user's wallet
     const wallet = await prisma.wallet.findUnique({
       where: { userId: session.user.id },
