@@ -43,7 +43,6 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
       select: {
         totalInvested: true,
         accumulatedYield: true,
-        lockedYield: true,
         lastYieldUpdate: true,
         tokenId: true,
         quantity: true
@@ -53,8 +52,23 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
     // Calculate total invested from holdings
     const totalInvested = holdings.reduce((sum, h) => sum + Number(h.totalInvested), 0)
 
-    // Calculate total locked yield
-    const totalLockedYield = holdings.reduce((sum, h) => sum + Number(h.lockedYield), 0)
+    // Calculate total locked yield (safely handle if field doesn't exist)
+    let totalLockedYield = 0
+    try {
+      const holdingsWithLocked = await prisma.tokenHolding.findMany({
+        where: {
+          userId,
+          quantity: { gt: 0 }
+        },
+        select: {
+          lockedYield: true
+        }
+      })
+      totalLockedYield = holdingsWithLocked.reduce((sum, h) => sum + Number(h.lockedYield || 0), 0)
+    } catch (error) {
+      // Field doesn't exist yet, use 0
+      console.log('lockedYield field not available yet')
+    }
 
     // Get token info for APY
     const tokenIds = [...new Set(holdings.map(h => h.tokenId))]
