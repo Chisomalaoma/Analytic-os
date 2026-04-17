@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/sync-wallet-transactions",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
