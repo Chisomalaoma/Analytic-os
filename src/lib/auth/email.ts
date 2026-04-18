@@ -13,8 +13,9 @@ interface EmailOptions {
  */
 export async function sendEmail({ to, subject, html }: EmailOptions): Promise<boolean> {
   try {
+    // Use noreply@xtes.app since domain is verified
     const { data, error } = await resend.emails.send({
-      from: 'XTes <support@xtes.app>',
+      from: 'XTes <noreply@xtes.app>',
       to,
       subject,
       html,
@@ -25,6 +26,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions): Promise<bo
       return false
     }
 
+    console.log('Email sent successfully:', data)
     return true
   } catch (error) {
     console.error('Email send error:', error)
