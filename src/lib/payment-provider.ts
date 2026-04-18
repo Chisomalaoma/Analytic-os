@@ -1,17 +1,13 @@
 // src/lib/payment-provider.ts
-// Unified payment provider interface - supports both Monnify and SafeHaven
+// Payment provider interface - uses Monnify only
 
 import * as monnify from './monnify'
-import * as safehaven from './safehaven'
 import * as monnifyDisbursement from './monnify-disbursement'
 
-// Determine which provider to use based on environment variable
-const PAYMENT_PROVIDER = (process.env.PAYMENT_PROVIDER || 'monnify').toLowerCase()
-
-export type PaymentProvider = 'monnify' | 'safehaven'
+export type PaymentProvider = 'monnify'
 
 export function getPaymentProvider(): PaymentProvider {
-  return PAYMENT_PROVIDER as PaymentProvider
+  return 'monnify'
 }
 
 export interface PaymentAccount {
@@ -43,27 +39,16 @@ export async function createVirtualAccount(params: {
   nin?: string
   reference: string
 }): Promise<PaymentAccount> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to create account`)
+  console.log('[PAYMENT-PROVIDER] Using Monnify to create account')
 
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    return await safehaven.createSubAccount({
-      email: params.email,
-      firstName: params.firstName,
-      lastName: params.lastName,
-      phoneNumber: params.phoneNumber,
-      reference: params.reference
-    })
-  } else {
-    // Default to Monnify
-    return await monnify.createReservedAccount({
-      email: params.email,
-      firstName: params.firstName,
-      lastName: params.lastName,
-      bvn: params.bvn,
-      nin: params.nin,
-      reference: params.reference
-    })
-  }
+  return await monnify.createReservedAccount({
+    email: params.email,
+    firstName: params.firstName,
+    lastName: params.lastName,
+    bvn: params.bvn,
+    nin: params.nin,
+    reference: params.reference
+  })
 }
 
 /**
@@ -77,30 +62,18 @@ export async function getAccountDetails(accountReference: string): Promise<{
   status?: string
   balance?: number
 }> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to get account details`)
-
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    // For SafeHaven, accountReference is the account number
-    return await safehaven.getSubAccountDetails(accountReference)
-  } else {
-    // Default to Monnify
-    return await monnify.getReservedAccountDetails(accountReference)
-  }
+  console.log('[PAYMENT-PROVIDER] Using Monnify to get account details')
+  return await monnify.getReservedAccountDetails(accountReference)
 }
 
 /**
  * Get account balance
  */
 export async function getAccountBalance(accountNumber: string): Promise<number> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to get balance`)
-
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    return await safehaven.getAccountBalance(accountNumber)
-  } else {
-    // Monnify doesn't have a direct balance API, return 0
-    // Balance is tracked in our database via webhooks
-    return 0
-  }
+  console.log('[PAYMENT-PROVIDER] Monnify does not have direct balance API')
+  // Monnify doesn't have a direct balance API, return 0
+  // Balance is tracked in our database via webhooks
+  return 0
 }
 
 /**
@@ -115,25 +88,14 @@ export async function getTransactionHistory(params: {
   page?: number
   pageSize?: number
 }): Promise<TransactionHistory[]> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to get transactions`)
+  console.log('[PAYMENT-PROVIDER] Using Monnify to get transactions')
 
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    return await safehaven.getTransactionHistory({
-      accountNumber: params.accountNumber,
-      startDate: params.startDate || params.fromDate,
-      endDate: params.endDate || params.toDate,
-      page: params.page,
-      pageSize: params.pageSize
-    })
-  } else {
-    // Default to Monnify
-    const transactions = await monnify.searchTransactions({
-      accountNumber: params.accountNumber,
-      fromDate: params.fromDate || params.startDate || '',
-      toDate: params.toDate || params.endDate || ''
-    })
-    return transactions
-  }
+  const transactions = await monnify.searchTransactions({
+    accountNumber: params.accountNumber,
+    fromDate: params.fromDate || params.startDate || '',
+    toDate: params.toDate || params.endDate || ''
+  })
+  return transactions
 }
 
 /**
@@ -143,14 +105,8 @@ export async function verifyBankAccount(
   accountNumber: string,
   bankCode: string
 ): Promise<{ accountName: string; accountNumber: string }> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to verify bank account`)
-
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    return await safehaven.verifyBankAccount(accountNumber, bankCode)
-  } else {
-    // Default to Monnify
-    return await monnifyDisbursement.verifyBankAccount(accountNumber, bankCode)
-  }
+  console.log('[PAYMENT-PROVIDER] Using Monnify to verify bank account')
+  return await monnifyDisbursement.verifyBankAccount(accountNumber, bankCode)
 }
 
 /**
@@ -166,32 +122,16 @@ export async function initiateWithdrawal(params: {
   reference: string
   sourceAccountNumber?: string
 }): Promise<{ transactionReference: string; status: string }> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to initiate withdrawal`)
+  console.log('[PAYMENT-PROVIDER] Using Monnify to initiate withdrawal')
 
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    if (!params.sourceAccountNumber) {
-      throw new Error('Source account number is required for SafeHaven transfers')
-    }
-    return await safehaven.initiateTransfer(
-      params.accountNumber,
-      params.accountName,
-      params.bankCode,
-      params.amount,
-      params.narration,
-      params.reference,
-      params.sourceAccountNumber
-    )
-  } else {
-    // Default to Monnify
-    return await monnifyDisbursement.initiateDisbursement(
-      params.accountNumber,
-      params.accountName,
-      params.bankCode,
-      params.amount,
-      params.narration,
-      params.reference
-    )
-  }
+  return await monnifyDisbursement.initiateDisbursement(
+    params.accountNumber,
+    params.accountName,
+    params.bankCode,
+    params.amount,
+    params.narration,
+    params.reference
+  )
 }
 
 /**
@@ -200,14 +140,8 @@ export async function initiateWithdrawal(params: {
 export async function getWithdrawalStatus(
   transactionReference: string
 ): Promise<{ status: string; amount: number }> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to get withdrawal status`)
-
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    return await safehaven.getTransferStatus(transactionReference)
-  } else {
-    // Default to Monnify
-    return await monnifyDisbursement.getDisbursementStatus(transactionReference)
-  }
+  console.log('[PAYMENT-PROVIDER] Using Monnify to get withdrawal status')
+  return await monnifyDisbursement.getDisbursementStatus(transactionReference)
 }
 
 /**
@@ -218,17 +152,6 @@ export async function getTransactionStatus(reference: string): Promise<{
   amount: number
   paidBy: string
 }> {
-  console.log(`[PAYMENT-PROVIDER] Using ${PAYMENT_PROVIDER} to get transaction status`)
-
-  if (PAYMENT_PROVIDER === 'safehaven') {
-    const result = await safehaven.getTransferStatus(reference)
-    return {
-      status: result.status,
-      amount: result.amount,
-      paidBy: '' // SafeHaven doesn't provide this in the same way
-    }
-  } else {
-    // Default to Monnify
-    return await monnify.getTransactionStatus(reference)
-  }
+  console.log('[PAYMENT-PROVIDER] Using Monnify to get transaction status')
+  return await monnify.getTransactionStatus(reference)
 }
