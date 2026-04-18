@@ -107,7 +107,7 @@ export async function sendPasswordResetOTPEmail(email: string, otp: string): Pro
 
   return sendEmail({
     to: email,
-    subject: 'Reset your AnalytiOS password',
+    subject: 'Reset your XTes password',
     html,
   })
 }
@@ -150,7 +150,7 @@ export async function sendPasswordResetEmail(
 
   return sendEmail({
     to: email,
-    subject: 'Reset your AnalytiOS password',
+    subject: 'Reset your XTes password',
     html,
   })
 }
@@ -175,7 +175,7 @@ export async function sendWelcomeEmail(email: string, firstName: string): Promis
     <body>
       <div class="container">
         <div class="card">
-          <h2 style="margin: 0 0 16px; color: white;">Welcome to AnalytiOS, ${firstName}!</h2>
+          <h2 style="margin: 0 0 16px; color: white;">Welcome to XTes, ${firstName}!</h2>
           <p style="color: #888; margin-bottom: 24px;">Your account has been created successfully.</p>
           <div style="text-align: center;">
             <a href="${process.env.NEXTAUTH_URL}/dashboard" class="button">Go to Dashboard</a>
@@ -191,7 +191,7 @@ export async function sendWelcomeEmail(email: string, firstName: string): Promis
 
   return sendEmail({
     to: email,
-    subject: 'Welcome to AnalytiOS!',
+    subject: 'Welcome to XTes!',
     html,
   })
 }
@@ -226,7 +226,7 @@ export async function sendPasswordChangeConfirmation(email: string): Promise<boo
 
   return sendEmail({
     to: email,
-    subject: 'Your AnalytiOS password has been changed',
+    subject: 'Your XTes password has been changed',
     html,
   })
 }
