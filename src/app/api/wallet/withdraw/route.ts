@@ -66,7 +66,6 @@ export async function POST(request: NextRequest) {
         amount: data.amount,
         narration: data.narration,
         reference,
-        sourceAccountNumber: wallet.accountNumber // For SafeHaven
       })
 
       // Create debit transaction
