@@ -6,6 +6,7 @@ import NextTopLoader from 'nextjs-toploader';
 import AuthProvider from '@/components/providers/AuthProvider';
 import { ZendeskProvider } from '@/components/providers/ZendeskProvider';
 import { CurrencyProvider } from '@/contexts/CurrencyContext';
+import SessionTimeout from '@/components/SessionTimeout';
 import {
   QueryClientProvider,
   QueryClient,
@@ -43,6 +44,7 @@ export default function RootLayout({
             <CurrencyProvider>
               <ZendeskProvider>
                 <NextTopLoader color="#4459FF" showSpinner={false} />
+                <SessionTimeout />
                 {children}
               </ZendeskProvider>
             </CurrencyProvider>
