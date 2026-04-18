@@ -148,6 +148,13 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
     }
   }, [newAccountNumber, newBankCode])
 
+  // Auto-verify when account number and bank are complete
+  useEffect(() => {
+    if (newAccountNumber.length === 10 && newBankCode && !newAccountName && !verifyingAccount) {
+      verifyAccount()
+    }
+  }, [newAccountNumber, newBankCode, newAccountName, verifyingAccount, verifyAccount])
+
   // Handle add bank account
   const handleAddBank = async () => {
     if (!newAccountNumber || !newBankCode || !newAccountName) return
@@ -462,26 +469,23 @@ export function WithdrawModal({ open, onClose, balance, onWithdraw }: WithdrawMo
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, '').slice(0, 10)
                   setNewAccountNumber(value)
+                  // Clear account name when user changes account number
+                  if (newAccountName) setNewAccountName('')
                 }}
                 placeholder="Enter account number"
                 className="w-full bg-[#181A20] border border-[#353A45] rounded-xl px-3 py-2.5 text-white font-mono text-sm focus:outline-none focus:border-[#4459FF]"
               />
+              {verifyingAccount && (
+                <p className="text-xs text-blue-400 mt-1">Verifying account...</p>
+              )}
             </div>
-
-            {/* Verify Button */}
-            <button
-              onClick={verifyAccount}
-              disabled={verifyingAccount || !newAccountNumber || !newBankCode}
-              className="w-full py-2.5 bg-[#353A45] hover:bg-[#4459FF] disabled:bg-[#353A45] disabled:cursor-not-allowed text-white font-medium rounded-xl transition-colors mb-3 text-sm"
-            >
-              {verifyingAccount ? 'Verifying...' : 'Verify Account'}
-            </button>
 
             {/* Account Name Display */}
             {newAccountName && (
-              <div className="bg-[#181A20] rounded-xl p-3 mb-3">
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 mb-3">
                 <p className="text-xs text-gray-400">Account Name</p>
                 <p className="text-white font-medium text-sm">{newAccountName}</p>
+                <p className="text-xs text-green-400 mt-1">✓ Account verified</p>
               </div>
             )}
 
