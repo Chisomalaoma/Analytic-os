@@ -10,7 +10,10 @@ const forgotPasswordSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[FORGOT-PASSWORD] API called')
     const body = await request.json()
+    console.log('[FORGOT-PASSWORD] Email:', body.email)
+    
     const { email } = forgotPasswordSchema.parse(body)
 
     // Check if user exists
@@ -18,8 +21,11 @@ export async function POST(request: NextRequest) {
       where: { email },
     })
 
+    console.log('[FORGOT-PASSWORD] User found:', !!user)
+
     // Don't reveal if user exists or not for security
     if (!user) {
+      console.log('[FORGOT-PASSWORD] User not found, returning success anyway')
       return NextResponse.json({
         success: true,
         message: 'If an account exists with this email, you will receive a reset code.',
@@ -27,10 +33,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate and store OTP
+    console.log('[FORGOT-PASSWORD] Generating OTP...')
     const otp = await createVerificationToken(email)
+    console.log('[FORGOT-PASSWORD] OTP generated:', otp)
 
     // Send OTP via email
+    console.log('[FORGOT-PASSWORD] Sending email...')
     const emailSent = await sendPasswordResetOTPEmail(email, otp)
+    console.log('[FORGOT-PASSWORD] Email sent:', emailSent)
     
     if (!emailSent) {
       console.error('[FORGOT-PASSWORD] Failed to send OTP email')
@@ -40,6 +50,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('[FORGOT-PASSWORD] Success!')
     return NextResponse.json({
       success: true,
       message: 'Reset code sent to your email',
@@ -48,13 +59,14 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('[FORGOT-PASSWORD] Validation error:', error.errors)
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
       )
     }
 
-    console.error('Forgot password error:', error)
+    console.error('[FORGOT-PASSWORD] Error:', error)
     return NextResponse.json(
       { error: 'Something went wrong. Please try again.' },
       { status: 500 }
