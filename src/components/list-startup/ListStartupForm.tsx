@@ -187,7 +187,7 @@ export default function ListStartupForm() {
                     </select>
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm">Minimum Investment (₦) *</label>
+                    <label className="block mb-2 text-sm">Total Supply (₦) *</label>
                     <input 
                         name="minimumInvestment"
                         type="number"
@@ -196,9 +196,9 @@ export default function ListStartupForm() {
                         onChange={handleChange}
                         required
                         className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500" 
-                        placeholder="e.g. 1000" 
+                        placeholder="e.g. 1000000" 
                     />
-                    <p className="text-xs text-gray-500 mt-1">Minimum amount investors can invest</p>
+                    <p className="text-xs text-gray-500 mt-1">Total supply capped at ₦1,000,000</p>
                 </div>
                 <div>
                     <label className="block mb-2 text-sm">Employee Count *</label>
