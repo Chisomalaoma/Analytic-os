@@ -8,6 +8,7 @@ interface Token {
   price: number;
   logoUrl: string | null;
   volume: number;
+  annualYield: number;
 }
 
 interface TrendingStartupsProps {
@@ -66,7 +67,7 @@ export default function TrendingStartups({ watchlistIds, onWatchlistToggle }: Tr
           name={token.name}
           symbol={token.symbol}
           price={token.price / 100} // Convert from kobo to naira
-          change={0} // Would need historical data for real change
+          change={Number(token.annualYield)} // Show annual yield as the change percentage
           logo={token.logoUrl || '/icons/company.svg'}
           initialIsInWatchlist={watchlistIds.includes(token.symbol)}
           onWatchlistToggle={onWatchlistToggle}
