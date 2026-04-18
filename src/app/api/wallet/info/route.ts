@@ -14,7 +14,16 @@ export async function GET() {
     }
 
     const wallet = await prisma.wallet.findUnique({
-      where: { userId: session.user.id }
+      where: { userId: session.user.id },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            username: true
+          }
+        }
+      }
     })
 
     if (!wallet) {
@@ -28,6 +37,11 @@ export async function GET() {
         }
       })
     }
+
+    // Use user's full name from database instead of Monnify's abbreviated name
+    const firstName = wallet.user.firstName || wallet.user.username || 'User'
+    const lastName = wallet.user.lastName || wallet.user.username || 'User'
+    const fullName = `${firstName} ${lastName}`
 
     // Verify the wallet exists on Monnify - if not, create it
     if (wallet.accountRef) {
@@ -65,7 +79,7 @@ export async function GET() {
                 exists: true,
                 accountNumber: newAccount.accountNumber,
                 bankName: newAccount.bankName,
-                accountName: newAccount.accountName
+                accountName: fullName // Use our full name, not Monnify's
               }
             })
           } catch (error) {
@@ -82,7 +96,7 @@ export async function GET() {
         exists: true,
         accountNumber: wallet.accountNumber,
         bankName: wallet.bankName,
-        accountName: wallet.accountName
+        accountName: fullName // Use our full name, not Monnify's
       }
     })
   } catch (error) {
