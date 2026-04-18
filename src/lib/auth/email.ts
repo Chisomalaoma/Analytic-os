@@ -78,6 +78,8 @@ export async function sendOTPEmail(email: string, otp: string): Promise<boolean>
  * Send password reset OTP email
  */
 export async function sendPasswordResetOTPEmail(email: string, otp: string): Promise<boolean> {
+  const logoUrl = process.env.CLOUDINARY_LOGO_URL || ''
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -86,6 +88,8 @@ export async function sendPasswordResetOTPEmail(email: string, otp: string): Pro
       <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0A0A0A; color: white; }
         .container { max-width: 480px; margin: 0 auto; padding: 40px 20px; }
+        .logo { text-align: center; margin-bottom: 24px; }
+        .logo img { height: 40px; }
         .card { background: #1A1A1A; border-radius: 12px; padding: 32px; border: 1px solid #23262F; }
         .otp { font-size: 32px; font-weight: bold; letter-spacing: 8px; text-align: center; margin: 24px 0; color: #fff; }
         .footer { margin-top: 24px; font-size: 14px; color: #888; text-align: center; }
@@ -93,6 +97,7 @@ export async function sendPasswordResetOTPEmail(email: string, otp: string): Pro
     </head>
     <body>
       <div class="container">
+        ${logoUrl ? `<div class="logo"><img src="${logoUrl}" alt="XTes Logo" /></div>` : ''}
         <div class="card">
           <h2 style="margin: 0 0 16px; color: white;">Reset your password</h2>
           <p style="color: #888; margin-bottom: 24px;">Enter this code to reset your password:</p>
