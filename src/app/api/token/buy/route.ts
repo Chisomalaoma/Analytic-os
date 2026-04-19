@@ -70,8 +70,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No wallet found' }, { status: 400 })
     }
 
-    // Convert naira amount to kobo for wallet operations
-    const amountInKobo = data.nairaAmount * 100
+    // Calculate transaction fee (0.35%)
+    const TRANSACTION_FEE_RATE = 0.0035 // 0.35%
+    const transactionFee = data.nairaAmount * TRANSACTION_FEE_RATE
+    const amountAfterFee = data.nairaAmount - transactionFee // Amount that goes to tokens after fee
+
+    // Convert amounts to kobo for wallet operations
+    const amountInKobo = data.nairaAmount * 100 // Total amount user pays
+    const feeInKobo = Math.round(transactionFee * 100)
 
     // Check sufficient balance
     if (wallet.balance < amountInKobo) {
@@ -81,8 +87,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Calculate tokens received (exact division for fractional tokens)
-    const tokensReceived = data.nairaAmount / TOKEN_PRICE_NAIRA
+    // Calculate tokens received based on amount AFTER fee deduction
+    const tokensReceived = amountAfterFee / TOKEN_PRICE_NAIRA
 
     // Generate unique reference
     const reference = `TKN-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
@@ -112,10 +118,13 @@ export async function POST(request: NextRequest) {
         const newPurchaseCost = tokensReceived * TOKEN_PRICE_KOBO
         const newTotalQuantity = Number(existingHolding.quantity) + tokensReceived
         const newAveragePrice = (oldTotalCost + newPurchaseCost) / newTotalQuantity
-        const newTotalInvested = Number(existingHolding.totalInvested) + data.nairaAmount
+        const newTotalInvested = Number(existingHolding.totalInvested) + amountAfterFee // Use amount after fee
 
         // Calculate new monthly yield based on new total investment
         const monthlyYield = calculateMonthlyYield(newTotalInvested, Number(token.annualYield))
+        
+        // Credit additional monthly yield for the new investment
+        const additionalMonthlyYield = calculateMonthlyYield(amountAfterFee, Number(token.annualYield))
 
         holding = await tx.tokenHolding.update({
           where: {
@@ -128,6 +137,8 @@ export async function POST(request: NextRequest) {
             quantity: { increment: tokensReceived },
             averagePrice: newAveragePrice,
             totalInvested: newTotalInvested,
+            accumulatedYield: { increment: additionalMonthlyYield }, // Credit additional yield immediately
+            lockedYield: { increment: additionalMonthlyYield }, // Credit additional yield immediately
             monthlyYieldAmount: monthlyYield,
             lastYieldUpdate: new Date(),
             updatedAt: new Date()
@@ -135,7 +146,7 @@ export async function POST(request: NextRequest) {
         })
       } else {
         // First purchase - initialize yield tracking
-        const monthlyYield = calculateMonthlyYield(data.nairaAmount, Number(token.annualYield))
+        const monthlyYield = calculateMonthlyYield(amountAfterFee, Number(token.annualYield)) // Use amount after fee
         const maturityDate = calculateMaturityDate(new Date(), 12) // 12 months maturity
 
         holding = await tx.tokenHolding.create({
@@ -144,9 +155,9 @@ export async function POST(request: NextRequest) {
             tokenId: token.symbol,
             quantity: tokensReceived,
             averagePrice: TOKEN_PRICE_KOBO,
-            totalInvested: data.nairaAmount,
-            accumulatedYield: 0,
-            lockedYield: 0,
+            totalInvested: amountAfterFee, // Use amount after fee
+            accumulatedYield: monthlyYield, // Credit first month's yield immediately
+            lockedYield: monthlyYield, // Credit first month's yield immediately
             monthlyYieldAmount: monthlyYield,
             maturityDate: maturityDate,
             lastYieldAccrual: new Date(),
@@ -160,7 +171,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: session.user.id,
           tokenId: token.symbol,
-          nairaAmountSpent: data.nairaAmount,
+          nairaAmountSpent: data.nairaAmount, // Total amount spent (including fee)
           tokensReceived,
           pricePerToken: TOKEN_PRICE_KOBO,
           totalAmountKobo: amountInKobo,
@@ -173,7 +184,7 @@ export async function POST(request: NextRequest) {
       await tx.token.update({
         where: { id: token.id },
         data: {
-          volume: { increment: data.nairaAmount }, // Increment in Naira, not kobo
+          volume: { increment: amountAfterFee }, // Volume based on amount after fee
           transactionCount: { increment: 1 }
         }
       })
@@ -190,7 +201,7 @@ export async function POST(request: NextRequest) {
       session.user.id,
       token.symbol,
       tokensReceived,
-      data.nairaAmount
+      amountAfterFee // Use amount after fee for notification
     )
 
     return NextResponse.json({
@@ -198,6 +209,8 @@ export async function POST(request: NextRequest) {
       purchase: {
         id: result.purchase.id,
         nairaAmountSpent: data.nairaAmount,
+        transactionFee: Math.round(transactionFee * 100) / 100, // Round to 2 decimal places
+        amountAfterFee: Math.round(amountAfterFee * 100) / 100,
         tokensReceived,
         pricePerToken: TOKEN_PRICE_NAIRA,
         newTokenBalance: result.holding.quantity,

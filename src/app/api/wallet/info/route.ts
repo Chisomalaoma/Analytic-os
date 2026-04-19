@@ -41,7 +41,7 @@ export async function GET() {
     // Use user's full name from database instead of Monnify's abbreviated name
     const firstName = wallet.user.firstName || wallet.user.username || 'User'
     const lastName = wallet.user.lastName || wallet.user.username || 'User'
-    const fullName = `${firstName} ${lastName}`
+    const fullName = `XTes - ${firstName} ${lastName}`
 
     // Verify the wallet exists on Monnify - if not, create it
     if (wallet.accountRef) {

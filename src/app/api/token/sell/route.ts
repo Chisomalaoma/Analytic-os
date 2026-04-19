@@ -78,9 +78,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No wallet found' }, { status: 400 })
     }
 
-    // Calculate Naira to receive
-    const nairaReceived = data.tokensToSell * TOKEN_PRICE_NAIRA
-    const nairaInKobo = Math.floor(nairaReceived * 100)
+    // Calculate Naira to receive before fee
+    const grossNairaReceived = data.tokensToSell * TOKEN_PRICE_NAIRA
+    
+    // Calculate 0.35% transaction fee
+    const TRANSACTION_FEE_RATE = 0.0035 // 0.35%
+    const transactionFee = grossNairaReceived * TRANSACTION_FEE_RATE
+    const netNairaReceived = grossNairaReceived - transactionFee
+    const nairaInKobo = Math.floor(netNairaReceived * 100)
 
     // Generate unique reference
     const reference = `SELL-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
@@ -128,7 +133,7 @@ export async function POST(request: NextRequest) {
       await tx.token.update({
         where: { id: token.id },
         data: {
-          volume: { increment: nairaReceived }, // Increment in Naira, not kobo
+          volume: { increment: netNairaReceived }, // Use net amount for volume
           transactionCount: { increment: 1 }
         }
       })
@@ -145,7 +150,7 @@ export async function POST(request: NextRequest) {
       session.user.id,
       token.symbol,
       data.tokensToSell,
-      nairaReceived
+      netNairaReceived
     )
 
     return NextResponse.json({
@@ -153,7 +158,9 @@ export async function POST(request: NextRequest) {
       sale: {
         id: result.transaction.id,
         tokensSold: data.tokensToSell,
-        nairaReceived,
+        grossAmount: Math.round(grossNairaReceived * 100) / 100,
+        transactionFee: Math.round(transactionFee * 100) / 100,
+        nairaReceived: Math.round(netNairaReceived * 100) / 100,
         pricePerToken: TOKEN_PRICE_NAIRA,
         newTokenBalance: Number(result.holding.quantity),
         newWalletBalance: result.wallet.balance,
