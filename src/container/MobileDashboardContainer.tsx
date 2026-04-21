@@ -306,7 +306,7 @@ export default function MobileDashboardContainer() {
                   logo={token.logoUrl}
                   industry={token.industry}
                   annualYield={token.annualYield}
-                  yieldPayout={formatAmount(yieldPayouts[token.symbol] || 0)}
+                  yieldPayout={formatAmount(yieldPayouts[token.symbol] || 0, 2)}
                   timePeriod={activeTime}
                 />
               ))}

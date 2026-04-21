@@ -105,7 +105,7 @@ export default function PortfolioSummary() {
                         {formatAmount(totalInvested)}
                     </div>
                     <div className="text-green-400 text-sm font-medium">
-                        {totalYield > 0 ? `+${formatAmount(totalYield)} yield earned` : totalYield < 0 ? `${formatAmount(totalYield)} loss` : 'No yield earned yet'}
+                        {totalYield > 0 ? `+${formatAmount(totalYield, 2)} yield earned` : totalYield < 0 ? `${formatAmount(totalYield, 2)} loss` : 'No yield earned yet'}
                     </div>
                 </div>
 
@@ -122,7 +122,7 @@ export default function PortfolioSummary() {
                         <FaChartLine /> Total Yield
                     </div>
                     <div className="text-3xl font-bold text-white">
-                        {formatAmount(totalYield)}
+                        {formatAmount(totalYield, 2)}
                     </div>
                     <div className="text-sm font-medium space-y-1">
                         <div className="text-green-400">
@@ -130,7 +130,7 @@ export default function PortfolioSummary() {
                         </div>
                         {lockedYield > 0 && (
                             <div className="text-yellow-400">
-                                {formatAmount(lockedYield)} locked until maturity
+                                {formatAmount(lockedYield, 2)} locked until maturity
                             </div>
                         )}
                     </div>

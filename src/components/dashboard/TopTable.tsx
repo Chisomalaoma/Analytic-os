@@ -204,7 +204,7 @@ export default function TopTable({ activeTab = 'all', timePeriod = '30d', watchl
                 change={0}
                 industry={token.industry}
                 annualYield={`${token.annualYield}%`}
-                yieldPayout={formatAmount(yieldPayout)}
+                yieldPayout={formatAmount(yieldPayout, 2)}
                 marketCap={formatAmount(displayVolume)}
                 chart="/icons/chart.svg"
                 tokenId={token.symbol}

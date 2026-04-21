@@ -47,12 +47,12 @@ const SearchDropdown = forwardRef<HTMLDivElement, SearchDropdownProps>(({ isOpen
   if (!isOpen) return null
 
   const formatPrice = (price: number) => {
-    // Format as Naira
+    // Format as Naira without decimals
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: 'NGN',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(price)
   }
 

@@ -162,7 +162,7 @@ export default function PortfolioTable({ holdings, watchlistIds, onWatchlistTogg
                   ) : (
                     <>
                       <div className={`font-semibold ${totalYield >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {totalYield >= 0 ? '+' : ''}{formatAmount(totalYield)}
+                        {totalYield >= 0 ? '+' : ''}{formatAmount(totalYield, 2)}
                       </div>
                       <div className={`text-xs ${yieldPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {yieldPercent >= 0 ? '+' : ''}{yieldPercent < 1 && yieldPercent > 0 ? yieldPercent.toFixed(2) : Math.round(yieldPercent)}%

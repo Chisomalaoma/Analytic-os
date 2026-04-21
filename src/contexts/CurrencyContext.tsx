@@ -15,7 +15,7 @@ interface CurrencyContextType {
   error: string | null
   setCurrency: (currency: 'NGN' | 'USD') => void
   convertAmount: (amount: number) => number
-  formatAmount: (amount: number) => string
+  formatAmount: (amount: number, decimals?: number) => string
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined)
@@ -91,18 +91,18 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
   /**
    * Format amount with currency symbol
    */
-  const formatAmount = (amountInNGN: number): string => {
+  const formatAmount = (amountInNGN: number, decimals: number = 0): string => {
     if (currency === 'NGN') {
       return `₦${amountInNGN.toLocaleString('en-NG', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
       })}`
     }
 
     const usdAmount = convertAmount(amountInNGN)
     return `$${usdAmount.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     })}`
   }
 
