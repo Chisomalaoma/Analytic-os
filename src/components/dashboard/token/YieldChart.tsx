@@ -162,14 +162,18 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-full bg-[#181A20] rounded flex items-center justify-center text-gray-500 text-sm">
-            No yield data available yet
+          <div className="h-full bg-[#181A20] rounded flex flex-col items-center justify-center text-gray-500 text-sm">
+            <div className="text-center">
+              <div className="text-lg mb-2">📊</div>
+              <div className="font-medium mb-1">No Holdings Yet</div>
+              <div className="text-xs">Purchase {tokenSymbol} tokens to see your yield performance</div>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Stats Summary */}
-      {data.length > 0 && (
+      {/* Stats Summary - Only show if user has holdings */}
+      {data.length > 0 && hasActualHolding && (
         <div className="mt-4 pt-4 border-t border-[#262626] grid grid-cols-3 gap-4">
           <div>
             <p className="text-gray-400 text-xs mb-1">Current Yield</p>

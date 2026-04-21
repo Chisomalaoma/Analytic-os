@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/lib/auth'
 
 /**
- * GET /api/token/yield-history - Get yield history for a token
+ * GET /api/token/yield-history - Get yield history for current user's holdings of a token
  */
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const tokenSymbol = searchParams.get('symbol')
     const period = searchParams.get('period') || '30d' // Default to 30 days
 
-    console.log('API called with:', { tokenSymbol, period })
+    console.log('API called with:', { tokenSymbol, period, userId: session.user.id })
 
     if (!tokenSymbol) {
       return NextResponse.json(
@@ -58,29 +67,58 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Generate simulated yield data based on annual yield
-    const annualYield = parseFloat(token.annualYield.toString())
-    const daysInPeriod = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    const dataPoints = Math.min(daysInPeriod, 30) // Max 30 data points
-    
-    console.log('Generating data:', { annualYield, daysInPeriod, dataPoints })
-    
-    // Check if user has any holdings for this token
+    // Check if CURRENT USER has any holdings for this token
     const userHolding = await prisma.tokenHolding.findFirst({
       where: {
-        tokenId: token.symbol
+        tokenId: token.symbol,
+        userId: session.user.id  // ✅ FIXED: Filter by current user
       },
       select: {
         totalInvested: true,
-        accumulatedYield: true
+        accumulatedYield: true,
+        quantity: true
       }
     })
+
+    console.log('User holding lookup:', { 
+      userId: session.user.id,
+      tokenSymbol: token.symbol,
+      hasHolding: !!userHolding,
+      totalInvested: userHolding?.totalInvested?.toString(),
+      accumulatedYield: userHolding?.accumulatedYield?.toString(),
+      quantity: userHolding?.quantity?.toString()
+    })
+
+    // If user has no holdings, return empty projection
+    if (!userHolding || Number(userHolding.quantity) === 0) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          tokenSymbol: token.symbol,
+          tokenName: token.name,
+          annualYield: parseFloat(token.annualYield.toString()),
+          baseInvestment: 0,
+          hasActualHolding: false,
+          period,
+          history: [] // Empty array - no data to show
+        }
+      })
+    }
+
+    // User has actual holdings - calculate real yield progression
+    const baseInvestment = parseFloat(userHolding.totalInvested.toString())
+    const startingYield = parseFloat(userHolding.accumulatedYield.toString())
+    const annualYield = parseFloat(token.annualYield.toString())
     
-    // Use actual investment or a reasonable example amount
-    const baseInvestment = userHolding ? parseFloat(userHolding.totalInvested.toString()) : 10000 // ₦10,000 example
-    const startingYield = userHolding ? parseFloat(userHolding.accumulatedYield.toString()) : 0
+    console.log('Generating data for user with holdings:', { 
+      annualYield, 
+      baseInvestment, 
+      startingYield,
+      daysInPeriod: Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    })
     
-    console.log('Investment data:', { baseInvestment, startingYield, hasHolding: !!userHolding })
+    const daysInPeriod = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    const dataPoints = Math.min(daysInPeriod, 30) // Max 30 data points
     
     const chartData = []
     
@@ -110,7 +148,7 @@ export async function GET(request: NextRequest) {
       chartData.push({
         date: date.toISOString().split('T')[0],
         yield: Number(totalYield.toFixed(2)),
-        period: userHolding ? 'actual' : 'projected'
+        period: 'actual'
       })
     }
 
@@ -123,7 +161,7 @@ export async function GET(request: NextRequest) {
         tokenName: token.name,
         annualYield: annualYield,
         baseInvestment: baseInvestment,
-        hasActualHolding: !!userHolding,
+        hasActualHolding: true,
         period,
         history: chartData
       }
