@@ -98,11 +98,16 @@ export async function POST(request: NextRequest) {
         data: { balance: { increment: nairaInKobo } }
       })
 
-      // 2. Calculate proportional totalInvested reduction
+      // 2. Calculate proportional reductions
       const sellRatio = data.tokensToSell / Number(holding.quantity)
       const investedReduction = Number(holding.totalInvested) * sellRatio
+      const yieldReduction = Number(holding.lockedYield || 0) * sellRatio
+      const accumulatedYieldReduction = Number(holding.accumulatedYield || 0) * sellRatio
 
       // 3. Update token holding
+      const newQuantity = Number(holding.quantity) - data.tokensToSell
+      const isSellingAll = newQuantity <= 0.000001 // Account for floating point precision
+      
       const updatedHolding = await tx.tokenHolding.update({
         where: {
           userId_tokenId: {
@@ -110,9 +115,20 @@ export async function POST(request: NextRequest) {
             tokenId: token.symbol
           }
         },
-        data: {
+        data: isSellingAll ? {
+          // If selling all tokens, reset everything to 0
+          quantity: 0,
+          totalInvested: 0,
+          lockedYield: 0,
+          accumulatedYield: 0,
+          monthlyYieldAmount: 0,
+          updatedAt: new Date()
+        } : {
+          // If partial sale, reduce proportionally
           quantity: { decrement: data.tokensToSell },
           totalInvested: { decrement: investedReduction },
+          lockedYield: { decrement: yieldReduction },
+          accumulatedYield: { decrement: accumulatedYieldReduction },
           updatedAt: new Date()
         }
       })
