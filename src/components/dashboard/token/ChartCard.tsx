@@ -13,6 +13,8 @@ const ChartCard: React.FC = () => {
     const [isMobile, setIsMobile] = useState(false);
     const timeframes = ['1s', '1m', '5m', '15m', '1h', '4h', '1D'];
 
+    console.log('ChartCard - tokenSymbol from URL:', tokenSymbol)
+
     useEffect(() => {
         const checkMobile = () => {
             setIsMobile(window.innerWidth < 768);

@@ -23,16 +23,26 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
 
   useEffect(() => {
     const fetchYieldHistory = async () => {
-      if (!tokenSymbol) return
+      if (!tokenSymbol) {
+        console.log('No tokenSymbol provided')
+        return
+      }
       
       try {
         setLoading(true)
+        console.log('Fetching yield history for:', tokenSymbol, 'period:', period)
         const response = await fetch(`/api/token/yield-history?symbol=${tokenSymbol}&period=${period}`)
         const result = await response.json()
+        
+        console.log('API Response:', result)
 
         if (result.success && result.data) {
+          console.log('Setting data:', result.data.history)
+          console.log('Setting annualYield:', result.data.annualYield)
           setData(result.data.history)
           setAnnualYield(result.data.annualYield)
+        } else {
+          console.error('API returned error:', result.error)
         }
       } catch (error) {
         console.error('Failed to fetch yield history:', error)
