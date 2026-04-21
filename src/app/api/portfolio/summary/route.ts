@@ -52,7 +52,7 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
     // Calculate total invested from holdings
     const totalInvested = holdings.reduce((sum, h) => sum + Number(h.totalInvested), 0)
 
-    // Calculate total locked yield (safely handle if field doesn't exist)
+    // Calculate total locked yield (this is what should be displayed as "Total Yield")
     let totalLockedYield = 0
     try {
       const holdingsWithLocked = await prisma.tokenHolding.findMany({
@@ -70,7 +70,10 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
       console.log('lockedYield field not available yet')
     }
 
-    // Get token info for APY
+    // Use locked yield as the main "Total Yield" display
+    const displayTotalYield = totalLockedYield
+
+    // Get token info for APY (for future use)
     const tokenIds = [...new Set(holdings.map(h => h.tokenId))]
     const tokens = await prisma.token.findMany({
       where: {
@@ -82,35 +85,6 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
         price: true
       }
     })
-
-    // Create a map of tokenId -> token data
-    const tokenMap = new Map(tokens.map(t => [t.symbol, t]))
-
-    // Calculate total yield across all holdings
-    let totalYield = 0
-    for (const holding of holdings) {
-      const token = tokenMap.get(holding.tokenId)
-      if (!token) continue
-
-      // Calculate current portfolio value for this holding
-      const currentValue = Number(holding.quantity) * (token.price / 100)
-
-      // Calculate new accumulated yield since last update (based on current portfolio value)
-      const newAccumulatedYield = calculateAccumulatedYield(
-        currentValue,  // Use current portfolio value, not investment amount
-        Number(token.annualYield),
-        holding.lastYieldUpdate
-      )
-      
-      // Total accumulated yield for this holding
-      const holdingAccumulatedYield = Number(holding.accumulatedYield) + newAccumulatedYield
-      
-      // Unrealized gain/loss
-      const unrealizedGainLoss = currentValue - Number(holding.totalInvested)
-      
-      // Total yield = unrealized gain/loss + accumulated yield
-      totalYield += unrealizedGainLoss + holdingAccumulatedYield
-    }
 
     // Query 3: Count transactions in last 30 days
     const thirtyDaysAgo = new Date()
@@ -146,16 +120,16 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
     // Count number of different tokens currently held (holdings with quantity > 0)
     const holdCount = holdings.length
 
-    // Calculate yield percentage
+    // Calculate yield percentage based on locked yield
     const yieldPercentage = totalInvested > 0 
-      ? (totalYield / totalInvested) * 100 
+      ? (displayTotalYield / totalInvested) * 100 
       : 0
 
     return NextResponse.json({
       success: true,
       data: {
         totalInvested,
-        totalYield: Math.round(totalYield * 100) / 100, // Round to 2 decimal places
+        totalYield: Math.round(displayTotalYield * 100) / 100, // Show locked yield as total yield
         yieldPercentage: Math.round(yieldPercentage * 100) / 100,
         transactionCount: totalTransactions,
         buyCount: recentPurchases,
