@@ -93,7 +93,10 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
    */
   const formatAmount = (amountInNGN: number): string => {
     if (currency === 'NGN') {
-      return `₦${Math.round(amountInNGN).toLocaleString('en-NG')}`
+      return `₦${amountInNGN.toLocaleString('en-NG', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}`
     }
 
     const usdAmount = convertAmount(amountInNGN)
