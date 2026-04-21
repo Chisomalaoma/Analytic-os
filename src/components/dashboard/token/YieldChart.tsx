@@ -19,6 +19,8 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState('30d')
   const [annualYield, setAnnualYield] = useState(0)
+  const [baseInvestment, setBaseInvestment] = useState(0)
+  const [hasActualHolding, setHasActualHolding] = useState(false)
   const { formatAmount } = useCurrency()
 
   useEffect(() => {
@@ -41,6 +43,8 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
           console.log('Setting annualYield:', result.data.annualYield)
           setData(result.data.history)
           setAnnualYield(result.data.annualYield)
+          setBaseInvestment(result.data.baseInvestment)
+          setHasActualHolding(result.data.hasActualHolding)
         } else {
           console.error('API returned error:', result.error)
         }
@@ -93,6 +97,11 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
           <h3 className="text-white font-semibold text-base sm:text-lg">Yield Performance</h3>
           <p className="text-gray-400 text-xs sm:text-sm">
             {annualYield}% Annual Yield
+            {!hasActualHolding && (
+              <span className="text-yellow-400 ml-2">
+                (Projection based on {formatAmount(baseInvestment)} investment)
+              </span>
+            )}
           </p>
         </div>
         

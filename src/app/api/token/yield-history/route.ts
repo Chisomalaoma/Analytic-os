@@ -65,21 +65,38 @@ export async function GET(request: NextRequest) {
     
     console.log('Generating data:', { annualYield, daysInPeriod, dataPoints })
     
+    // Check if user has any holdings for this token
+    const userHolding = await prisma.tokenHolding.findFirst({
+      where: {
+        tokenId: token.symbol
+      },
+      select: {
+        totalInvested: true,
+        accumulatedYield: true
+      }
+    })
+    
+    // Use actual investment or a reasonable example amount
+    const baseInvestment = userHolding ? parseFloat(userHolding.totalInvested.toString()) : 10000 // ₦10,000 example
+    const startingYield = userHolding ? parseFloat(userHolding.accumulatedYield.toString()) : 0
+    
+    console.log('Investment data:', { baseInvestment, startingYield, hasHolding: !!userHolding })
+    
     const chartData = []
     
     for (let i = 0; i <= dataPoints; i++) {
       const date = new Date(startDate)
       date.setDate(startDate.getDate() + Math.floor(i * (daysInPeriod / dataPoints)))
       
-      // Simulate accumulated yield over time with a base investment of ₦1000
-      const baseInvestment = 1000
+      // Calculate yield progression
       const dailyYieldRate = annualYield / 365 / 100 // Convert percentage to decimal daily rate
-      const accumulatedYield = baseInvestment * dailyYieldRate * i
+      const newYieldForPeriod = baseInvestment * dailyYieldRate * i
+      const totalYield = startingYield + newYieldForPeriod
       
       chartData.push({
         date: date.toISOString().split('T')[0],
-        yield: Number(accumulatedYield.toFixed(2)),
-        period: 'simulated'
+        yield: Number(totalYield.toFixed(2)),
+        period: userHolding ? 'actual' : 'projected'
       })
     }
 
@@ -91,6 +108,8 @@ export async function GET(request: NextRequest) {
         tokenSymbol: token.symbol,
         tokenName: token.name,
         annualYield: annualYield,
+        baseInvestment: baseInvestment,
+        hasActualHolding: !!userHolding,
         period,
         history: chartData
       }
