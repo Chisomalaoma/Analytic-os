@@ -43,6 +43,8 @@ export async function GET(request: NextRequest) {
       where: { symbol: tokenSymbol.toUpperCase() }
     })
 
+    console.log('Token lookup:', { tokenSymbol, found: !!token, annualYield: token?.annualYield })
+
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Token not found' },
@@ -77,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     // If no historical data, generate sample data based on annual yield
     if (chartData.length === 0) {
-      const annualYield = Number(token.annualYield)
+      const annualYield = parseFloat(token.annualYield.toString())
       const monthlyYield = annualYield / 12
       const daysInPeriod = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
       const dataPoints = Math.min(daysInPeriod, 30) // Max 30 data points
@@ -86,8 +88,10 @@ export async function GET(request: NextRequest) {
         const date = new Date(startDate)
         date.setDate(startDate.getDate() + Math.floor(i * (daysInPeriod / dataPoints)))
         
-        // Simulate accumulated yield over time
-        const accumulatedYield = (monthlyYield / 30) * i
+        // Simulate accumulated yield over time with a base investment of ₦1000
+        const baseInvestment = 1000
+        const dailyYieldRate = annualYield / 365 / 100 // Convert percentage to decimal daily rate
+        const accumulatedYield = baseInvestment * dailyYieldRate * i
         
         chartData.push({
           date: date.toISOString().split('T')[0],
@@ -102,7 +106,7 @@ export async function GET(request: NextRequest) {
       data: {
         tokenSymbol: token.symbol,
         tokenName: token.name,
-        annualYield: Number(token.annualYield),
+        annualYield: parseFloat(token.annualYield.toString()),
         period,
         history: chartData
       }
