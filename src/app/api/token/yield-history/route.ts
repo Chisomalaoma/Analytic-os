@@ -88,10 +88,24 @@ export async function GET(request: NextRequest) {
       const date = new Date(startDate)
       date.setDate(startDate.getDate() + Math.floor(i * (daysInPeriod / dataPoints)))
       
-      // Calculate yield progression
+      // Calculate actual days from start for this data point
+      const actualDaysFromStart = Math.floor(i * (daysInPeriod / dataPoints))
+      
+      // Calculate yield progression based on actual days
       const dailyYieldRate = annualYield / 365 / 100 // Convert percentage to decimal daily rate
-      const newYieldForPeriod = baseInvestment * dailyYieldRate * i
+      const newYieldForPeriod = baseInvestment * dailyYieldRate * actualDaysFromStart
       const totalYield = startingYield + newYieldForPeriod
+      
+      if (i === dataPoints) {
+        console.log('Final calculation:', {
+          i,
+          actualDaysFromStart,
+          dailyYieldRate,
+          newYieldForPeriod,
+          totalYield,
+          period
+        })
+      }
       
       chartData.push({
         date: date.toISOString().split('T')[0],
