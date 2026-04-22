@@ -107,13 +107,24 @@ export async function GET(request: NextRequest) {
 
     // User has actual holdings - calculate real yield progression
     const baseInvestment = parseFloat(userHolding.totalInvested.toString())
-    const startingYield = parseFloat(userHolding.accumulatedYield.toString())
+    const currentAccumulatedYield = parseFloat(userHolding.accumulatedYield.toString())
+    const quantity = parseFloat(userHolding.quantity.toString())
     const annualYield = parseFloat(token.annualYield.toString())
+    
+    // Calculate current market value
+    const currentMarketValue = quantity * (token.price / 100)
+    
+    // Calculate CURRENT total yield (not projected)
+    const unrealizedGainLoss = currentMarketValue - baseInvestment
+    const currentTotalYield = unrealizedGainLoss + currentAccumulatedYield
     
     console.log('Generating data for user with holdings:', { 
       annualYield, 
-      baseInvestment, 
-      startingYield,
+      baseInvestment,
+      currentMarketValue,
+      currentAccumulatedYield,
+      unrealizedGainLoss,
+      currentTotalYield,
       daysInPeriod: Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
     })
     
@@ -122,37 +133,27 @@ export async function GET(request: NextRequest) {
     
     const chartData = []
     
+    // Calculate historical yield progression leading up to current yield
     for (let i = 0; i <= dataPoints; i++) {
       const date = new Date(startDate)
       date.setDate(startDate.getDate() + Math.floor(i * (daysInPeriod / dataPoints)))
       
-      // Calculate actual days from start for this data point
-      const actualDaysFromStart = Math.floor(i * (daysInPeriod / dataPoints))
-      
-      // Calculate yield progression based on actual days
-      const dailyYieldRate = annualYield / 365 / 100 // Convert percentage to decimal daily rate
-      const newYieldForPeriod = baseInvestment * dailyYieldRate * actualDaysFromStart
-      const totalYield = startingYield + newYieldForPeriod
-      
-      if (i === dataPoints) {
-        console.log('Final calculation:', {
-          i,
-          actualDaysFromStart,
-          dailyYieldRate,
-          newYieldForPeriod,
-          totalYield,
-          period
-        })
-      }
+      // Calculate yield at this point in time (proportional to current yield)
+      const progressRatio = i / dataPoints
+      const yieldAtThisPoint = currentTotalYield * progressRatio
       
       chartData.push({
         date: date.toISOString().split('T')[0],
-        yield: Number(totalYield.toFixed(2)),
+        yield: Number(yieldAtThisPoint.toFixed(2)),
         period: 'actual'
       })
     }
 
-    console.log('Generated chart data:', chartData.slice(0, 3), '... total:', chartData.length)
+    console.log('Generated chart data:', {
+      firstPoint: chartData[0],
+      lastPoint: chartData[chartData.length - 1],
+      total: chartData.length
+    })
 
     return NextResponse.json({
       success: true,
@@ -161,6 +162,7 @@ export async function GET(request: NextRequest) {
         tokenName: token.name,
         annualYield: annualYield,
         baseInvestment: baseInvestment,
+        currentTotalYield: currentTotalYield, // Add current total yield for reference
         hasActualHolding: true,
         period,
         history: chartData

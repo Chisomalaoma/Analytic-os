@@ -45,35 +45,12 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
         accumulatedYield: true,
         lastYieldUpdate: true,
         tokenId: true,
-        quantity: true
+        quantity: true,
+        lockedYield: true
       }
     })
 
-    // Calculate total invested from holdings
-    const totalInvested = holdings.reduce((sum, h) => sum + Number(h.totalInvested), 0)
-
-    // Calculate total locked yield (this is what should be displayed as "Total Yield")
-    let totalLockedYield = 0
-    try {
-      const holdingsWithLocked = await prisma.tokenHolding.findMany({
-        where: {
-          userId,
-          quantity: { gt: 0 }
-        },
-        select: {
-          lockedYield: true
-        }
-      })
-      totalLockedYield = holdingsWithLocked.reduce((sum, h) => sum + Number(h.lockedYield || 0), 0)
-    } catch (error) {
-      // Field doesn't exist yet, use 0
-      console.log('lockedYield field not available yet')
-    }
-
-    // Use locked yield as the main "Total Yield" display
-    const displayTotalYield = totalLockedYield
-
-    // Get token info for APY (for future use)
+    // Get token prices for current market value calculation
     const tokenIds = [...new Set(holdings.map(h => h.tokenId))]
     const tokens = await prisma.token.findMany({
       where: {
@@ -84,6 +61,53 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
         annualYield: true,
         price: true
       }
+    })
+
+    // Create token price map
+    const tokenPriceMap = new Map(tokens.map(t => [t.symbol, t]))
+
+    // Calculate total invested and total yield using CORRECT formula
+    let totalInvested = 0
+    let totalYield = 0
+    let totalLockedYield = 0
+
+    for (const holding of holdings) {
+      const token = tokenPriceMap.get(holding.tokenId)
+      if (!token) continue
+
+      const invested = Number(holding.totalInvested)
+      const quantity = Number(holding.quantity)
+      const accumulatedYield = Number(holding.accumulatedYield)
+      
+      // Calculate current market value
+      const currentValue = quantity * (token.price / 100) // Convert from kobo to Naira
+      
+      // Calculate new accumulated yield since last update
+      const now = new Date()
+      const lastUpdate = new Date(holding.lastYieldUpdate)
+      const msPerDay = 24 * 60 * 60 * 1000
+      const daysSinceLastUpdate = (now.getTime() - lastUpdate.getTime()) / msPerDay
+      const dailyYield = (currentValue * (Number(token.annualYield) / 100)) / 365
+      const newAccumulatedYield = dailyYield * daysSinceLastUpdate
+      
+      // Total accumulated yield
+      const totalAccumulatedYield = accumulatedYield + newAccumulatedYield
+      
+      // CORRECT FORMULA: Total Yield = (Current Value - Invested) + Accumulated Yield
+      const unrealizedGainLoss = currentValue - invested
+      const holdingTotalYield = unrealizedGainLoss + totalAccumulatedYield
+      
+      totalInvested += invested
+      totalYield += holdingTotalYield
+      totalLockedYield += Number(holding.lockedYield || 0)
+    }
+
+    console.log('Portfolio Summary Calculation:', {
+      userId,
+      totalInvested,
+      totalYield,
+      totalLockedYield,
+      holdingsCount: holdings.length
     })
 
     // Query 3: Count transactions in last 30 days
@@ -120,16 +144,16 @@ export async function GET(): Promise<NextResponse<PortfolioSummaryResponse>> {
     // Count number of different tokens currently held (holdings with quantity > 0)
     const holdCount = holdings.length
 
-    // Calculate yield percentage based on locked yield
+    // Calculate yield percentage based on total yield
     const yieldPercentage = totalInvested > 0 
-      ? (displayTotalYield / totalInvested) * 100 
+      ? (totalYield / totalInvested) * 100 
       : 0
 
     return NextResponse.json({
       success: true,
       data: {
-        totalInvested,
-        totalYield: Math.round(displayTotalYield * 100) / 100, // Show locked yield as total yield
+        totalInvested: Math.round(totalInvested * 100) / 100,
+        totalYield: Math.round(totalYield * 100) / 100, // Use CORRECT total yield calculation
         yieldPercentage: Math.round(yieldPercentage * 100) / 100,
         transactionCount: totalTransactions,
         buyCount: recentPurchases,

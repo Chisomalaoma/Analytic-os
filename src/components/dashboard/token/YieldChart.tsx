@@ -20,6 +20,7 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
   const [period, setPeriod] = useState('30d')
   const [annualYield, setAnnualYield] = useState(0)
   const [baseInvestment, setBaseInvestment] = useState(0)
+  const [currentTotalYield, setCurrentTotalYield] = useState(0)
   const [hasActualHolding, setHasActualHolding] = useState(false)
   const { formatAmount } = useCurrency()
 
@@ -41,9 +42,11 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
         if (result.success && result.data) {
           console.log('Setting data:', result.data.history)
           console.log('Setting annualYield:', result.data.annualYield)
+          console.log('Setting currentTotalYield:', result.data.currentTotalYield)
           setData(result.data.history)
           setAnnualYield(result.data.annualYield)
           setBaseInvestment(result.data.baseInvestment)
+          setCurrentTotalYield(result.data.currentTotalYield || 0) // ✅ Use API's calculated current yield
           setHasActualHolding(result.data.hasActualHolding)
         } else {
           console.error('API returned error:', result.error)
@@ -178,7 +181,7 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
           <div>
             <p className="text-gray-400 text-xs mb-1">Current Yield</p>
             <p className="text-white font-semibold text-sm">
-              {formatAmount(data[data.length - 1]?.yield || 0, 2)}
+              {formatAmount(currentTotalYield, 2)}
             </p>
           </div>
           <div>
@@ -193,7 +196,7 @@ export default function YieldChart({ tokenSymbol }: YieldChartProps) {
           <div>
             <p className="text-gray-400 text-xs mb-1">Total Growth</p>
             <p className="text-green-400 font-semibold text-sm">
-              +{formatAmount(data[data.length - 1]?.yield || 0, 2)}
+              +{formatAmount(currentTotalYield, 2)}
             </p>
           </div>
         </div>

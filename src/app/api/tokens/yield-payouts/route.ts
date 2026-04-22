@@ -5,7 +5,10 @@ type TimePeriod = '1d' | '7d' | '30d' | '1yr'
 
 /**
  * GET /api/tokens/yield-payouts?period=30d
- * Calculate total yield payouts for all tokens based on time period
+ * Calculate MARKET-WIDE total yield payouts for all tokens based on time period
+ * 
+ * NOTE: This calculates yield across ALL USERS for market statistics.
+ * For individual user yield, use /api/portfolio/summary instead.
  */
 export async function GET(request: NextRequest) {
   try {
