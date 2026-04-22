@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
     const lastName = formData.get('lastName') as string
     const dob = formData.get('dob') as string
     const selfieFile = formData.get('selfie') as File
+    const livenessVideo = formData.get('livenessVideo') as File
 
     if (!idType || !idNumber || !firstName || !lastName) {
       return NextResponse.json(
@@ -27,9 +28,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!selfieFile) {
+    // Accept either selfie image OR liveness video
+    if (!selfieFile && !livenessVideo) {
       return NextResponse.json(
-        { error: 'Selfie image is required' },
+        { error: 'Selfie image or liveness video is required' },
         { status: 400 }
       )
     }
@@ -37,15 +39,27 @@ export async function POST(request: NextRequest) {
     // Generate unique job ID
     const jobId = `KYC_${session.user.id}_${Date.now()}`
 
-    // Convert selfie to base64
-    const selfieBuffer = Buffer.from(await selfieFile.arrayBuffer())
-    const selfieBase64 = selfieBuffer.toString('base64')
+    // Convert selfie/video to base64
+    let selfieBase64 = ''
+    let hasLivenessVideo = false
+    
+    if (livenessVideo) {
+      // Use liveness video (preferred)
+      const videoBuffer = Buffer.from(await livenessVideo.arrayBuffer())
+      selfieBase64 = videoBuffer.toString('base64')
+      hasLivenessVideo = true
+    } else if (selfieFile) {
+      // Fallback to selfie image
+      const selfieBuffer = Buffer.from(await selfieFile.arrayBuffer())
+      selfieBase64 = selfieBuffer.toString('base64')
+    }
 
     console.log('[KYC-SUBMIT] Submitting job:', {
       userId: session.user.id,
       jobId,
       idType,
       idNumber,
+      hasLivenessVideo,
     })
 
     // Submit job using SmileID SDK
