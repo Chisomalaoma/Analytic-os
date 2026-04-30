@@ -91,13 +91,14 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
 
       {/* Navigation */}
       <nav className="relative z-50 flex items-center justify-between px-6 py-4 lg:px-12">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4459FF] to-[#7C3AED] flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl font-bold text-white">XTes</span>
         </div>
 
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
           <button
             onClick={onOpenSignIn}
@@ -110,6 +111,16 @@ export function HeroSection({ onOpenSignUp, onOpenSignIn }: HeroSectionProps) {
             className="px-5 py-2 bg-[#4459FF] hover:bg-[#3448EE] text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#4459FF]/25"
           >
             Start Earning Today
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="flex md:hidden items-center gap-3">
+          <button
+            onClick={onOpenSignIn}
+            className="px-4 py-2 text-gray-300 hover:text-white transition-colors font-medium text-sm"
+          >
+            Login
           </button>
         </div>
       </nav>
